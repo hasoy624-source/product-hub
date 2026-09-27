@@ -42,7 +42,7 @@ fs.mkdirSync(output, { recursive: true });
     const suffix = Date.now().toString().slice(-8);
     const productName = '验收产品-' + suffix;
     await visit('products', '产品与销售');
-    await page.getByRole('heading', { name: '品类销售结构', exact: true }).waitFor();
+    await page.getByRole('heading', { name: '产品分类', exact: true }).waitFor();
     await page.getByRole('button', { name: '新建产品', exact: true }).click();
     await dialog().getByLabel(/^产品名称/).fill(productName);
     await dialog().getByLabel(/^SKU/).fill('QA-' + suffix);

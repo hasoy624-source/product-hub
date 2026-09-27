@@ -160,3 +160,21 @@ tbody tr:hover{background:#f5f7fc}
 .exception-group:hover .exception-group-marker{height:52px}
 .exception-group:hover>svg,.exception-detail-row:hover>svg{transform:translateX(4px)}
 @keyframes exception-enter{from{opacity:.55;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+button.metric{appearance:none;background:transparent;border:0;border-left:1px solid var(--line);border-radius:0;text-align:left;color:inherit;width:100%}
+button.metric:first-child{border-left:0}
+button.metric:hover{background:#f4f6fb}
+.metrics{grid-template-columns:1.85fr .85fr .85fr .85fr;align-items:stretch}
+.metric.main-metric>strong{font-size:48px}
+.metric:not(.main-metric)>strong{font-size:22px}
+button.stage-item{appearance:none;background:transparent;border:0;color:inherit;text-align:left;padding:0 10px 0 0;min-height:44px}
+button.stage-item:hover strong{color:#2c3650}
+.overview-later{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.7fr);gap:32px;margin-top:8px}
+.overview-later .context-section{margin:0;padding-top:8px;border-top:1px solid var(--line)}
+.exception-hero>.exception-hero-total{margin-top:0}
+.kb-count{display:flex;align-items:baseline;justify-content:flex-end;gap:8px;padding:8px 0 18px;color:#65708b}
+.kb-count strong{font-size:28px;font-weight:500;line-height:1;color:#343b4c}
+.kb-count span{font-size:11px}
+@media(max-width:1200px){.metric.main-metric>strong{font-size:40px}.metric:not(.main-metric)>strong{font-size:20px}}
+@media(max-width:1020px){.metric.main-metric>strong{font-size:36px}.metric:not(.main-metric)>strong{font-size:20px}.overview-later{grid-template-columns:1fr}}
+@media(max-width:760px){.metrics{grid-template-columns:1fr 1fr}.metric.main-metric{grid-column:1/-1}.metric.main-metric>strong{font-size:36px}.metric:not(.main-metric)>strong{font-size:22px}button.metric:not(.main-metric){min-height:0;padding-left:0!important;border-left:0}button.metric:nth-child(even){border-left:0}button.metric:nth-child(3){padding-left:23px!important;border-left:1px solid var(--line)}.kb-count{justify-content:flex-start}.kb-count strong{font-size:22px}}
+@media(max-width:470px){.metric.main-metric>strong{font-size:32px}.metric:not(.main-metric)>strong{font-size:20px}}

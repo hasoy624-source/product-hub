@@ -24,6 +24,7 @@ test('project board filters overdue, active and configurable categories', () => 
   assert.deepEqual(filterProjects(projects, tasks, meta, 'overdue', today).map(p => p.id), ['p1', 'p3'])
   assert.deepEqual(filterProjects(projects, tasks, meta, 'active', today).map(p => p.id), ['p1', 'p4'])
   assert.deepEqual(filterProjects(projects, tasks, meta, 'project-battery', today).map(p => p.id), ['p1'])
+  assert.deepEqual(filterProjects([{ id: 's1', stage: 'EVT', status: '正常', due_date: '2026-10-05' }, { id: 's2', stage: 'MP', status: '正常', due_date: '2026-10-05' }], [], [], 'stage:EVT', today).map(p => p.id), ['s1'])
   assert.deepEqual(boardCounts(projects, tasks, meta, categories, today).map(item => item.count), [4, 2, 2, 1, 1])
   assert.equal(reportCategoryId({ id: 'r1' }, []), 'report-product')
   assert.equal(reportCategoryId({ id: 'r1' }, [{ scope: 'report', entity_id: 'r1', category_id: 'report-market' }]), 'report-market')
