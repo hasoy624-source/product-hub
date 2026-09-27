@@ -1,6 +1,6 @@
 """Persistence models. Monetary values are integer CNY cents."""
 from uuid import uuid4
-from sqlalchemy import Boolean, CheckConstraint, Integer, String, Text, UniqueConstraint, ForeignKey
+from sqlalchemy import Boolean, CheckConstraint, Integer, JSON, String, Text, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -104,6 +104,53 @@ class Report(Base):
     source: Mapped[str] = mapped_column(String(30), default="规则汇总")
 
 
+class KnowledgeDocument(Base):
+    __tablename__ = "knowledge_documents"
+    __table_args__ = (UniqueConstraint("project_id", "template_id"),)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    project_id: Mapped[str] = mapped_column(String(64), default="")
+    template_id: Mapped[str] = mapped_column(String(100))
+    stage: Mapped[str] = mapped_column(String(30))
+    title: Mapped[str] = mapped_column(String(200))
+    owner: Mapped[str] = mapped_column(String(100), default="")
+    status: Mapped[str] = mapped_column(String(30), default="草稿")
+    content: Mapped[str] = mapped_column(Text, default="")
+    updated_at: Mapped[str] = mapped_column(String(40))
+
+
+class Category(Base):
+    __tablename__ = "categories"
+    __table_args__ = (UniqueConstraint("scope", "name"),)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    scope: Mapped[str] = mapped_column(String(20), index=True)
+    name: Mapped[str] = mapped_column(String(100))
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class CustomField(Base):
+    __tablename__ = "custom_fields"
+    __table_args__ = (UniqueConstraint("scope", "key"),)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    scope: Mapped[str] = mapped_column(String(20), index=True)
+    key: Mapped[str] = mapped_column(String(64))
+    label: Mapped[str] = mapped_column(String(100))
+    kind: Mapped[str] = mapped_column(String(20))
+    options: Mapped[list] = mapped_column(JSON, default=list)
+    required: Mapped[bool] = mapped_column(Boolean, default=False)
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class EntityMeta(Base):
+    __tablename__ = "entity_meta"
+    scope: Mapped[str] = mapped_column(String(20), primary_key=True)
+    entity_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    category_id: Mapped[str] = mapped_column(String(64), default="")
+    values: Mapped[dict] = mapped_column(JSON, default=dict)
+    updated_at: Mapped[str] = mapped_column(String(40))
+
+
 class Activity(Base):
     __tablename__ = "activity"
     id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
@@ -131,7 +178,7 @@ class JobRun(Base):
 
 
 ENTITIES = {"products": Product, "sales": Sale, "projects": Project, "tasks": Task,
-            "signals": Signal, "seats": Seat, "jobs": Job}
+            "signals": Signal, "seats": Seat, "jobs": Job, "knowledge_documents": KnowledgeDocument}
 
 
 def serialize(row):

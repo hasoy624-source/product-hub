@@ -1,4 +1,5 @@
 import type { Dashboard, Job, Product, Project, Report, Sale, Seat, Signal, Task, Workspace } from './types'
+import { defaultCategories } from './classification.ts'
 
 const STORAGE_KEY = 'zhixu-public-preview-v1'
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date())
@@ -49,7 +50,13 @@ function seed(): Workspace {
   ]
   const next = new Date(`${shiftMonth(month, 1)}-01T09:00:00+08:00`).toISOString()
   const jobs: Job[] = [{ id: 'demo-job-1', name: '竞品与市场月报', frequency: 'monthly', enabled: true, next_run_at: next, last_run_at: null }]
-  return { products, sales, projects, tasks, signals, seats, jobs, reports: [createReport(month, null, products, sales, signals)], activity: [{ id: 'activity-1', action: '初始化演示空间：全部产品、品牌、销售与评价均为虚构样例', created_at: new Date().toISOString() }] }
+  const reports = [createReport(month, null, products, sales, signals)]
+  const samples = ['project-battery', 'project-accessory', 'project-dry-burn', 'project-accessory', 'project-battery']
+  const entity_meta: Workspace['entity_meta'] = [
+    ...projects.map((project, index) => ({ scope: 'project' as const, entity_id: project.id, category_id: samples[index], values: {}, updated_at: new Date().toISOString() })),
+    { scope: 'report', entity_id: reports[0].id, category_id: 'report-product', values: {}, updated_at: new Date().toISOString() },
+  ]
+  return { products, sales, projects, tasks, signals, seats, jobs, knowledge_documents: [], categories: structuredClone(defaultCategories), custom_fields: [], entity_meta, reports, activity: [{ id: 'activity-1', action: '初始化演示空间：全部产品、品牌、销售与评价均为虚构样例', created_at: new Date().toISOString() }] }
 }
 
 function dashboard(workspace: Workspace, month: string): Dashboard {
@@ -100,7 +107,14 @@ function save(workspace: Workspace) {
 function load(): Workspace {
   const stored = localStorage.getItem(STORAGE_KEY)
   if (!stored) { const initial = seed(); save(initial); return initial }
-  try { return JSON.parse(stored) as Workspace } catch { const initial = seed(); save(initial); return initial }
+  try {
+    const data = JSON.parse(stored) as Workspace
+    data.knowledge_documents ||= []
+    data.categories ||= structuredClone(defaultCategories)
+    data.custom_fields ||= []
+    data.entity_meta ||= []
+    return data
+  } catch { const initial = seed(); save(initial); return initial }
 }
 function record(workspace: Workspace, action: string) {
   workspace.activity.unshift({ id: uuid(), action, created_at: new Date().toISOString() })
@@ -117,6 +131,50 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
   const workspace = load()
   if (pathname === '/workspace' && verb === 'GET') return structuredClone(workspace) as T
   if (pathname === '/dashboard' && verb === 'GET') return dashboard(workspace, query.get('month') || currentMonth()) as T
+  const taxonomyMatch = pathname.match(/^\/(categories|custom-fields)(?:\/([^/]+))?$/)
+  if (taxonomyMatch && ['POST', 'PATCH'].includes(verb)) {
+    const [, resource, id] = taxonomyMatch
+    const collection = resource === 'categories' ? workspace.categories : workspace.custom_fields
+    const input = (body || {}) as Record<string, unknown>
+    if (verb === 'PATCH') {
+      const target = collection.find(item => item.id === id)
+      if (!target) throw new ApiError('配置不存在', 404)
+      if (input.scope && input.scope !== target.scope) throw new ApiError('所属范围不可修改', 422)
+      if (resource === 'custom-fields' && input.key && input.key !== (target as { key?: string }).key) throw new ApiError('字段标识不可修改', 422)
+      Object.assign(target, input); save(workspace)
+      return structuredClone(target) as T
+    }
+    if (!['project', 'report'].includes(String(input.scope))) throw new ApiError('范围无效', 422)
+    const duplicate = resource === 'categories'
+      ? workspace.categories.some(item => item.scope === input.scope && item.name === input.name)
+      : workspace.custom_fields.some(item => item.scope === input.scope && item.key === input.key)
+    if (duplicate) throw new ApiError('配置已存在', 409)
+    const created = { id: uuid(), ...input }
+    if (resource === 'categories') workspace.categories.push(created as Workspace['categories'][number])
+    else workspace.custom_fields.push(created as Workspace['custom_fields'][number])
+    save(workspace)
+    return structuredClone(created) as T
+  }
+  const metaMatch = pathname.match(/^\/entity-meta\/(project|report)\/([^/]+)$/)
+  if (metaMatch && verb === 'PUT') {
+    const [, scope, entityId] = metaMatch
+    if (!(scope === 'project' ? workspace.projects : workspace.reports).some(item => item.id === entityId)) throw new ApiError('关联记录不存在', 404)
+    const input = body as { category_id: string; values: Record<string, string> }
+    if (input.category_id && !workspace.categories.some(item => item.id === input.category_id && item.scope === scope)) throw new ApiError('分类不属于当前范围', 422)
+    const definitions = workspace.custom_fields.filter(item => item.scope === scope)
+    for (const definition of definitions) {
+      const value = input.values?.[definition.key] || ''
+      if (definition.active && definition.required && !value.trim()) throw new ApiError(`请填写${definition.label}`, 422)
+      if (definition.kind === 'select' && value && !definition.options.includes(value)) throw new ApiError(`${definition.label}不在候选值内`, 422)
+    }
+    let row = workspace.entity_meta.find(item => item.scope === scope && item.entity_id === entityId)
+    if (!row) { row = { scope: scope as 'project' | 'report', entity_id: entityId, category_id: '', values: {}, updated_at: '' }; workspace.entity_meta.push(row) }
+    row.category_id = input.category_id || ''
+    row.values = input.values || {}
+    row.updated_at = new Date().toISOString()
+    save(workspace)
+    return structuredClone(row) as T
+  }
   if (pathname === '/reports/generate' && verb === 'POST') {
     const payload = body as { month?: string }
     const month = payload?.month || currentMonth()
@@ -133,15 +191,16 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
     workspace.reports.unshift(report); record(workspace, `手动运行预览任务并生成月报：${job.name}`); save(workspace)
     return report as T
   }
-  const entityMatch = pathname.match(/^\/(products|sales|projects|tasks|signals|seats|jobs)(?:\/([^/]+))?$/)
+  const entityMatch = pathname.match(/^\/(products|sales|projects|tasks|signals|seats|jobs|knowledge_documents)(?:\/([^/]+))?$/)
   if (entityMatch && ['POST', 'PATCH'].includes(verb)) {
     const [, entity, id] = entityMatch
-    const collection = workspace[entity as keyof Pick<Workspace, 'products' | 'sales' | 'projects' | 'tasks' | 'signals' | 'seats' | 'jobs'>] as unknown as Array<Record<string, unknown>>
+    const collection = workspace[entity as keyof Pick<Workspace, 'products' | 'sales' | 'projects' | 'tasks' | 'signals' | 'seats' | 'jobs' | 'knowledge_documents'>] as unknown as Array<Record<string, unknown>>
     const input = (body || {}) as Record<string, unknown>
     if (verb === 'PATCH') {
       const target = collection.find(item => item.id === id)
       if (!target) throw new ApiError('记录不存在', 404)
       Object.assign(target, input)
+      if (entity === 'knowledge_documents') target.updated_at = new Date().toISOString()
       record(workspace, `更新 ${entity}：${String(target.name || target.title || id)}`)
       save(workspace)
       return structuredClone(target) as T
@@ -153,7 +212,11 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
     }
     if (entity === 'projects' && input.product_id && !workspace.products.some(product => product.id === input.product_id)) throw new ApiError('关联产品不存在', 422)
     if (entity === 'tasks' && !workspace.projects.some(project => project.id === input.project_id)) throw new ApiError('关联项目不存在', 422)
-    const created = { id: uuid(), ...input } as Record<string, unknown>
+    if (entity === 'knowledge_documents') {
+      if (input.project_id && !workspace.projects.some(project => project.id === input.project_id)) throw new ApiError('关联项目不存在', 422)
+      if (collection.some(item => item.project_id === input.project_id && item.template_id === input.template_id)) throw new ApiError('该项目的此文档已存在', 409)
+    }
+    const created = { id: uuid(), ...input, ...(entity === 'knowledge_documents' ? { updated_at: new Date().toISOString() } : {}) } as Record<string, unknown>
     collection.push(created)
     record(workspace, `新增 ${entity}：${String(created.name || created.title || '预览记录')}`)
     save(workspace)

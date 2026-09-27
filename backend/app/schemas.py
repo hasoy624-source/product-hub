@@ -116,6 +116,39 @@ class ReportIn(Schema):
     job_id: Reference | None = None
 
 
+class KnowledgeDocumentIn(Schema):
+    project_id: OptionalReference = ""
+    template_id: NonEmpty100
+    stage: Literal["概念与启动", "设计与开发", "EVT", "DVT", "MP"]
+    title: NonEmpty
+    owner: Short = ""
+    status: Literal["草稿", "待评审", "已归档"] = "草稿"
+    content: Annotated[str, Field(max_length=100000)] = ""
+
+
+class CategoryIn(Schema):
+    scope: Literal["project", "report"]
+    name: NonEmpty100
+    active: StrictBool = True
+    sort_order: Annotated[StrictInt, Field(ge=0, le=10000)] = 0
+
+
+class CustomFieldIn(Schema):
+    scope: Literal["project", "report"]
+    key: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]{0,63}$")]
+    label: NonEmpty100
+    kind: Literal["text", "number", "date", "select"] = "text"
+    options: Annotated[list[NonEmpty100], Field(max_length=30)] = Field(default_factory=list)
+    required: StrictBool = False
+    active: StrictBool = True
+    sort_order: Annotated[StrictInt, Field(ge=0, le=10000)] = 0
+
+
+class EntityMetaIn(Schema):
+    category_id: OptionalReference = ""
+    values: Annotated[dict[str, Annotated[str, Field(max_length=1000)]], Field(max_length=50)] = Field(default_factory=dict)
+
+
 class LoginIn(Schema):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=False)
     username: Annotated[str, Field(min_length=1, max_length=200)]
@@ -123,4 +156,5 @@ class LoginIn(Schema):
 
 
 SCHEMAS = {"products": ProductIn, "sales": SaleIn, "projects": ProjectIn,
-           "tasks": TaskIn, "signals": SignalIn, "seats": SeatIn, "jobs": JobIn}
+           "tasks": TaskIn, "signals": SignalIn, "seats": SeatIn, "jobs": JobIn,
+           "knowledge_documents": KnowledgeDocumentIn}
