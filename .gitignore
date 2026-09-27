@@ -16,6 +16,8 @@ test-results/
 # Keep documentation and generated build metadata local.
 docs/
 **/*.md
+# Keep the repository handoff guide available to cloned harnesses.
+!/AGENTS.md
 *.tsbuildinfo
 .env.*
 !.env.example
