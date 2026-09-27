@@ -1,0 +1,14 @@
+export type Product = { id: string; name: string; sku: string; category: string; status: string; owner: string; description: string }
+export type Sale = { id: string; product_id: string; month: string; revenue_cents: number; units: number; channel: string; note: string }
+export type Project = { id: string; name: string; product_id: string; stage: string; status: string; owner: string; due_date: string; progress: number; description: string }
+export type Task = { id: string; project_id: string; title: string; owner: string; due_date: string; status: string }
+export type Signal = { id: string; kind: string; brand: string; title: string; content: string; sentiment: string; source_url: string; occurred_on: string }
+export type Seat = { id: string; name: string; kind: string; provider: string; status: string; note: string }
+export type Job = { id: string; name: string; frequency: string; enabled: boolean; next_run_at: string; last_run_at: string | null }
+export type Report = { id: string; title: string; month: string; content: string; generated_at: string; job_id: string | null; source: string }
+export type Activity = { id: string; action: string; created_at: string }
+export type Workspace = { products: Product[]; sales: Sale[]; projects: Project[]; tasks: Task[]; signals: Signal[]; seats: Seat[]; jobs: Job[]; reports: Report[]; activity: Activity[] }
+export type Dashboard = { month: string; revenue_cents: number; previous_revenue_cents: number; growth_pct: number | null; top_product_share: number; risk_threshold: number; product_count: number; active_projects: number; overdue_tasks: number; product_sales: { product_id: string; name: string; category: string; revenue_cents: number; share: number }[]; trend: { month: string; revenue_cents: number }[]; category_sales: { category: string; revenue_cents: number; share: number }[] }
+export type Entity = 'products' | 'sales' | 'projects' | 'tasks' | 'signals' | 'seats' | 'jobs'
+export type Field = { key: string; label: string; type?: string; required?: boolean; options?: { label: string; value: string }[]; hint?: string; min?: number; max?: number; step?: string }
+export type EditState = { entity: Entity; id?: string; title: string; values: Record<string, string | number | boolean>; fields: Field[] }

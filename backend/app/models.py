@@ -1,0 +1,138 @@
+"""Persistence models. Monetary values are integer CNY cents."""
+from uuid import uuid4
+from sqlalchemy import Boolean, CheckConstraint, Integer, String, Text, UniqueConstraint, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+def uid():
+    return str(uuid4())
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class Product(Base):
+    __tablename__ = "products"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    name: Mapped[str] = mapped_column(String(200))
+    sku: Mapped[str] = mapped_column(String(100), unique=True)
+    category: Mapped[str] = mapped_column(String(100))
+    status: Mapped[str] = mapped_column(String(30))
+    owner: Mapped[str] = mapped_column(String(100))
+    description: Mapped[str] = mapped_column(Text, default="")
+
+
+class Sale(Base):
+    __tablename__ = "sales"
+    __table_args__ = (UniqueConstraint("product_id", "month", "channel"), CheckConstraint("revenue_cents >= 0"), CheckConstraint("units >= 0"))
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    product_id: Mapped[str] = mapped_column(ForeignKey("products.id"))
+    month: Mapped[str] = mapped_column(String(7), index=True)
+    revenue_cents: Mapped[int] = mapped_column(Integer)
+    units: Mapped[int] = mapped_column(Integer)
+    channel: Mapped[str] = mapped_column(String(100))
+    note: Mapped[str] = mapped_column(Text, default="")
+
+
+class Project(Base):
+    __tablename__ = "projects"
+    __table_args__ = (CheckConstraint("progress >= 0 AND progress <= 100"),)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    name: Mapped[str] = mapped_column(String(200))
+    # Empty string represents an independent project in the public contract.
+    # API validation provides the optional relationship constraint.
+    product_id: Mapped[str] = mapped_column(String(64), default="")
+    stage: Mapped[str] = mapped_column(String(30))
+    status: Mapped[str] = mapped_column(String(30))
+    owner: Mapped[str] = mapped_column(String(100))
+    due_date: Mapped[str] = mapped_column(String(10))
+    progress: Mapped[int] = mapped_column(Integer)
+    description: Mapped[str] = mapped_column(Text, default="")
+
+
+class Task(Base):
+    __tablename__ = "tasks"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"))
+    title: Mapped[str] = mapped_column(String(200))
+    owner: Mapped[str] = mapped_column(String(100))
+    due_date: Mapped[str] = mapped_column(String(10))
+    status: Mapped[str] = mapped_column(String(30))
+
+
+class Signal(Base):
+    __tablename__ = "signals"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    kind: Mapped[str] = mapped_column(String(30))
+    brand: Mapped[str] = mapped_column(String(100))
+    title: Mapped[str] = mapped_column(String(200))
+    content: Mapped[str] = mapped_column(Text)
+    sentiment: Mapped[str] = mapped_column(String(30))
+    source_url: Mapped[str] = mapped_column(Text, default="")
+    occurred_on: Mapped[str] = mapped_column(String(10), index=True)
+
+
+class Seat(Base):
+    __tablename__ = "seats"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    name: Mapped[str] = mapped_column(String(200))
+    kind: Mapped[str] = mapped_column(String(30))
+    provider: Mapped[str] = mapped_column(String(100))
+    status: Mapped[str] = mapped_column(String(30))
+    note: Mapped[str] = mapped_column(Text, default="")
+
+
+class Job(Base):
+    __tablename__ = "jobs"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    name: Mapped[str] = mapped_column(String(200))
+    frequency: Mapped[str] = mapped_column(String(20))
+    enabled: Mapped[bool] = mapped_column(Boolean)
+    next_run_at: Mapped[str] = mapped_column(String(40), index=True)
+    last_run_at: Mapped[str | None] = mapped_column(String(40), nullable=True)
+
+
+class Report(Base):
+    __tablename__ = "reports"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    title: Mapped[str] = mapped_column(String(200))
+    month: Mapped[str] = mapped_column(String(7))
+    content: Mapped[str] = mapped_column(Text)
+    generated_at: Mapped[str] = mapped_column(String(40))
+    job_id: Mapped[str | None] = mapped_column(ForeignKey("jobs.id"), nullable=True)
+    source: Mapped[str] = mapped_column(String(30), default="规则汇总")
+
+
+class Activity(Base):
+    __tablename__ = "activity"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    action: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String(40))
+
+
+class SessionToken(Base):
+    __tablename__ = "sessions"
+    token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    expires_at: Mapped[str] = mapped_column(String(40))
+
+
+class JobRun(Base):
+    __tablename__ = "job_runs"
+    __table_args__ = (UniqueConstraint("job_id", "scheduled_for"),)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    job_id: Mapped[str] = mapped_column(ForeignKey("jobs.id"))
+    scheduled_for: Mapped[str] = mapped_column(String(80))
+    started_at: Mapped[str] = mapped_column(String(40))
+    finished_at: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    status: Mapped[str] = mapped_column(String(20))
+    error: Mapped[str] = mapped_column(Text, default="")
+    report_id: Mapped[str | None] = mapped_column(ForeignKey("reports.id"), nullable=True)
+
+
+ENTITIES = {"products": Product, "sales": Sale, "projects": Project, "tasks": Task,
+            "signals": Signal, "seats": Seat, "jobs": Job}
+
+
+def serialize(row):
+    return {column.name: getattr(row, column.name) for column in row.__table__.columns}

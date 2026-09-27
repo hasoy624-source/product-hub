@@ -1,0 +1,21 @@
+backend/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/*.pyc
+**/*.db
+**/*.db-wal
+**/*.db-shm
+frontend/node_modules/
+frontend/dist/
+.env
+logs/
+backups/
+test-results/
+*.log
+
+# Keep documentation and generated build metadata local.
+docs/
+**/*.md
+*.tsbuildinfo
+.env.*
+!.env.example

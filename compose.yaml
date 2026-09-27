@@ -1,0 +1,66 @@
+name: zhixu-product-hub
+x-app-environment: &app-environment
+  APP_MODE: production
+  DATABASE_URL: postgresql+psycopg://producthub:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/producthub
+  ADMIN_USERNAME: ${ADMIN_USERNAME:?Set ADMIN_USERNAME in .env}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+  PUBLIC_ORIGIN: https://${DOMAIN:?Set DOMAIN in .env}
+  FRONTEND_DIST: /app/frontend/dist
+  TZ: Asia/Shanghai
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: producthub
+      POSTGRES_USER: producthub
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      TZ: Asia/Shanghai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U producthub -d producthub"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+  api:
+    build: .
+    image: zhixu-product-hub:local
+    environment: *app-environment
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+    restart: unless-stopped
+  worker:
+    image: zhixu-product-hub:local
+    environment: *app-environment
+    command: [python, -m, app.worker]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env}
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:
