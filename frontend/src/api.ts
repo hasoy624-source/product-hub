@@ -1,5 +1,8 @@
-export class ApiError extends Error { status: number; constructor(message: string, status: number) { super(message); this.status = status } }
+import { ApiError, previewApi } from './preview'
+
+export { ApiError }
 export async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
+  if (import.meta.env.VITE_PREVIEW_MODE === 'true') return previewApi<T>(path, method, body)
   const response = await fetch(`/api${path}`, { method, credentials: 'same-origin', headers: body === undefined ? {} : { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) })
   const data = await response.json().catch(() => null)
   if (!response.ok) {
