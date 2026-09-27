@@ -1,4 +1,22 @@
-import type { Category, EntityMeta, Project, Task, Report } from './types'
+import type { Category, EntityMeta, Product, Project, Task, Report, Sale } from './types'
+
+export const featuredProductCategories = ['配件类', '电池类', '干烧类'] as const
+export type ProductFilter = 'all' | string
+export function filterProducts(products: Product[], filter: ProductFilter, query = '') {
+  const search = query.trim().toLocaleLowerCase()
+  return products.filter(product => (filter === 'all' || product.category === filter)
+    && `${product.name} ${product.sku} ${product.category} ${product.owner}`.toLocaleLowerCase().includes(search))
+}
+export function filterSalesByProducts(sales: Sale[], products: Product[], filter: ProductFilter, month: string) {
+  const ids = new Set(filterProducts(products, filter).map(product => product.id))
+  return sales.filter(sale => sale.month === month && ids.has(sale.product_id))
+}
+export function productCategoryCards(products: Product[], sales: Sale[], month: string) {
+  const categories = [...featuredProductCategories, ...new Set(products.map(product => product.category).filter(category => category && !featuredProductCategories.includes(category as typeof featuredProductCategories[number])))]
+  return [{ id: 'all', label: '全部产品', count: products.length, revenue_cents: sales.filter(sale => sale.month === month).reduce((sum, sale) => sum + sale.revenue_cents, 0) },
+    ...categories.map(category => ({ id: category, label: category, count: products.filter(product => product.category === category).length,
+      revenue_cents: filterSalesByProducts(sales, products, category, month).reduce((sum, sale) => sum + sale.revenue_cents, 0) }))]
+}
 
 export const defaultCategories: Category[] = [
   { id: 'project-battery', scope: 'project', name: '电池类', active: true, sort_order: 10 },

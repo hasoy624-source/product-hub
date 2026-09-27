@@ -15,11 +15,11 @@ function uuid() { return globalThis.crypto?.randomUUID?.() ?? `preview-${Date.no
 function seed(): Workspace {
   const month = currentMonth()
   const products: Product[] = [
-    { id: 'demo-p1', name: '智能舒眠颈枕', sku: 'REST-01', category: '智能健康', status: '在售', owner: '林悦', description: '演示虚构产品 · 温感支撑与旅途舒眠' },
-    { id: 'demo-p2', name: '便携筋膜按摩仪', sku: 'MOVE-02', category: '运动恢复', status: '在售', owner: '陈知远', description: '演示虚构产品 · 轻量化便携设计' },
-    { id: 'demo-p3', name: '桌面空气净化器', sku: 'AIR-03', category: '智能家居', status: '在售', owner: '周可', description: '演示虚构产品 · 桌面清新空气' },
-    { id: 'demo-p4', name: '睡眠监测眼罩', sku: 'SLEEP-04', category: '智能健康', status: '研发中', owner: '林悦', description: '演示虚构产品 · 正在进行工程验证' },
-    { id: 'demo-p5', name: '便携冷热杯', sku: 'CUP-05', category: '生活方式', status: '研发中', owner: '苏禾', description: '演示虚构产品 · 概念验证阶段' },
+    { id: 'demo-p1', name: '智能舒眠颈枕', sku: 'REST-01', category: '配件类', status: '在售', owner: '林悦', description: '演示虚构产品 · 温感支撑与旅途舒眠' },
+    { id: 'demo-p2', name: '便携筋膜按摩仪', sku: 'MOVE-02', category: '电池类', status: '在售', owner: '陈知远', description: '演示虚构产品 · 轻量化便携设计' },
+    { id: 'demo-p3', name: '桌面空气净化器', sku: 'AIR-03', category: '配件类', status: '在售', owner: '周可', description: '演示虚构产品 · 桌面清新空气' },
+    { id: 'demo-p4', name: '睡眠监测眼罩', sku: 'SLEEP-04', category: '电池类', status: '研发中', owner: '林悦', description: '演示虚构产品 · 正在进行工程验证' },
+    { id: 'demo-p5', name: '便携冷热杯', sku: 'CUP-05', category: '干烧类', status: '研发中', owner: '苏禾', description: '演示虚构产品 · 概念验证阶段' },
   ]
   const sales: Sale[] = []
   for (let offset = -5; offset <= 0; offset++) {
@@ -113,6 +113,11 @@ function load(): Workspace {
     data.categories ||= structuredClone(defaultCategories)
     data.custom_fields ||= []
     data.entity_meta ||= []
+    const originalCategories: Record<string, string> = { 'demo-p1': '智能健康', 'demo-p2': '运动恢复', 'demo-p3': '智能家居', 'demo-p4': '智能健康', 'demo-p5': '生活方式' }
+    const newCategories: Record<string, string> = { 'demo-p1': '配件类', 'demo-p2': '电池类', 'demo-p3': '配件类', 'demo-p4': '电池类', 'demo-p5': '干烧类' }
+    let migrated = false
+    for (const product of data.products) if (product.category === originalCategories[product.id]) { product.category = newCategories[product.id]; migrated = true }
+    if (migrated) save(data)
     return data
   } catch { const initial = seed(); save(initial); return initial }
 }
