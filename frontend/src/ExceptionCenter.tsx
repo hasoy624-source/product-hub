@@ -24,11 +24,29 @@ function Donut({ groups, total, compact = false }: { groups: ReturnType<typeof e
   </div>
 }
 
-export function ExceptionSnapshot({ workspace, today, onNavigate }: Pick<Props, 'workspace' | 'today' | 'onNavigate'>) {
+export function ExceptionMetric({ workspace, today }: Pick<Props, 'workspace' | 'today'>) {
   const { groups, total } = exceptionDetails(workspace, today)
-  return <section className="exception-snapshot" aria-label="异常概览">
-    <div className="exception-snapshot-head"><span>异常概览</span><button className="text-button" onClick={() => onNavigate('')}>查看全部<ArrowRight size={14}/></button></div>
-    <div className="exception-snapshot-body"><Donut groups={groups} total={total} compact/><div className="exception-snapshot-counts">{groups.map(group => <button key={group.id} onClick={() => onNavigate(group.id)}><i style={{ background: group.color }}/><span>{group.label}</span><strong>{group.count}</strong></button>)}</div></div>
+  const circumference = 2 * Math.PI * 33
+  let offset = 0
+  return <section className="metric exception-metric" aria-label="异常概览">
+    <a className="exception-metric-heading" href="#exceptions">异常概览<ArrowRight size={14}/></a>
+    <div className="exception-metric-body">
+      <div className="exception-metric-chart">
+        <svg viewBox="0 0 88 88" role="group" aria-label="点击扇区查看对应异常">
+          <circle cx="44" cy="44" r="33" fill="none" stroke="#e7eaf1" strokeWidth="13"/>
+          {total > 0 && groups.map(group => {
+            const length = group.count / total * circumference
+            const start = offset
+            offset += length
+            return group.count > 0 && <a key={group.id} href={`#exceptions/${group.id}`} aria-label={`查看${group.label}，${group.count}项`}>
+              <circle cx="44" cy="44" r="33" fill="none" stroke={group.color} strokeWidth="13" strokeDasharray={`${length} ${circumference - length}`} strokeDashoffset={-start} transform="rotate(-90 44 44)" className="exception-metric-segment"><title>{group.label} · {group.count} 项</title></circle>
+            </a>
+          })}
+        </svg>
+        <a className="exception-metric-total" href="#exceptions" aria-label={`查看全部${total}项异常`}>{total}<small>项</small></a>
+      </div>
+      <div className="exception-metric-legend">{groups.map(group => <a key={group.id} href={`#exceptions/${group.id}`} aria-label={`查看${group.label}，${group.count}项`}><i style={{ background: group.color }}/><span>{group.label}</span><strong>{group.count}</strong></a>)}</div>
+    </div>
   </section>
 }
 

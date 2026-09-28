@@ -178,3 +178,27 @@ button.stage-item:hover strong{color:#2c3650}
 @media(max-width:1020px){.metric.main-metric>strong{font-size:36px}.metric:not(.main-metric)>strong{font-size:20px}.overview-later{grid-template-columns:1fr}}
 @media(max-width:760px){.metrics{grid-template-columns:1fr 1fr}.metric.main-metric{grid-column:1/-1}.metric.main-metric>strong{font-size:36px}.metric:not(.main-metric)>strong{font-size:22px}button.metric:not(.main-metric){min-height:0;padding-left:0!important;border-left:0}button.metric:nth-child(even){border-left:0}button.metric:nth-child(3){padding-left:23px!important;border-left:1px solid var(--line)}.kb-count{justify-content:flex-start}.kb-count strong{font-size:22px}}
 @media(max-width:470px){.metric.main-metric>strong{font-size:32px}.metric:not(.main-metric)>strong{font-size:20px}}
+
+/* The exception breakdown replaces the product-concentration KPI on the overview. */
+.metrics{grid-template-columns:1.7fr 1.25fr .8fr .8fr}
+.exception-metric{display:flex;flex-direction:column;justify-content:center}
+.exception-metric-heading{display:flex;align-items:center;gap:6px;width:100%;min-height:24px;padding:0;text-align:left;color:#37435f;font-size:11px;font-weight:600}
+.exception-metric-heading svg{color:#7785b4;transition:transform .18s ease}
+.exception-metric-heading:hover svg{transform:translateX(3px)}
+.exception-metric-body{display:flex;align-items:center;gap:13px;margin-top:9px;min-width:0}
+.exception-metric-chart{position:relative;width:88px;height:88px;flex:0 0 88px}
+.exception-metric-chart svg{display:block;width:100%;height:100%}
+.exception-metric-chart a{cursor:pointer;outline-offset:0}
+.exception-metric-segment{transition:stroke-width .18s ease,opacity .18s ease}
+.exception-metric-chart a:hover .exception-metric-segment,.exception-metric-chart a:focus-visible .exception-metric-segment{stroke-width:17;opacity:.9}
+.exception-metric-total{position:absolute;inset:19px;width:50px;height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;color:#2e384f;font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.exception-metric-total small{display:block;font-size:9px;font-weight:400;color:#808a9e;line-height:1}
+.exception-metric-legend{flex:1;min-width:0}
+.exception-metric-legend a{display:flex;align-items:center;gap:6px;width:100%;min-height:27px;padding:2px 0;text-align:left;color:#667188;font-size:10px;white-space:nowrap}
+.exception-metric-legend a:hover,.exception-metric-legend a:focus-visible{color:#364c9d}
+.exception-metric-legend i{width:7px;height:7px;border-radius:50%;flex:0 0 7px}
+.exception-metric-legend span{flex:1;min-width:0}
+.exception-metric-legend strong{color:#35415b;font-variant-numeric:tabular-nums;font-size:11px}
+@media(max-width:1200px){.metrics{grid-template-columns:1.45fr 1.3fr .8fr .85fr}.exception-metric-body{gap:8px}.exception-metric-chart{width:76px;height:76px;flex-basis:76px}.exception-metric-total{inset:16px;width:44px;height:44px;font-size:21px}.exception-metric-legend a{font-size:9px}}
+@media(max-width:760px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.exception-metric{padding-top:18px!important;padding-bottom:18px!important}.exception-metric-body{gap:9px}.exception-metric-chart{width:76px;height:76px;flex-basis:76px}.exception-metric-legend a{font-size:10px}}
+@media(max-width:470px){.exception-metric{padding-left:13px!important}.exception-metric-body{gap:5px}.exception-metric-chart{width:64px;height:64px;flex-basis:64px}.exception-metric-total{inset:14px;width:36px;height:36px;font-size:17px}.exception-metric-total small{font-size:8px}.exception-metric-legend a{gap:4px;min-height:21px;font-size:9px}.exception-metric-legend i{width:5px;height:5px;flex-basis:5px}.exception-metric-legend strong{font-size:9px}}
