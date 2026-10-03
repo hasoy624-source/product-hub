@@ -29,7 +29,7 @@ export function ExceptionMetric({ workspace, today }: Pick<Props, 'workspace' | 
   const circumference = 2 * Math.PI * 33
   let offset = 0
   return <section className="metric exception-metric" aria-label="异常概览">
-    <a className="exception-metric-heading" href="#exceptions">异常概览<ArrowRight size={14}/></a>
+    <h2><a className="exception-metric-heading" href="#exceptions">异常概览<ArrowRight size={14}/></a></h2>
     <div className="exception-metric-body">
       <div className="exception-metric-chart">
         <svg viewBox="0 0 88 88" role="group" aria-label="点击扇区查看对应异常">

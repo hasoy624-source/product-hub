@@ -44,7 +44,7 @@ export function filterProjects(projects: Project[], tasks: Task[], meta: EntityM
   if (filter === 'all') return projects
   if (filter === 'overdue') return projects.filter(project => projectOverdue(project, tasks, today))
   if (filter === 'active') return projects.filter(projectInProgress)
-  if (filter.startsWith('stage:')) return projects.filter(project => project.stage === filter.slice(6))
+  if (filter.startsWith('stage:')) return projects.filter(project => project.stage === filter.slice(6) && projectInProgress(project))
   return projects.filter(project => projectCategoryId(project, meta) === filter)
 }
 export function boardCounts(projects: Project[], tasks: Task[], meta: EntityMeta[], categories: Category[], today: string) {
