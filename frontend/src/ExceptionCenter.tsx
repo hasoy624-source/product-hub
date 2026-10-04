@@ -67,6 +67,6 @@ export default function ExceptionCenter({ workspace, today, view, onNavigate, on
 
   return <div className="exception-center">
     <section className="exception-hero"><div className="exception-hero-total"><strong>{details.total}</strong><span>项待关注记录</span></div><Donut groups={details.groups} total={details.total}/></section>
-    <div className="exception-groups">{details.groups.map(group => <button className="exception-group" key={group.id} onClick={() => onNavigate(group.id)}><span className="exception-group-marker" style={{ background: group.color }}/><span className="exception-group-copy"><strong>{group.label}</strong><small>{group.description}</small></span><span className="exception-group-count">{group.count}<small>项</small></span><ArrowRight size={17}/></button>)}</div>
+    <div className="exception-groups">{details.groups.map(group => <button className="exception-group" key={group.id} onClick={() => onNavigate(group.id)}><span className="exception-group-marker" style={{ background: group.color }}/><span className="exception-group-copy"><strong>{group.label}</strong></span><span className="exception-group-count">{group.count}<small>项</small></span><ArrowRight size={17}/></button>)}</div>
   </div>
 }
