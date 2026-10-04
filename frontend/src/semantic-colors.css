@@ -1,0 +1,85 @@
+/* Data colors are localized to labels and stage indicators; primary actions stay indigo. */
+.semantic-tag {
+  display: inline-flex; align-items: center; gap: 5px; width: fit-content;
+  min-height: 24px; padding: 3px 7px; border: 1px solid var(--semantic-border);
+  border-radius: 4px; background: var(--semantic-bg); color: var(--semantic-ink);
+  font-size: 11px; font-weight: 550; line-height: 1.45; white-space: nowrap; vertical-align: middle;
+}
+.semantic-tag > i { width: 5px; height: 5px; flex: 0 0 5px; border-radius: 50%; background: var(--semantic-solid); }
+.semantic-control { color: var(--semantic-ink) !important; background: var(--semantic-bg) !important; border-color: var(--semantic-border) !important; }
+.semantic-control option { color: var(--ink); background: white; }
+
+.ops-stages button[data-tone] { background: var(--semantic-bg); box-shadow: inset 0 3px 0 var(--semantic-solid); transition: background .18s, box-shadow .18s; }
+.ops-stages button[data-tone]:hover, .ops-stages button[data-tone]:focus-visible { box-shadow: inset 0 4px 0 var(--semantic-solid), inset 0 0 0 1px var(--semantic-border); background: white; }
+.ops-stages button[data-tone] .ops-stage-name, .ops-stages button[data-tone] .ops-stage-bottom > strong, .ops-stages button[data-tone] .ops-step { color: var(--semantic-ink); }
+.ops-stages button[data-tone] .ops-stage-name { font-weight: 600; }
+.ops-stage-risk { background: var(--semantic-bg); border: 1px solid var(--semantic-border); border-radius: 4px; padding: 2px 5px; color: var(--semantic-ink); }
+.ops-focus-row[data-tone] .ops-focus-icon { color: var(--semantic-ink); background: var(--semantic-bg); }
+.ops-focus-row[data-tone] .ops-state { color: var(--semantic-ink); }
+.ops-project-row[data-tone] .ops-project-progress b { background: var(--semantic-solid); }
+.ops-project-mobile-stage { display: none; }
+.ops-project-name small > .ops-project-mobile-stage { margin-right: 5px; }
+.ops-product-sale[data-tone] .ops-product-bar i { background: var(--semantic-solid); opacity: 1 !important; }
+.ops-product-sale-foot { align-items: center; }
+.ops-product-sale-foot .semantic-tag { min-height: 20px; font-size: 10px; padding: 2px 5px; }
+.ops-secondary-row:has(.semantic-tag) { align-items: flex-start; }
+.ops-secondary-row small > .semantic-tag { min-height: 20px; font-size: 10px; padding: 1px 5px; }
+
+.project-selector[data-tone] { border-left: 3px solid var(--semantic-solid); }
+.project-selector[data-tone].selected { background: var(--semantic-bg); border-color: var(--semantic-border); border-left-color: var(--semantic-solid); }
+.project-selector[data-tone] .project-icon { color: var(--semantic-ink); background: var(--semantic-bg); }
+.project-selector[data-tone] .progress-track i, .project-detail[data-tone] .progress-track i { background: var(--semantic-solid); }
+.project-selector p { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.project-selector p > .semantic-tag { min-height: 22px; font-size: 10px; padding: 2px 5px; }
+.project-facts .semantic-tag { margin-top: 7px; }
+.stage-progress > div[data-tone] > span { color: var(--semantic-ink); background: var(--semantic-bg); border-color: var(--semantic-border); }
+.stage-progress > div[data-tone] small { color: var(--semantic-ink); font-size: 10px; }
+.stage-progress > div[data-step="current"] > span { width: 29px; height: 29px; margin-top: -2px; margin-bottom: 8px; border: 2px solid var(--semantic-solid); box-shadow: 0 0 0 3px var(--semantic-bg); font-weight: 700; }
+.stage-progress > div[data-step="current"] small { font-weight: 700; }
+.stage-progress > div[data-step="complete"]:after { background: var(--semantic-solid); }
+.stage-progress > div[data-step="upcoming"] > span { background: white; }
+
+.project-filter[data-tone] { color: var(--semantic-ink); }
+.project-filter[data-tone]:before { content: ''; width: 6px; height: 6px; flex-shrink: 0; border-radius: 50%; background: var(--semantic-solid); }
+.project-filter[data-tone]:hover, .project-filter[data-tone].selected { color: var(--semantic-ink); background: var(--semantic-bg); border-color: var(--semantic-border); }
+.project-filter[data-tone].selected > span { color: var(--semantic-ink); }
+.project-stage-filter[data-tone] { background: var(--semantic-bg); color: var(--semantic-ink); border: 1px solid var(--semantic-border); }
+.product-board .project-board-card[data-tone] > span { color: var(--semantic-ink); }
+.product-board .project-board-card[data-tone] > span > svg { color: var(--semantic-solid); }
+.product-board .project-board-card[data-tone].selected { background: var(--semantic-bg); color: var(--semantic-ink); box-shadow: inset 0 3px 0 var(--semantic-solid); }
+.product-board .project-board-card[data-tone].selected > strong { color: var(--semantic-ink); }
+.product-board .project-board-card[data-tone]:hover { background: var(--semantic-bg); }
+
+.kb-stages button[data-tone] { color: var(--semantic-ink); background: var(--semantic-bg); border-bottom-color: transparent; }
+.kb-stages button[data-tone] > span { color: var(--semantic-ink); }
+.kb-stages button[data-tone].active { color: var(--semantic-ink); background: var(--semantic-bg); border-bottom-color: var(--semantic-solid); box-shadow: inset 0 0 0 1px var(--semantic-border); font-weight: 650; }
+.kb-stages button[data-tone]:hover { background: white; }
+.kb-page[data-tone] .kb-index-item.selected { color: var(--semantic-ink); background: var(--semantic-bg); box-shadow: inset 3px 0 0 var(--semantic-solid); }
+.kb-page[data-tone] .kb-activity { color: var(--semantic-ink); }
+.kb-index-item > .semantic-tag { flex: 0 0 auto; min-width: auto; font-size: 10px; padding: 2px 5px; min-height: 21px; }
+.kb-detail-head .eyebrow { display: flex; align-items: center; gap: 9px; font-size: 12px; }
+.kb-status.semantic-tag { min-height: 24px; }
+.record-meta summary small { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.record-meta summary small .semantic-tag { min-height: 22px; font-size: 10px; }
+
+.report-category-tabs button[data-tone] { color: var(--semantic-ink); }
+.report-category-tabs button[data-tone]:before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--semantic-solid); margin-right: 6px; vertical-align: 1px; }
+.report-category-tabs button[data-tone].selected { color: var(--semantic-ink); background: var(--semantic-bg); border-color: var(--semantic-border); box-shadow: inset 0 -2px 0 var(--semantic-solid); }
+.report-row[data-tone] .report-icon { background: var(--semantic-bg); color: var(--semantic-ink); }
+.report-title small { line-height: 2; }
+.signal-meta .semantic-tag { font-size: 11px; }
+.tabs[aria-label="情报类型筛选"] button[data-tone] { color: var(--semantic-ink); }
+.tabs[aria-label="情报类型筛选"] button[data-tone]:before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--semantic-solid); margin-right: 6px; vertical-align: 1px; }
+.tabs[aria-label="情报类型筛选"] button[data-tone].selected { color: var(--semantic-ink); background: var(--semantic-bg); border-color: var(--semantic-border); }
+
+@media (max-width: 760px) {
+  .ops-project-mobile-stage { display: inline; }
+  .ops-project-mobile-stage .semantic-tag { font-size: 10px; min-height: 21px; padding: 2px 5px; }
+  .ops-project-name small { line-height: 2.2; }
+  .stage-progress small { max-width: 55px; margin: auto; line-height: 1.6; display: block; }
+  .project-filter { min-height: 40px; }
+  .kb-stages { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); overflow: hidden; }
+  .kb-stages button { min-width: 0; min-height: 64px; padding: 8px 3px; flex-direction: column; justify-content: center; gap: 4px; text-align: center; font-size: 10px; }
+  .kb-stages button > span { font-size: 9px; }
+  .semantic-tag { max-width: 100%; }
+}

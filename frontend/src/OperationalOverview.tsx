@@ -2,6 +2,8 @@ import { ArrowDownRight, ArrowRight, ArrowUpRight, CalendarClock, CheckCircle2, 
 import type { ReactNode } from 'react'
 import { ExceptionMetric } from './ExceptionCenter'
 import { operationalOverview } from './overview-model'
+import SemanticTag from './SemanticTag'
+import { categoryTone, stageTone, toneStyle } from './semantics'
 import type { Stage } from './knowledge-catalog'
 import type { Dashboard, Project, Report, Workspace } from './types'
 
@@ -47,7 +49,7 @@ export default function OperationalOverview({ workspace, dashboard, today, month
     <section className="ops-focus ops-surface" aria-label="工作优先级">
       <div className="ops-inbox">
         <div className="ops-section-head"><div><h2>待处理事项 <span className="ops-count">{model.focus.length}</span></h2><p>逾期与风险优先，进入项目继续处理。</p></div><button className="text-button" onClick={() => onNavigate('exceptions')}>全部异常<ArrowRight size={15}/></button></div>
-        <div className="ops-focus-list">{model.focus.slice(0, 3).map(item => <button key={item.id} className={`ops-focus-row ${item.kind}`} onClick={() => item.projectId && workspace.projects.some(project => project.id === item.projectId) ? onProject(item.projectId) : onNavigate('exceptions/tasks')}>
+        <div className="ops-focus-list">{model.focus.slice(0, 3).map(item => <button key={item.id} className={`ops-focus-row ${item.kind}`} data-tone={item.kind === 'task' ? 'red' : 'amber'} style={toneStyle(item.kind === 'task' ? 'red' : 'amber')} onClick={() => item.projectId && workspace.projects.some(project => project.id === item.projectId) ? onProject(item.projectId) : onNavigate('exceptions/tasks')}>
           <span className="ops-focus-icon">{item.kind === 'task' ? <CalendarClock size={18}/> : <CircleAlert size={18}/>}</span>
           <span className="ops-focus-copy"><strong>{item.title}</strong><small>{item.context} · {item.owner}</small></span>
           <span className="ops-focus-meta"><span className={`ops-state ${item.kind === 'task' ? 'danger' : 'warning'}`}>{item.kind === 'task' ? `逾期 ${item.overdueDays} 天` : '项目风险'}</span><small>{item.dueDate.slice(5).replace('-', '/')} 截止</small></span><ArrowRight className="ops-row-arrow" size={15}/>
@@ -59,14 +61,14 @@ export default function OperationalOverview({ workspace, dashboard, today, month
 
     <section className="ops-workflow ops-surface" aria-label="研发推进">
       <div className="ops-section-head"><div><h2>研发推进</h2><p>按阶段查看项目，接着处理任务与输出文档。</p></div><button className="text-button" onClick={() => onNavigate('projects')}>全部项目<ArrowRight size={15}/></button></div>
-      <div className="ops-stages" aria-label="按研发阶段筛选项目">{model.stages.map((stage, index) => <button key={stage.id} onClick={() => onStage(stage.id)} aria-label={`${stage.title}，${stage.count}个在研项目`}>
+      <div className="ops-stages" aria-label="按研发阶段筛选项目">{model.stages.map((stage, index) => <button key={stage.id} data-tone={stageTone(stage.id)} style={toneStyle(stageTone(stage.id))} onClick={() => onStage(stage.id)} aria-label={`${stage.title}，${stage.count}个在研项目`}>
         <span className="ops-stage-top"><span className="ops-step">{String(index + 1).padStart(2, '0')}</span><span className="ops-stage-name">{stage.title}<small>{stage.subtitle}</small></span></span>
-        <span className="ops-stage-bottom"><strong>{stage.count}<small> 个项目</small></strong>{stage.riskCount > 0 && <span className="ops-stage-risk">{stage.riskCount} 项风险</span>}</span>
+        <span className="ops-stage-bottom"><strong>{stage.count}<small> 个项目</small></strong>{stage.riskCount > 0 && <span className="ops-stage-risk" style={toneStyle('amber')}>{stage.riskCount} 项风险</span>}</span>
       </button>)}</div>
       <div className="ops-project-table">
         <div className="ops-project-labels"><span>当前项目</span><span>阶段</span><span>负责人</span><span>进度</span><span>输出文档</span></div>
-        {model.projects.map(project => <div className="ops-project-row" key={project.id}>
-          <button className="ops-project-main" onClick={() => onProject(project.id)} aria-label={`查看项目 ${project.name}`}><span className="ops-project-name"><span className={`ops-project-dot ${project.status === '风险' ? 'risk' : ''}`}/><span><strong>{project.name}</strong><small>计划 {project.due_date}</small></span></span><span className="ops-project-stage">{project.stage}</span><span className="ops-project-owner">{project.owner || '待指定'}</span><span className="ops-project-progress"><i><b style={{ width: `${project.progress}%` }}/></i><small>{project.progress}%</small></span></button>
+        {model.projects.map(project => <div className="ops-project-row" key={project.id} data-tone={stageTone(project.stage)} style={toneStyle(stageTone(project.stage))}>
+          <button className="ops-project-main" onClick={() => onProject(project.id)} aria-label={`查看项目 ${project.name}`}><span className="ops-project-name"><span className={`ops-project-dot ${project.status === '风险' ? 'risk' : ''}`}/><span><strong>{project.name}</strong><small><span className="ops-project-mobile-stage"><SemanticTag kind="stage" value={project.stage}/></span>计划 {project.due_date}</small></span></span><span className="ops-project-stage"><SemanticTag kind="stage" value={project.stage}/></span><span className="ops-project-owner">{project.owner || '待指定'}</span><span className="ops-project-progress"><i><b style={{ width: `${project.progress}%` }}/></i><small>{project.progress}%</small></span></button>
           <button className="ops-document-link" onClick={() => onDocuments(project)} aria-label={`查看 ${project.name} 的阶段文档`}><FileText size={15}/><span>阶段文档</span><ArrowRight size={13}/></button>
         </div>)}
         {!model.projects.length && <p className="ops-empty">暂无在研项目，新建项目后开始阶段推进。</p>}
@@ -79,13 +81,13 @@ export default function OperationalOverview({ workspace, dashboard, today, month
         <SalesTrend dashboard={dashboard}/>
       </div>
       <div className="ops-product-mix"><div className="ops-section-head"><h2>产品销售结构</h2><button className="text-button" onClick={() => onNavigate('products')}>明细<ArrowRight size={15}/></button></div>
-        {productSales.map((product, index) => <button className="ops-product-sale" key={product.product_id} onClick={() => onNavigate('products')}><span className="ops-product-sale-title"><small>{String(index + 1).padStart(2, '0')}</small><strong>{product.name}</strong><span>{product.share.toFixed(1)}%</span></span><span className="ops-product-bar"><i style={{ width: `${product.share}%`, opacity: 1 - index * .22 }}/></span><span className="ops-product-sale-foot">{product.category}<strong>{money(product.revenue_cents)}</strong></span></button>)}
+        {productSales.map((product, index) => <button className="ops-product-sale" key={product.product_id} data-tone={categoryTone(product.category)} style={toneStyle(categoryTone(product.category))} onClick={() => onNavigate('products')}><span className="ops-product-sale-title"><small>{String(index + 1).padStart(2, '0')}</small><strong>{product.name}</strong><span>{product.share.toFixed(1)}%</span></span><span className="ops-product-bar"><i style={{ width: `${product.share}%` }}/></span><span className="ops-product-sale-foot"><SemanticTag kind="category" value={product.category}/><strong>{money(product.revenue_cents)}</strong></span></button>)}
         {!productSales.length && <p className="ops-empty">所选月暂无销售记录。</p>}
       </div>
     </section>
 
     <div className="ops-secondary">
-      <section><div className="ops-section-head"><h2>近期市场反馈</h2><button className="text-button" onClick={() => onNavigate('signals')}>全部情报<ArrowRight size={15}/></button></div>{model.signals.map(signal => <button key={signal.id} className="ops-secondary-row" onClick={() => onNavigate('signals')}><span className={`ops-signal-dot ${signal.sentiment === '负向' ? 'negative' : ''}`}/><span><strong>{signal.title}</strong><small>{signal.kind} · {signal.brand}</small></span><time>{signal.occurred_on.slice(5).replace('-', '/')}</time><ArrowRight size={14}/></button>)}{!model.signals.length && <p className="ops-empty">暂无市场反馈。</p>}</section>
+      <section><div className="ops-section-head"><h2>近期市场反馈</h2><button className="text-button" onClick={() => onNavigate('signals')}>全部情报<ArrowRight size={15}/></button></div>{model.signals.map(signal => <button key={signal.id} className="ops-secondary-row" onClick={() => onNavigate('signals')}><span className={`ops-signal-dot ${signal.sentiment === '负向' ? 'negative' : ''}`}/><span><strong>{signal.title}</strong><small><SemanticTag kind="signal" value={signal.kind}/> · {signal.brand}</small></span><time>{signal.occurred_on.slice(5).replace('-', '/')}</time><ArrowRight size={14}/></button>)}{!model.signals.length && <p className="ops-empty">暂无市场反馈。</p>}</section>
       <section><div className="ops-section-head"><h2>最新报告</h2><button className="text-button" onClick={() => onNavigate('reports')}>报告档案<ArrowRight size={15}/></button></div>{model.reports.map(report => <button key={report.id} className="ops-secondary-row" onClick={() => onReport(report)}><FileText size={17}/><span><strong>{report.title}</strong><small>{report.month} · {report.source}</small></span><ArrowRight size={14}/></button>)}{!model.reports.length && <p className="ops-empty">生成月度报告后在这里查看。</p>}</section>
     </div>
   </div>
