@@ -11,7 +11,7 @@ export function exceptionDetails(workspace: Workspace, today: string): {
   groups: ExceptionGroup[]
   total: number
 } {
-  const tasks = workspace.tasks.filter(task => task.status !== '已完成' && task.due_date < today)
+  const tasks = workspace.tasks.filter(task => task.status !== '已完成' && Boolean(task.due_date) && task.due_date < today)
     .sort((a, b) => a.due_date.localeCompare(b.due_date))
   const projects = workspace.projects.filter(project => project.status === '风险')
     .sort((a, b) => a.due_date.localeCompare(b.due_date))

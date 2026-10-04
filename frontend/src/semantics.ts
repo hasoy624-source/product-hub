@@ -19,7 +19,7 @@ const stageTones: Record<string, SemanticTone> = {
 }
 const statusTones: Record<string, SemanticTone> = {
   '正常': 'cyan', '在售': 'cyan', '正向': 'cyan', '已启用': 'cyan',
-  '进行中': 'blue', '研发中': 'blue', '待办': 'amber', '待评审': 'amber', '风险': 'amber',
+  '进行中': 'blue', '研发中': 'blue', '待立项': 'amber', '已终止': 'neutral', '待确认': 'neutral', '待办': 'amber', '待评审': 'amber', '风险': 'amber',
   '已完成': 'violet', '已归档': 'violet', '逾期': 'red', '已逾期': 'red', '负向': 'red',
   '暂停': 'neutral', '停产': 'neutral', '草稿': 'neutral', '中性': 'neutral',
 }

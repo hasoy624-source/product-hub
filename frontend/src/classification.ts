@@ -35,7 +35,14 @@ export function reportCategoryId(report: Report, meta: EntityMeta[]) {
   return meta.find(row => row.scope === 'report' && row.entity_id === report.id)?.category_id || 'report-product'
 }
 export function projectOverdue(project: Project, tasks: Task[], today: string) {
-  return project.status !== '已完成' && (project.due_date < today || tasks.some(task => task.project_id === project.id && task.status !== '已完成' && task.due_date < today))
+  return !['已完成', '已终止'].includes(project.status) && (Boolean(project.due_date) && project.due_date < today || tasks.some(task => task.project_id === project.id && task.status !== '已完成' && Boolean(task.due_date) && task.due_date < today))
+}
+export function projectProgressText(project: Project) {
+  return (project.profile?.progress_known ?? project.import_info?.progress_known) === false ? '未录入' : `${project.progress}%`
+}
+export function searchProjects(projects: Project[], query: string) {
+  const text = query.trim().toLocaleLowerCase()
+  return projects.filter(project => `${project.name} ${project.owner} ${project.stage} ${project.profile?.structural_owner || ''} ${project.profile?.phase || project.import_info?.phase || ''} ${project.profile?.priority || project.import_info?.priority || ''} ${project.import_info?.category || ''}`.toLocaleLowerCase().includes(text))
 }
 export function projectInProgress(project: Project) {
   return project.status === '正常' || project.status === '风险'
@@ -44,6 +51,7 @@ export function filterProjects(projects: Project[], tasks: Task[], meta: EntityM
   if (filter === 'all') return projects
   if (filter === 'overdue') return projects.filter(project => projectOverdue(project, tasks, today))
   if (filter === 'active') return projects.filter(projectInProgress)
+  if (filter.startsWith('status:')) return projects.filter(project => project.status === filter.slice(7))
   if (filter.startsWith('stage:')) return projects.filter(project => project.stage === filter.slice(6) && projectInProgress(project))
   return projects.filter(project => projectCategoryId(project, meta) === filter)
 }

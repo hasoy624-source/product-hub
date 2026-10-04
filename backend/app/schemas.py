@@ -2,7 +2,7 @@ import re
 from datetime import date, datetime, timezone
 from typing import Annotated, Literal
 from urllib.parse import urlparse
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, AfterValidator
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, AfterValidator, model_validator
 
 
 def month_value(value: str) -> str:
@@ -41,6 +41,7 @@ Short = Annotated[str, Field(max_length=100)]
 Long = Annotated[str, Field(max_length=20000)]
 Month = Annotated[str, AfterValidator(month_value)]
 Date = Annotated[str, AfterValidator(date_value)]
+OptionalDate = Annotated[str, AfterValidator(lambda value: date_value(value) if value else "")]
 Timestamp = Annotated[str, AfterValidator(timestamp_value)]
 NonNegative = Annotated[StrictInt, Field(ge=0, le=2_000_000_000)]
 
@@ -67,23 +68,63 @@ class SaleIn(Schema):
     note: Long = ""
 
 
+class ProjectProfileIn(Schema):
+    priority: Short = ""
+    phase: Short = ""
+    structural_owner: Short = ""
+    target: Long = ""
+    key_plan: Long = ""
+    risk_note: Long = ""
+    actual_completed_on: OptionalDate = ""
+
+
+class MilestoneIn(Schema):
+    name: NonEmpty
+    owner: Short = ""
+    planned_start: OptionalDate = ""
+    planned_end: OptionalDate = ""
+    actual_start: OptionalDate = ""
+    actual_end: OptionalDate = ""
+    status: Literal["待开始", "进行中", "已完成", "暂停", "待确认"] = "待开始"
+    recorded_text: Long = ""
+    note: Long = ""
+    sort_order: Annotated[StrictInt, Field(ge=0, le=10000)] = 0
+
+    @model_validator(mode="after")
+    def ordered_dates(self):
+        for prefix in ("planned", "actual"):
+            start, end = getattr(self, prefix + "_start"), getattr(self, prefix + "_end")
+            if start and end and start > end:
+                raise ValueError("结束日期应不早于开始日期")
+        return self
+
+
+class ProjectUpdateIn(Schema):
+    content: Annotated[str, Field(min_length=1, max_length=100000)]
+    occurred_on: OptionalDate = ""
+    author: Short = ""
+    kind: Literal["进度记录", "历史进度", "关键节点", "历史问题", "风险记录", "待确认", "操作记录"] = "进度记录"
+
+
 class ProjectIn(Schema):
     name: NonEmpty
     product_id: OptionalReference = ""
-    stage: Literal["概念与启动", "设计与开发", "EVT", "DVT", "MP"] = "概念与启动"
-    status: Literal["正常", "风险", "暂停", "已完成"] = "正常"
-    owner: NonEmpty100
-    due_date: Date
+    stage: Literal["概念与启动", "设计与开发", "EVT", "DVT", "MP", "待确认"] = "概念与启动"
+    status: Literal["正常", "风险", "暂停", "已完成", "待立项", "已终止", "待确认"] = "正常"
+    owner: Short = ""
+    due_date: OptionalDate = ""
     progress: Annotated[StrictInt, Field(ge=0, le=100)] = 0
     description: Long = ""
+    profile: ProjectProfileIn | None = None
 
 
 class TaskIn(Schema):
     project_id: Reference
     title: NonEmpty
-    owner: NonEmpty100
-    due_date: Date
+    owner: Short = ""
+    due_date: OptionalDate = ""
     status: Literal["待办", "进行中", "已完成"] = "待办"
+    description: Annotated[str, Field(max_length=100000)] = ""
 
 
 class SignalIn(Schema):

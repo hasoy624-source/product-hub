@@ -55,8 +55,8 @@ def dashboard(session, month, today=None):
             "growth_pct": round((total - previous) / previous * 100, 2) if previous else None,
             "top_product_share": product_sales[0]["share"] if product_sales else 0, "risk_threshold": 60,
             "product_count": len(products),
-            "active_projects": sum(p.status not in ("暂停", "已完成") for p in projects),
-            "overdue_tasks": sum(t.status != "已完成" and t.due_date < today.isoformat() for t in tasks),
+            "active_projects": sum(p.status in ("正常", "风险") for p in projects),
+            "overdue_tasks": sum(t.status != "已完成" and bool(t.due_date) and t.due_date < today.isoformat() for t in tasks),
             "product_sales": product_sales,
             "trend": [{"month": m, "revenue_cents": totals[m]} for m in months],
             "category_sales": [{"category": key, "revenue_cents": amount, "share": round(amount / total * 100, 2) if total else 0}

@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import os
+import re
 import secrets
 import time
 from decimal import Decimal, InvalidOperation
@@ -16,8 +17,10 @@ from pydantic import ValidationError
 from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
 from .database import database, initialize
-from .models import ENTITIES, Activity, Category, CustomField, EntityMeta, Job, JobRun, Product, Project, Report, SessionToken, serialize
-from .schemas import SCHEMAS, CategoryIn, CustomFieldIn, EntityMetaIn, LoginIn, ReportIn, date_value, month_value
+from .models import ENTITIES, Activity, Category, CustomField, EntityMeta, Job, JobRun, Product, Project, ProjectSource, ProjectProfile, TaskContent, Report, SessionToken, serialize
+from .schemas import SCHEMAS, CategoryIn, CustomFieldIn, EntityMetaIn, LoginIn, ReportIn, ProjectProfileIn, date_value, month_value
+from .native_projects import register_project_routes, profile_values, ensure_profile, add_update
+from .native_project_migration import migrate_native_projects
 from .seed import seed
 from .services import claim_job, dashboard, execute_run, local_today, log, stamp, utcnow
 
@@ -37,7 +40,7 @@ DEFAULT_CATEGORIES = (
 
 def seed_classifications(session, demo=False):
     for identifier, scope, name, order in DEFAULT_CATEGORIES:
-        if not session.get(Category, identifier):
+        if not session.get(Category, identifier) and not session.scalar(select(Category).where(Category.scope == scope, Category.name == name)):
             session.add(Category(id=identifier, scope=scope, name=name, active=True, sort_order=order))
     session.flush()
     if demo:
@@ -90,6 +93,11 @@ def create_app(database_url=None, seed_demo=True):
                 seed_classifications(session, demo=mode == "demo" and seed_demo)
             except IntegrityError:
                 session.rollback()  # Another initializer inserted the same defaults first.
+        with factory() as session, session.begin():
+            migrate_native_projects(session)
+            for project in session.scalars(select(Project)):
+                if not session.get(ProjectProfile, project.id):
+                    ensure_profile(session, project.id).progress_known = True
         yield
         engine.dispose()
 
@@ -97,6 +105,7 @@ def create_app(database_url=None, seed_demo=True):
     app.state.Session = factory
     app.state.engine = engine
     app.state.mode = mode
+    register_project_routes(app, factory)
     app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"] if mode == "demo" else [], allow_credentials=True, allow_methods=["GET", "POST", "PATCH", "PUT", "OPTIONS"], allow_headers=["Content-Type"])
     attempts = {}
 
@@ -126,7 +135,7 @@ def create_app(database_url=None, seed_demo=True):
 
     @app.get("/api/health")
     def health():
-        return {"status": "ok", "mode": mode}
+        return {"status": "ok", "mode": mode, "workspace_kind": getattr(app.state, "workspace_kind", "")}
 
     @app.post("/api/auth/login")
     def login(payload: LoginIn, request: Request):
@@ -168,12 +177,36 @@ def create_app(database_url=None, seed_demo=True):
     def workspace():
         with factory() as session:
             result = {name: [serialize(row) for row in session.scalars(select(model))] for name, model in ENTITIES.items()}
+            profiles = {row.project_id: row for row in session.scalars(select(ProjectProfile))}
+            for project in result["projects"]:
+                project["profile"] = profile_values(profiles.get(project['id']))
+            contents = {row.task_id: row.description for row in session.scalars(select(TaskContent))}
+            for task in result['tasks']:
+                task['description'] = contents.get(task['id'], '')
             result["reports"] = [serialize(row) for row in session.scalars(select(Report).order_by(Report.generated_at.desc()))]
             result["categories"] = [serialize(row) for row in session.scalars(select(Category).order_by(Category.scope, Category.sort_order, Category.name))]
             result["custom_fields"] = [serialize(row) for row in session.scalars(select(CustomField).order_by(CustomField.scope, CustomField.sort_order, CustomField.label))]
             result["entity_meta"] = [serialize(row) for row in session.scalars(select(EntityMeta))]
             result["activity"] = [serialize(row) for row in session.scalars(select(Activity).order_by(Activity.created_at.desc()).limit(50))]
             return result
+
+    @app.get("/api/project-sources/{project_id}")
+    def project_source(project_id: str):
+        with factory() as session:
+            source = session.get(ProjectSource, project_id)
+            if not source:
+                raise HTTPException(404, "项目没有 Excel 来源记录")
+            return {**source.payload, "progress_known": source.progress_known}
+
+    @app.get("/api/project-assets/{filename}")
+    def project_asset(filename: str):
+        if not re.fullmatch(r"[a-f0-9]{64}\.(png|jpg|jpeg|gif|webp)", filename):
+            raise HTTPException(404, "图片不存在")
+        root = Path(os.getenv("PROJECT_ASSETS", str(Path(__file__).resolve().parents[1] / "import-assets"))).resolve()
+        target = (root / filename).resolve()
+        if not target.is_relative_to(root) or not target.is_file():
+            raise HTTPException(404, "图片不存在")
+        return FileResponse(target, headers={"Cache-Control": "private, max-age=3600", "X-Content-Type-Options": "nosniff"})
 
     @app.get("/api/dashboard")
     def get_dashboard(month: str | None = None):
@@ -200,10 +233,23 @@ def create_app(database_url=None, seed_demo=True):
                 raise HTTPException(422, jsonable_encoder(error.errors(), custom_encoder={ValueError: str}))
             with factory() as session:
                 validate_references(session, name, values)
+                nested_profile = values.pop('profile', None) if name == 'projects' else None
+                task_description = values.pop('description') if name == 'tasks' else None
                 row = model(**values)
                 if name == "knowledge_documents":
                     row.updated_at = stamp()
                 session.add(row)
+                if name in ('projects', 'tasks'):
+                    session.flush()
+                if name == 'projects':
+                    profile = ensure_profile(session, row.id)
+                    for key, value in (nested_profile or {}).items():
+                        setattr(profile, key, value)
+                    profile.progress_known = 'progress' in payload
+                    add_update(session, row.id, '新建项目')
+                if name == 'tasks':
+                    session.add(TaskContent(task_id=row.id, description=task_description or ''))
+                    add_update(session, row.project_id, f'新增任务：{row.title}')
                 log(session, f"新增 {name}：{values.get('name', values.get('title', values.get('month', '记录')))}")
                 try:
                     session.commit()
@@ -217,14 +263,40 @@ def create_app(database_url=None, seed_demo=True):
                 row = session.get(model, row_id)
                 if not row:
                     raise HTTPException(404, "记录不存在")
-                current = {field: getattr(row, field) for field in schema.model_fields}
+                current = {field: getattr(row, field) for field in schema.model_fields if field not in (('profile',) if name == 'projects' else ('description',) if name == 'tasks' else ())}
+                if name == 'projects':
+                    profile = ensure_profile(session, row_id)
+                    current['profile'] = {key: getattr(profile, key) for key in ProjectProfileIn.model_fields}
+                    if isinstance(payload.get('profile'), dict):
+                        payload = {**payload, 'profile': {**current['profile'], **payload['profile']}}
+                if name == 'tasks':
+                    content = session.get(TaskContent, row_id)
+                    current['description'] = content.description if content else ''
                 try:
                     values = schema.model_validate({**current, **payload}).model_dump()
                 except ValidationError as error:
                     raise HTTPException(422, jsonable_encoder(error.errors(), custom_encoder={ValueError: str}))
                 validate_references(session, name, values)
+                nested_profile = values.pop('profile', None) if name == 'projects' else None
+                task_description = values.pop('description') if name == 'tasks' else None
                 for key, value in values.items():
                     setattr(row, key, value)
+                if name == 'projects':
+                    for key, value in (nested_profile or {}).items():
+                        setattr(profile, key, value)
+                    if 'progress' in payload:
+                        profile.progress_known = True
+                    add_update(session, row_id, f'更新项目：{row.stage} · {row.status}')
+                if name == 'tasks':
+                    if not content:
+                        content = TaskContent(task_id=row_id)
+                        session.add(content)
+                    content.description = task_description
+                    add_update(session, row.project_id, f'更新任务：{row.title} · {row.status}')
+                if name == "projects" and "progress" in payload:
+                    source = session.get(ProjectSource, row_id)
+                    if source:
+                        source.progress_known = True
                 if name == "knowledge_documents":
                     row.updated_at = stamp()
                 log(session, f"更新 {name}：{values.get('name', values.get('title', row_id))}")

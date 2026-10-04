@@ -51,6 +51,69 @@ class Project(Base):
     description: Mapped[str] = mapped_column(Text, default="")
 
 
+class ProjectSource(Base):
+    __tablename__ = "project_sources"
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), primary_key=True)
+    file_sha256: Mapped[str] = mapped_column(String(64), index=True)
+    progress_known: Mapped[bool] = mapped_column(Boolean, default=False)
+    payload: Mapped[dict] = mapped_column(JSON)
+
+
+class ProjectProfile(Base):
+    __tablename__ = "project_profiles"
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), primary_key=True)
+    priority: Mapped[str] = mapped_column(String(100), default="")
+    phase: Mapped[str] = mapped_column(String(100), default="")
+    structural_owner: Mapped[str] = mapped_column(String(100), default="")
+    target: Mapped[str] = mapped_column(Text, default="")
+    key_plan: Mapped[str] = mapped_column(Text, default="")
+    risk_note: Mapped[str] = mapped_column(Text, default="")
+    actual_completed_on: Mapped[str] = mapped_column(String(10), default="")
+    progress_known: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class ProjectMilestone(Base):
+    __tablename__ = "project_milestones"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    name: Mapped[str] = mapped_column(String(200))
+    owner: Mapped[str] = mapped_column(String(100), default="")
+    planned_start: Mapped[str] = mapped_column(String(10), default="")
+    planned_end: Mapped[str] = mapped_column(String(10), default="")
+    actual_start: Mapped[str] = mapped_column(String(10), default="")
+    actual_end: Mapped[str] = mapped_column(String(10), default="")
+    status: Mapped[str] = mapped_column(String(30), default="待开始")
+    recorded_text: Mapped[str] = mapped_column(Text, default="")
+    note: Mapped[str] = mapped_column(Text, default="")
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class ProjectUpdate(Base):
+    __tablename__ = "project_updates"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    content: Mapped[str] = mapped_column(Text)
+    occurred_on: Mapped[str] = mapped_column(String(10), default="")
+    author: Mapped[str] = mapped_column(String(100), default="")
+    kind: Mapped[str] = mapped_column(String(30), default="进度记录")
+    created_at: Mapped[str] = mapped_column(String(40))
+
+
+class ProjectImage(Base):
+    __tablename__ = "project_images"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    filename: Mapped[str] = mapped_column(String(100))
+    caption: Mapped[str] = mapped_column(String(200), default="")
+    sort_order: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class TaskContent(Base):
+    __tablename__ = "task_content"
+    task_id: Mapped[str] = mapped_column(ForeignKey("tasks.id"), primary_key=True)
+    description: Mapped[str] = mapped_column(Text, default="")
+
+
 class Task(Base):
     __tablename__ = "tasks"
     id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)

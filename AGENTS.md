@@ -77,3 +77,17 @@ curl -fsS https://<DOMAIN>/api/health
 - 能在本地复现前端测试、目标模式的构建；后端变更能运行对应测试。
 - 能核对 `git status`、提交范围、远端 `main` 和 GitHub Actions 的最新部署结果。
 - 能说明预览数据的存储边界，并将已验证的 URL/运行结果交给下一位接手者，而不是仅报告“已推送”。
+
+## 7. 实际 Excel 项目空间（本地持久化）
+
+- 入口：`start-projects.ps1`，默认 `http://127.0.0.1:8011/#projects`；后端模块 `app.project_workspace`，不执行演示 seed，也不启动演示 worker。
+- 数据：`backend/project-workspace.db`；原图：`backend/import-assets/`。两者被 Git 忽略，不能打包进 Pages 或提交到公共仓库。
+- `start.ps1` 仍是原来的演示数据库/模式，不要混用。SQLite 项目空间在本机刷新、换浏览器、重启服务后保留。
+- 导入：从 `backend` 运行 `.venv/Scripts/python.exe -m app.import_projects <LOCAL_REGISTER.xlsx>`。按项目号不区分大小写合并，保留全部原表记录、隐藏页、图片、节点及履历；主总表为当前依据。导入后一次性迁移为原生业务记录，不显示工作表/单元格资料。
+- 同一文件重导跳过现有项目/任务，保留用户后续编辑；不同来源碰到已有项目会整体回滚，不静默覆盖。没有负责人、日期和进度时保留空缺，不按阶段估算进度或制造任务期限。
+- 本地构建：清除 `VITE_PREVIEW_MODE` 后，从根目录运行 `npm.cmd --prefix frontend run build -- --base=/ --outDir dist-local`，再运行 `./start-projects.ps1`。
+- 原生详情 API：`GET /api/projects/{id}/details`；项目资料支持嵌套 `profile` 的 POST/PATCH；节点 `milestones`、动态 `updates` 可新增/编辑；`milestone-template` 补齐标准节点；`images` 接受原始图片请求体。原图读取 `GET /api/project-assets/{hash-filename}`。完整问题措施存在原生 `TaskContent`，任务 POST/PATCH 接受 `description`。
+- `native_project_migration.py` 在启动与导入时进行幂等的一次迁移：新增 `ProjectProfile`、`ProjectMilestone`、`ProjectUpdate`、`ProjectImage`、`TaskContent`，不修改既有 Project/Task 列结构。存在 profile 的项目不再从导入台账覆盖；资料维护以后只写原生表。`ProjectSource` 留作内部导入台账，不作为运行界面依赖。未标明计划/实际的节点日期保留在可编辑“节点记录”中，不当成实际完成。
+- 项目工作区统一为“概况 / 节点计划 / 问题与任务 / 项目动态”，包括后续手工新建项目。静态预览同样维护原生 profile 与 project_details，但不带入实际项目数据库。
+- 项目页布局由 `ProjectNavigator.tsx`（列表/搜索）、`ProjectBoard.tsx`（快捷筛选与下拉）、`ProjectWorkspace.tsx`（详情）组成。桌面 `.project-workbench` 使用等高双栏，只有 `.project-list-scroll` 与 `.native-panel` 内部滚动；不要重新只把左栏设为 sticky，或恢复两块各自按内容撑高。900px 以下使用列表/详情切换和“返回项目列表”。概况先展示待推进，团队/图片/阶段路径/自定义字段属于次级资料；五阶段标记不推断节点完成。
+- 如需真正多人协作，迁移到已有正式服务模板及受控的数据空间；静态 GitHub Pages 继续使用演示数据。

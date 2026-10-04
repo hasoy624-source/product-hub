@@ -1,6 +1,7 @@
 import { ArrowDownRight, ArrowRight, ArrowUpRight, CalendarClock, CheckCircle2, CircleAlert, FileCheck2, FileText, FlaskConical, ListTodo } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ExceptionMetric } from './ExceptionCenter'
+import { projectProgressText } from './classification'
 import { operationalOverview } from './overview-model'
 import SemanticTag from './SemanticTag'
 import { categoryTone, stageTone, toneStyle } from './semantics'
@@ -52,7 +53,7 @@ export default function OperationalOverview({ workspace, dashboard, today, month
         <div className="ops-focus-list">{model.focus.slice(0, 3).map(item => <button key={item.id} className={`ops-focus-row ${item.kind}`} data-tone={item.kind === 'task' ? 'red' : 'amber'} style={toneStyle(item.kind === 'task' ? 'red' : 'amber')} onClick={() => item.projectId && workspace.projects.some(project => project.id === item.projectId) ? onProject(item.projectId) : onNavigate('exceptions/tasks')}>
           <span className="ops-focus-icon">{item.kind === 'task' ? <CalendarClock size={18}/> : <CircleAlert size={18}/>}</span>
           <span className="ops-focus-copy"><strong>{item.title}</strong><small>{item.context} · {item.owner}</small></span>
-          <span className="ops-focus-meta"><span className={`ops-state ${item.kind === 'task' ? 'danger' : 'warning'}`}>{item.kind === 'task' ? `逾期 ${item.overdueDays} 天` : '项目风险'}</span><small>{item.dueDate.slice(5).replace('-', '/')} 截止</small></span><ArrowRight className="ops-row-arrow" size={15}/>
+          <span className="ops-focus-meta"><span className={`ops-state ${item.kind === 'task' ? 'danger' : 'warning'}`}>{item.kind === 'task' ? `逾期 ${item.overdueDays} 天` : '项目风险'}</span><small>{item.dueDate ? `${item.dueDate.slice(5).replace('-', '/')} 截止` : '日期未确定'}</small></span><ArrowRight className="ops-row-arrow" size={15}/>
         </button>)}</div>
         {!model.focus.length && <div className="ops-empty-state"><CheckCircle2 size={24}/><strong>当前没有逾期任务或风险项目</strong><button className="text-button" onClick={() => onNavigate('projects')}>查看研发项目<ArrowRight size={15}/></button></div>}
       </div>
@@ -68,7 +69,7 @@ export default function OperationalOverview({ workspace, dashboard, today, month
       <div className="ops-project-table">
         <div className="ops-project-labels"><span>当前项目</span><span>阶段</span><span>负责人</span><span>进度</span><span>输出文档</span></div>
         {model.projects.map(project => <div className="ops-project-row" key={project.id} data-tone={stageTone(project.stage)} style={toneStyle(stageTone(project.stage))}>
-          <button className="ops-project-main" onClick={() => onProject(project.id)} aria-label={`查看项目 ${project.name}`}><span className="ops-project-name"><span className={`ops-project-dot ${project.status === '风险' ? 'risk' : ''}`}/><span><strong>{project.name}</strong><small><span className="ops-project-mobile-stage"><SemanticTag kind="stage" value={project.stage}/></span>计划 {project.due_date}</small></span></span><span className="ops-project-stage"><SemanticTag kind="stage" value={project.stage}/></span><span className="ops-project-owner">{project.owner || '待指定'}</span><span className="ops-project-progress"><i><b style={{ width: `${project.progress}%` }}/></i><small>{project.progress}%</small></span></button>
+          <button className="ops-project-main" onClick={() => onProject(project.id)} aria-label={`查看项目 ${project.name}`}><span className="ops-project-name"><span className={`ops-project-dot ${project.status === '风险' ? 'risk' : ''}`}/><span><strong>{project.name}</strong><small><span className="ops-project-mobile-stage"><SemanticTag kind="stage" value={project.stage}/></span>计划 {project.due_date || '未确定'}</small></span></span><span className="ops-project-stage"><SemanticTag kind="stage" value={project.stage}/></span><span className="ops-project-owner">{project.owner || '待指定'}</span><span className="ops-project-progress"><i><b style={{ width: `${project.progress}%` }}/></i><small>{projectProgressText(project)}</small></span></button>
           <button className="ops-document-link" onClick={() => onDocuments(project)} aria-label={`查看 ${project.name} 的阶段文档`}><FileText size={15}/><span>阶段文档</span><ArrowRight size={13}/></button>
         </div>)}
         {!model.projects.length && <p className="ops-empty">暂无在研项目。</p>}

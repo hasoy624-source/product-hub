@@ -1,6 +1,6 @@
-import { ArrowRight, X } from 'lucide-react'
+import { Settings2, X } from 'lucide-react'
 import { boardCounts } from './classification'
-import { categoryTone, stageTone, statusTone, toneStyle } from './semantics'
+import { stageTone, toneStyle } from './semantics'
 import type { Category, EntityMeta, Project, Task } from './types'
 
 type Props = {
@@ -16,14 +16,12 @@ type Props = {
 
 export default function ProjectBoard({ projects, tasks, meta, categories, filter, today, onFilter, onManage }: Props) {
   const cards = boardCounts(projects, tasks, meta, categories, today)
-  const renderFilter = (item: typeof cards[number]) => {
-    const tone = ['all', 'active', 'overdue'].includes(item.id) ? statusTone(item.label) : categoryTone(item.label)
-    return <button key={item.id} className={`project-filter ${filter === item.id ? 'selected' : ''}`} data-tone={tone} style={toneStyle(tone)} aria-pressed={filter === item.id} onClick={() => onFilter(item.id)}>{item.label}<span>{item.count}</span></button>
-  }
-  return <section className="project-board" aria-label="项目看板">
-    <div className="project-board-heading"><h2>项目筛选</h2><button className="text-button" onClick={onManage}>管理分类与字段<ArrowRight size={15}/></button></div>
-    <div className="project-filter-row"><span className="project-filter-label">状态</span>{cards.slice(0, 3).map(renderFilter)}</div>
-    <div className="project-filter-row"><span className="project-filter-label">品类</span>{cards.slice(3).map(renderFilter)}{cards.length === 3 && <span className="muted">暂无分类</span>}</div>
-    {filter.startsWith('stage:') && <div className="project-stage-filter" data-tone={stageTone(filter.slice(6))} style={toneStyle(stageTone(filter.slice(6)))}><span>阶段：{filter.slice(6)} · 进行中</span><button className="text-button" onClick={() => onFilter('all')} aria-label="清除阶段筛选"><X size={14}/>清除筛选</button></div>}
+  const statuses = [...new Set(projects.map(project => project.status))]
+  const categoryCards = cards.slice(3)
+  return <section className="project-board project-filter-bar" aria-label="项目筛选">
+    <div className="project-quick-filters" aria-label="常用项目筛选">{[cards[0], cards[2], cards[1]].map(item => <button key={item.id} className={`project-filter ${filter === item.id ? 'selected' : ''} ${item.id === 'overdue' ? 'filter-overdue' : ''}`} aria-pressed={filter === item.id} onClick={() => onFilter(item.id)}>{item.label}<span>{item.count}</span></button>)}</div>
+    <div className="project-select-filters"><label><span>状态</span><select aria-label="项目状态筛选" value={filter.startsWith('status:') ? filter : ''} onChange={event => onFilter(event.target.value || 'all')}><option value="">全部状态</option>{statuses.map(status => <option key={status} value={`status:${status}`}>{status} · {projects.filter(project => project.status === status).length}</option>)}</select></label><label><span>品类</span><select aria-label="项目品类筛选" value={categoryCards.some(item => item.id === filter) ? filter : ''} onChange={event => onFilter(event.target.value || 'all')}><option value="">全部品类</option>{categoryCards.map(item => <option key={item.id} value={item.id}>{item.label} · {item.count}</option>)}</select></label></div>
+    {filter.startsWith('stage:') && <div className="project-stage-filter" style={toneStyle(stageTone(filter.slice(6)))}><span>{filter.slice(6)} · 进行中</span><button className="icon-button" onClick={() => onFilter('all')} aria-label="清除阶段筛选"><X size={14}/></button></div>}
+    <button className="icon-button project-filter-settings" onClick={onManage} aria-label="管理分类与字段" title="管理分类与字段"><Settings2 size={17}/></button>
   </section>
 }

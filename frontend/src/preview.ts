@@ -1,5 +1,6 @@
-import type { Dashboard, Job, Product, Project, Report, Sale, Seat, Signal, Task, Workspace } from './types'
+import type { Dashboard, Job, Product, Project, ProjectDetails, ProjectMilestone, ProjectUpdate, Report, Sale, Seat, Signal, Task, Workspace } from './types'
 import { defaultCategories } from './classification.ts'
+import { emptyProfile, emptyMilestone, milestoneTemplate, validateMilestone } from './project-native.ts'
 
 const STORAGE_KEY = 'zhixu-public-preview-v1'
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date())
@@ -71,13 +72,13 @@ function dashboard(workspace: Workspace, month: string): Dashboard {
   const products = workspace.products.map(product => ({ product_id: product.id, name: product.name, category: product.category, revenue_cents: byProduct.get(product.id) || 0, share: percent(byProduct.get(product.id) || 0, total) })).sort((a, b) => b.revenue_cents - a.revenue_cents || a.name.localeCompare(b.name))
   const categories = new Map<string, number>()
   for (const product of workspace.products) categories.set(product.category, (categories.get(product.category) || 0) + (byProduct.get(product.id) || 0))
-  const active = workspace.projects.filter(project => project.status !== '暂停' && project.status !== '已完成').length
+  const active = workspace.projects.filter(project => project.status === '正常' || project.status === '风险').length
   const prior = totals.get(shiftMonth(month, -1)) || 0
   return {
     month, revenue_cents: total, previous_revenue_cents: prior,
     growth_pct: prior ? Math.round((total - prior) / prior * 10000) / 100 : null,
     top_product_share: products[0]?.share || 0, risk_threshold: 60, product_count: workspace.products.length,
-    active_projects: active, overdue_tasks: workspace.tasks.filter(task => task.status !== '已完成' && task.due_date < today()).length,
+    active_projects: active, overdue_tasks: workspace.tasks.filter(task => task.status !== '已完成' && Boolean(task.due_date) && task.due_date < today()).length,
     product_sales: products, trend: months.map(item => ({ month: item, revenue_cents: totals.get(item) || 0 })),
     category_sales: Array.from(categories, ([category, revenue_cents]) => ({ category, revenue_cents, share: percent(revenue_cents, total) })).sort((a, b) => b.revenue_cents - a.revenue_cents || a.category.localeCompare(b.category)),
   }
@@ -134,8 +135,50 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
   if (pathname === '/auth/login' && verb === 'POST') return { authenticated: true, username: '预览访客', mode: 'demo' } as T
   if (pathname === '/auth/logout' && verb === 'POST') return { authenticated: false } as T
   const workspace = load()
+  workspace.project_details ||= {}
+  for (const project of workspace.projects) project.profile ||= { ...emptyProfile(), progress_known: true }
   if (pathname === '/workspace' && verb === 'GET') return structuredClone(workspace) as T
   if (pathname === '/dashboard' && verb === 'GET') return dashboard(workspace, query.get('month') || currentMonth()) as T
+  const projectMatch = pathname.match(/^\/projects\/([^/]+)\/(details|profile|milestones|updates|milestone-template|images)(?:\/([^/]+))?$/)
+  if (projectMatch) {
+    const [, projectId, resource, recordId] = projectMatch
+    const project = workspace.projects.find(item => item.id === projectId)
+    if (!project) throw new ApiError('项目不存在', 404)
+    const data: ProjectDetails = workspace.project_details[projectId] ||= { profile: project.profile!, milestones: [], updates: [], images: [] }
+    data.profile = project.profile!
+    const addUpdate = (content: string) => data.updates.unshift({ id: uuid(), project_id: projectId, kind: '操作记录', content, occurred_on: today(), author: '', created_at: new Date().toISOString() })
+    const input = (body || {}) as Record<string, unknown>
+    if (resource === 'details' && verb === 'GET') return structuredClone(data) as T
+    if (resource === 'profile' && verb === 'PATCH') { Object.assign(project.profile!, input); addUpdate('更新项目目标与团队信息'); save(workspace); return structuredClone(project.profile) as T }
+    if (resource === 'milestone-template' && verb === 'POST') {
+      let added = 0
+      let order = Math.max(0, ...data.milestones.map(item => item.sort_order))
+      for (const name of milestoneTemplate) if (!data.milestones.some(item => item.name === name)) { order += 10; data.milestones.push({ ...emptyMilestone(), id: uuid(), project_id: projectId, name, sort_order: order }); added++ }
+      if (added) addUpdate(`补充研发节点模板：${added} 个节点`)
+      save(workspace); return { added } as T
+    }
+    if (resource === 'images' && verb === 'POST') {
+      if (!/^data:image\/(png|jpeg|webp);base64,/.test(String(input.url || ''))) throw new ApiError('图片格式不正确', 422)
+      const row = { id: uuid(), project_id: projectId, filename: '', url: String(input.url), caption: String(input.caption || '产品示意图'), sort_order: data.images.length * 10 }
+      data.images.push(row); addUpdate('添加产品示意图'); save(workspace); return row as T
+    }
+    if (['milestones', 'updates'].includes(resource) && ['POST', 'PATCH'].includes(verb)) {
+      const collection = resource === 'milestones' ? data.milestones : data.updates
+      const existing = recordId ? collection.find(item => item.id === recordId) : undefined
+      if (verb === 'PATCH' && !existing) throw new ApiError('项目记录不存在', 404)
+      const defaults = resource === 'milestones' ? emptyMilestone() : { content: '', occurred_on: '', author: '', kind: '进度记录', created_at: new Date().toISOString() }
+      const row = { id: existing?.id || uuid(), project_id: projectId, ...defaults, ...existing, ...input }
+      if (resource === 'milestones') validateMilestone(row as ProjectMilestone)
+      else if (!String((row as ProjectUpdate).content || '').trim()) throw new ApiError('请填写动态内容', 422)
+      if (existing) Object.assign(existing, row)
+      else if (resource === 'milestones') data.milestones.push(row as ProjectMilestone)
+      else data.updates.unshift(row as ProjectUpdate)
+      data.milestones.sort((a, b) => a.sort_order - b.sort_order)
+      if (resource === 'milestones') addUpdate(`${existing ? '更新' : '新增'}节点：${(row as ProjectMilestone).name}`)
+      save(workspace); return structuredClone(row) as T
+    }
+    throw new ApiError('项目操作不存在', 404)
+  }
   const taxonomyMatch = pathname.match(/^\/(categories|custom-fields)(?:\/([^/]+))?$/)
   if (taxonomyMatch && ['POST', 'PATCH'].includes(verb)) {
     const [, resource, id] = taxonomyMatch
@@ -204,6 +247,9 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
     if (verb === 'PATCH') {
       const target = collection.find(item => item.id === id)
       if (!target) throw new ApiError('记录不存在', 404)
+      if (entity === 'projects') {
+        input.profile = { ...(target.profile || emptyProfile()) as object, ...(input.profile || {}) as object, ...('progress' in input ? { progress_known: true } : {}) }
+      }
       Object.assign(target, input)
       if (entity === 'knowledge_documents') target.updated_at = new Date().toISOString()
       record(workspace, `更新 ${entity}：${String(target.name || target.title || id)}`)
@@ -222,6 +268,7 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
       if (collection.some(item => item.project_id === input.project_id && item.template_id === input.template_id)) throw new ApiError('该项目的此文档已存在', 409)
     }
     const created = { id: uuid(), ...input, ...(entity === 'knowledge_documents' ? { updated_at: new Date().toISOString() } : {}) } as Record<string, unknown>
+    if (entity === 'projects') { created.progress ??= 0; created.profile = { ...emptyProfile(), ...(input.profile || {}) as object, progress_known: 'progress' in input } }
     collection.push(created)
     record(workspace, `新增 ${entity}：${String(created.name || created.title || '预览记录')}`)
     save(workspace)
