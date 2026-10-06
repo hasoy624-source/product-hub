@@ -1,8 +1,13 @@
 import type { Dashboard, Job, Product, Project, ProjectDetails, ProjectMilestone, ProjectUpdate, Report, Sale, Seat, Signal, Task, Workspace } from './types'
 import { defaultCategories } from './classification.ts'
 import { emptyProfile, emptyMilestone, milestoneTemplate, validateMilestone } from './project-native.ts'
+import projectSnapshot from './data/published-projects.json' with { type: 'json' }
+import { publishedStorageKey, publishedWorkspace } from './published-preview.ts'
+import type { PublishedProjectSnapshot } from './published-preview.ts'
 
-const STORAGE_KEY = 'zhixu-public-preview-v1'
+export const publishedPreviewEnabled = import.meta.env?.VITE_PREVIEW_MODE === 'true'
+const snapshot = projectSnapshot as unknown as PublishedProjectSnapshot
+const STORAGE_KEY = publishedPreviewEnabled ? publishedStorageKey(snapshot.revision) : 'zhixu-public-preview-v1'
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date())
 const currentMonth = () => today().slice(0, 7)
 function shiftMonth(month: string, delta: number) {
@@ -14,6 +19,7 @@ function percent(amount: number, total: number) { return total ? Math.round(amou
 function uuid() { return globalThis.crypto?.randomUUID?.() ?? `preview-${Date.now()}-${Math.random().toString(36).slice(2)}` }
 
 function seed(): Workspace {
+  if (publishedPreviewEnabled) return publishedWorkspace(snapshot, import.meta.env.BASE_URL)
   const month = currentMonth()
   const products: Product[] = [
     { id: 'demo-p1', name: '智能舒眠颈枕', sku: 'REST-01', category: '配件类', status: '在售', owner: '林悦', description: '演示虚构产品 · 温感支撑与旅途舒眠' },
@@ -90,7 +96,8 @@ function createReport(month: string, jobId: string | null, products: Product[], 
   for (const sale of sales.filter(item => item.month === month)) byProduct.set(sale.product_id, (byProduct.get(sale.product_id) || 0) + sale.revenue_cents)
   const top = revenue ? Math.max(0, ...byProduct.values()) / revenue * 100 : 0
   const records = signals.filter(signal => signal.occurred_on.slice(0, 7) === month)
-  const lines = [`# ${month} 竞品与市场月报`, '', '> 生成方式：规则汇总。预览使用本地虚构数据；仅汇总浏览器中的演示样例，未调用 AI 或外部数据服务。', '', '## 数据概览', `- 净销售额：¥${(revenue / 100).toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`, `- 第一产品销售占比：${top.toFixed(2)}%（预警阈值 60%）`, `- 市场情报：${records.length} 条`, '', '## 产品排名']
+  const sourceNote = publishedPreviewEnabled ? '> 生成方式：规则汇总。项目来自已发布数据快照；经营信息按浏览器内已录入记录汇总，未调用 AI 或外部服务。' : '> 生成方式：规则汇总。预览使用本地虚构数据；仅汇总浏览器中的演示样例，未调用 AI 或外部数据服务。'
+  const lines = [`# ${month} 竞品与市场月报`, '', sourceNote, '', '## 数据概览', `- 净销售额：¥${(revenue / 100).toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`, `- 第一产品销售占比：${top.toFixed(2)}%（预警阈值 60%）`, `- 市场情报：${records.length} 条`, '', '## 产品排名']
   for (const product of products.slice().sort((a, b) => (byProduct.get(b.id) || 0) - (byProduct.get(a.id) || 0))) lines.push(`- ${product.name}：¥${((byProduct.get(product.id) || 0) / 100).toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`)
   for (const kind of ['竞品动态', '市场反馈', '独立站评价']) {
     const items = records.filter(signal => signal.kind === kind)
@@ -98,7 +105,7 @@ function createReport(month: string, jobId: string | null, products: Product[], 
     if (!items.length) lines.push('本月暂无已录入记录。')
     for (const item of items) lines.push(`### ${item.occurred_on} · ${item.brand} · ${item.title}`, `情绪标签：${item.sentiment}`, '', item.content, '')
   }
-  lines.push('## 提示', '以上内容仅作交互预览，初始数据均为虚构样例。')
+  lines.push('## 提示', publishedPreviewEnabled ? '项目初始数据来自已发布快照；浏览器编辑与新增记录不回写本地项目数据库。' : '以上内容仅作交互预览，初始数据均为虚构样例。')
   return { id: uuid(), title: `${month} 竞品与市场月报`, month, content: lines.join('\n'), generated_at: new Date().toISOString(), job_id: jobId, source: '规则汇总' }
 }
 

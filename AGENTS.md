@@ -5,15 +5,16 @@
 ## 1. 当前实际状态
 
 - 代码仓库：<https://github.com/hasoy624-source/product-hub>，主分支 `main`。
-- **已上线的是静态演示预览**：<https://hasoy624-source.github.io/product-hub/>。部署入口是 [`.github/workflows/deploy-preview.yml`](.github/workflows/deploy-preview.yml)，发布目标是 GitHub Pages。
-- 预览构建设置 `VITE_PREVIEW_MODE=true`，`frontend/src/api.ts` 因而调用 `frontend/src/preview.ts`。数据是浏览器内的虚构样例与 `localStorage`，不同浏览器不共享；它不调用后端，也不是实际生产系统。
+- **已上线的是静态项目数据预览**：<https://hasoy624-source.github.io/product-hub/>。部署入口是 [`.github/workflows/deploy-preview.yml`](.github/workflows/deploy-preview.yml)，发布目标是 GitHub Pages。
+- 用户于 2026-10-06 明确要求将已导入项目数据同步至 GitHub 预览。`frontend/src/data/published-projects.json` 是经此次请求发布的原生项目快照，`frontend/public/project-assets/` 是对应原图副本；原 Excel、SQLite 数据库、导入溯源台账、会话与配置不发布。
+- 预览构建设置 `VITE_PREVIEW_MODE=true`，`frontend/src/api.ts` 调用 `frontend/src/preview.ts`，以已发布项目快照初始化浏览器 `localStorage`。不同浏览器的编辑不共享，不调用后端，不回写本地数据库，也不是多人协作生产系统。前端 Node 回归测试仍使用隔离的虚构演示 seed；新增快照测试单独验证真实项目数据及图片。
 - `compose.yaml` + `deploy/Caddyfile` 是**未来真正线上系统的部署方案**（PostgreSQL、FastAPI、worker、Caddy/HTTPS），不能把它误认作当前 Pages 的运行环境。接手时先核实是否另有实际生产实例，不能仅凭这些文件声称已部署。
 
 ## 2. 三种工作模式
 
 | 模式 | 启动/构建 | 数据与用途 | 对外地址 |
 | --- | --- | --- | --- |
-| 静态预览 | 在 `frontend` 目录设置 `VITE_PREVIEW_MODE=true` 后构建，或由 GitHub Actions 自动构建 | `preview.ts` + 浏览器 `localStorage`；给他人体验界面与交互 | <https://hasoy624-source.github.io/product-hub/> |
+| 静态预览 | 在 `frontend` 目录设置 `VITE_PREVIEW_MODE=true` 后构建，或由 GitHub Actions 自动构建 | 原生项目发布快照 + 浏览器 `localStorage`；浏览数据与体验界面 | <https://hasoy624-source.github.io/product-hub/> |
 | 本地后端演示 | 仓库根目录运行 `./setup.ps1`、`./start.ps1` | `APP_MODE=demo`；FastAPI + 本地 SQLite `backend/product-hub.db`，按需启动 worker；用于端到端开发 | `http://127.0.0.1:8010`（可用 `./start.ps1 -Port 8011`） |
 | 正式服务模板 | 配置 `.env` 后用 `docker compose` 构建/启动 | `APP_MODE=production`；PostgreSQL + 身份验证 + worker，Caddy 提供 HTTPS | `https://<DOMAIN>`，仅在实际部署并验证后成立 |
 
@@ -42,7 +43,7 @@ Remove-Item Env:VITE_PREVIEW_MODE
 - `frontend/src/App.tsx`：应用布局、导航与主页面路由；`frontend/src/styles.css`：全局视觉样式。
 - `frontend/src/ExceptionCenter.tsx`、`frontend/src/exceptions.ts`：异常总览与任务/项目/信号明细；当前界面使用 hash 路由（例如 `/#exceptions`、`/#exceptions/tasks`）。
 - `frontend/src/ProductBoard.tsx`、`ProjectBoard.tsx`、`KnowledgeBase.tsx`、`classification.ts`：产品销售分类、项目看板、阶段知识库、分类配置。
-- `frontend/src/api.ts`：预览/真实 API 的切换点；`frontend/src/preview.ts`：静态演示的模拟 API、种子数据和浏览器存储。新增功能须检查两种分支的行为是否一致。
+- `frontend/src/api.ts`：预览/真实 API 的切换点；`frontend/src/preview.ts`：静态预览 API 与浏览器存储；`published-preview.ts`：发布快照加载、存储版本及 Pages 图片路径。新增功能须检查两种分支的行为是否一致。
 - `backend/app/main.py`：API、模式设置、会话认证、路由；`models.py`/`schemas.py`：数据模型与校验；`seed.py`：演示数据；`worker.py`：后台任务。
 - `backend/tests/` 与 `frontend/tests/`：回归测试。`docs/` 存放本地知识库/流程资料，但被 `.gitignore` 排除，不能假设克隆仓库后存在。
 
@@ -81,13 +82,21 @@ curl -fsS https://<DOMAIN>/api/health
 ## 7. 实际 Excel 项目空间（本地持久化）
 
 - 入口：`start-projects.ps1`，默认 `http://127.0.0.1:8011/#projects`；后端模块 `app.project_workspace`，不执行演示 seed，也不启动演示 worker。
-- 数据：`backend/project-workspace.db`；原图：`backend/import-assets/`。两者被 Git 忽略，不能打包进 Pages 或提交到公共仓库。
+- 数据：`backend/project-workspace.db`；原图：`backend/import-assets/`。两者仍被 Git 忽略；不要直接上传数据库或整个导入目录。用户授权的数据发布走第 8 节的业务字段快照与关联图片副本。
 - `start.ps1` 仍是原来的演示数据库/模式，不要混用。SQLite 项目空间在本机刷新、换浏览器、重启服务后保留。
 - 导入：从 `backend` 运行 `.venv/Scripts/python.exe -m app.import_projects <LOCAL_REGISTER.xlsx>`。按项目号不区分大小写合并，保留全部原表记录、隐藏页、图片、节点及履历；主总表为当前依据。导入后一次性迁移为原生业务记录，不显示工作表/单元格资料。
 - 同一文件重导跳过现有项目/任务，保留用户后续编辑；不同来源碰到已有项目会整体回滚，不静默覆盖。没有负责人、日期和进度时保留空缺，不按阶段估算进度或制造任务期限。
 - 本地构建：清除 `VITE_PREVIEW_MODE` 后，从根目录运行 `npm.cmd --prefix frontend run build -- --base=/ --outDir dist-local`，再运行 `./start-projects.ps1`。
 - 原生详情 API：`GET /api/projects/{id}/details`；项目资料支持嵌套 `profile` 的 POST/PATCH；节点 `milestones`、动态 `updates` 可新增/编辑；`milestone-template` 补齐标准节点；`images` 接受原始图片请求体。原图读取 `GET /api/project-assets/{hash-filename}`。完整问题措施存在原生 `TaskContent`，任务 POST/PATCH 接受 `description`。
 - `native_project_migration.py` 在启动与导入时进行幂等的一次迁移：新增 `ProjectProfile`、`ProjectMilestone`、`ProjectUpdate`、`ProjectImage`、`TaskContent`，不修改既有 Project/Task 列结构。存在 profile 的项目不再从导入台账覆盖；资料维护以后只写原生表。`ProjectSource` 留作内部导入台账，不作为运行界面依赖。未标明计划/实际的节点日期保留在可编辑“节点记录”中，不当成实际完成。
-- 项目工作区统一为“概况 / 节点计划 / 问题与任务 / 项目动态”，包括后续手工新建项目。静态预览同样维护原生 profile 与 project_details，但不带入实际项目数据库。
+- 项目工作区统一为“概况 / 节点计划 / 问题与任务 / 项目动态”，包括后续手工新建项目。静态预览维护原生 profile 与 project_details，数据来自发布快照，不直接带入实际项目数据库。
 - 项目页布局由 `ProjectNavigator.tsx`（列表/搜索）、`ProjectBoard.tsx`（快捷筛选与下拉）、`ProjectWorkspace.tsx`（详情）组成。桌面 `.project-workbench` 使用等高双栏，只有 `.project-list-scroll` 与 `.native-panel` 内部滚动；不要重新只把左栏设为 sticky，或恢复两块各自按内容撑高。900px 以下使用列表/详情切换和“返回项目列表”。概况先展示待推进，团队/图片/阶段路径/自定义字段属于次级资料；五阶段标记不推断节点完成。
-- 如需真正多人协作，迁移到已有正式服务模板及受控的数据空间；静态 GitHub Pages 继续使用演示数据。
+- 如需真正多人协作，迁移到已有正式服务模板及受控的数据空间；静态 GitHub Pages 继续使用发布快照和浏览器私有编辑。
+
+## 8. 将本地原生项目同步到 GitHub 预览
+
+- 在 `backend` 目录运行 `.venv/Scripts/python.exe -m app.export_preview`。该命令只读 SQLite，导出原生项目、profile、完整任务措施、节点、动态、分类、自定义字段、项目文档及关联产品；仅复制关联原图。它不导出原表、导入台账、会话、内部操作日志、数据库文件或运行配置。
+- 产物：`frontend/src/data/published-projects.json` 与 `frontend/public/project-assets/`。已授权的快照和关联图片须随前端代码一起暂存、提交；后端数据库和原 Excel 保持本地。确认 JSON 的 counts 与本地原生记录一致、所有图片 SHA256 与原图一致。
+- 快照 revision 根据业务内容计算。浏览器存储使用 `zhixu-public-projects-<revision>`，与旧的五项目演示缓存隔离；再次发布新数据会启用新 revision，旧版本的本机编辑仍留在旧键中，不静默覆盖。当前版本的编辑刷新后保留，但不同访客不共享。
+- 发布并非持续自动同步：本地项目变化后须重新执行导出命令，再执行第 4 节的测试、构建、提交、部署验收。不同浏览器应显示同一初始快照，项目详情不得请求 Pages 上不存在的 `/api/project-assets/`。
+- 已发布业务数据属于公开预览内容；不要扩展导出到未经用户要求的其他数据或配置。未来接手时核对当前发布快照，不再误报线上仍只有五个虚构项目。

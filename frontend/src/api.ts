@@ -1,6 +1,6 @@
 import { ApiError, previewApi } from './preview'
 
-export { ApiError }
+export { ApiError, publishedPreviewEnabled } from './preview'
 export async function uploadProjectImage(projectId: string, file: File) {
   if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) throw new ApiError('请选择 PNG、JPEG 或 WebP 图片', 422)
   if (file.size > 10 * 1024 * 1024) throw new ApiError('图片应小于 10 MB', 413)
