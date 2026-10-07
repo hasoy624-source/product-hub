@@ -1,7 +1,16 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { projectWorkbookGroups, linkedNodeDocuments, workbookCategory, workbookColumns, defaultWorkbookColumns } from '../src/project-workbook-model.ts'
 import { previewApi, resetPreview } from '../src/preview.ts'
+
+test('project sheets start collapsed and retain accessible manual expansion',()=>{
+  const source=readFileSync(new URL('../src/ProjectWorkbook.tsx',import.meta.url),'utf8')
+  assert.match(source,/const \[collapsed,setCollapsed\]=useState\(true\)/)
+  assert.match(source,/onClick=\{\(\)=>setCollapsed\(!collapsed\)\}/)
+  assert.match(source,/aria-expanded=\{!collapsed\}/)
+  assert.match(source,/\{!collapsed&&<>/)
+})
 
 test('stage workbook groups existing projects without inventing gates or nodes',()=>{
   const projects=[{id:'a',stage:'EVT'},{id:'b',stage:'概念与启动'},{id:'c',stage:'EVT',status:'已完成'}]

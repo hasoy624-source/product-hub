@@ -47,7 +47,7 @@ function DocumentReader({document,onClose}:{document:KnowledgeDocument;onClose:(
 
 function ProjectSheet({project,workspace,columns,today,onDetails,onChanged,onDocuments}:{project:Project;workspace:Workspace;columns:WorkbookColumn[];today:string;onDetails:(id:string)=>void;onChanged:()=>Promise<void>;onDocuments:()=>void}) {
   const [data,setData]=useState<ProjectDetails|null>(workspace.project_details?.[project.id]||null)
-  const [collapsed,setCollapsed]=useState(false)
+  const [collapsed,setCollapsed]=useState(true)
   const [expanded,setExpanded]=useState(false)
   const [editing,setEditing]=useState<Editing|null>(null)
   const [document,setDocument]=useState<KnowledgeDocument|null>(null)
