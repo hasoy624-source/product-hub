@@ -51,6 +51,8 @@ export function filterProjects(projects: Project[], tasks: Task[], meta: EntityM
   if (filter === 'all') return projects
   if (filter === 'overdue') return projects.filter(project => projectOverdue(project, tasks, today))
   if (filter === 'active') return projects.filter(projectInProgress)
+  if (filter === 'attention:tasks') return projects.filter(project=>tasks.some(task=>task.project_id===project.id&&task.status!=='已完成'&&Boolean(task.due_date)&&task.due_date<today))
+  if (filter === 'attention:projects') return projects.filter(project=>project.status==='风险'||tasks.some(task=>task.project_id===project.id&&task.status!=='已完成'&&Boolean(task.due_date)&&task.due_date<today))
   if (filter.startsWith('status:')) return projects.filter(project => project.status === filter.slice(7))
   if (filter.startsWith('stage:')) return projects.filter(project => project.stage === filter.slice(6) && projectInProgress(project))
   return projects.filter(project => projectCategoryId(project, meta) === filter)

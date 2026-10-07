@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { BookOpen, ChevronDown, ChevronRight, Columns3, FileText, Image as ImageIcon, Plus, Search, Settings2, UserRound, X } from 'lucide-react'
 import { api } from './api'
+import ProjectFiles,{ProjectFileLink} from './ProjectFiles'
 import SemanticTag from './SemanticTag'
 import { categoryTone, stageTone, toneStyle } from './semantics'
 import { emptyMilestone } from './project-native'
@@ -51,15 +52,17 @@ function DocumentReader({document,onClose}:{document:KnowledgeDocument;onClose:(
   return <dialog ref={dialog} className="workbook-document-reader" aria-label={document.title} onCancel={onClose}><div className="dialog-head"><h2>{document.title}</h2><button className="icon-button" onClick={onClose} aria-label="关闭关联文档"><X size={18}/></button></div><pre>{document.content||'文档尚未填写正文'}</pre></dialog>
 }
 
-function ProjectSheet({project,workspace,columns,today,onDetails,onChanged,onDocuments}:{project:Project;workspace:Workspace;columns:WorkbookColumn[];today:string;onDetails:(id:string)=>void;onChanged:()=>Promise<void>;onDocuments:()=>void}) {
+function ProjectSheet({project,workspace,columns,today,focused,onDetails,onChanged,onDocuments}:{project:Project;workspace:Workspace;columns:WorkbookColumn[];today:string;focused:boolean;onDetails:(id:string)=>void;onChanged:()=>Promise<void>;onDocuments:()=>void}) {
   const [data,setData]=useState<ProjectDetails|null>(workspace.project_details?.[project.id]||null)
   const [collapsed,setCollapsed]=useState(true)
   const [expanded,setExpanded]=useState(false)
   const [editing,setEditing]=useState<Editing|null>(null)
   const [document,setDocument]=useState<KnowledgeDocument|null>(null)
+  const [fileNode,setFileNode]=useState<ProjectMilestone|null>(null)
   const [error,setError]=useState('')
   const load=useCallback(async()=>{try{setData(await api<ProjectDetails>(`/projects/${project.id}/details`));setError('')}catch(cause){setError(cause instanceof Error?cause.message:'节点读取失败')}},[project.id])
-  useEffect(()=>{if(workspace.project_details?.[project.id])setData(workspace.project_details[project.id]);else void load()},[workspace,project.id,load])
+  useEffect(()=>{if(workspace.project_details?.[project.id])setData(workspace.project_details[project.id]);void load()},[workspace,project.id,load])
+  useEffect(()=>{if(focused)setCollapsed(false)},[focused])
   const nodes=data?.milestones||[]
   const shown=expanded?nodes:nodes.slice(0,5)
   const category=workbookCategory(workspace,project.id)
@@ -69,11 +72,12 @@ function ProjectSheet({project,workspace,columns,today,onDetails,onChanged,onDoc
   const minWidth=48+selectedColumns.reduce((sum,column)=>sum+column.width,0)
   const edit=(node:ProjectMilestone,field:Editable)=>setEditing({project,node,field})
   const afterSave=async()=>{await Promise.all([load(),onChanged()])}
-  return <section className="workbook-project-sheet" style={{width:minWidth+2,minWidth:minWidth+2}} aria-label={`${project.name} 节点工作表`}>
+  return <section id={`project-sheet-${project.id}`} className={`workbook-project-sheet${focused?' workbook-target':''}`} style={{width:minWidth+2,minWidth:minWidth+2}} aria-label={`${project.name} 节点工作表`}>
     <header className="workbook-sheet-heading"><button className="workbook-collapse" onClick={()=>setCollapsed(!collapsed)} aria-expanded={!collapsed} aria-label={`${collapsed?'展开':'收起'} ${project.name} 工作表`}>{collapsed?<ChevronRight size={16}/>:<ChevronDown size={16}/>}</button><button className="workbook-sheet-name" onClick={()=>onDetails(project.id)}>{project.name}</button><SemanticTag kind="stage" value={project.stage}/><span className="workbook-node-count">{nodes.length} 个节点</span><button className="workbook-cell-button workbook-project-start" onClick={()=>setEditing({project,node:null,field:'planned_start'})} aria-label={`编辑 ${project.name} 项目开始日期`}>开始日期 {project.start_date||'未设置'}</button><span className="workbook-project-due">项目截止 {project.due_date||'未设置'}</span><button className="text-button workbook-sheet-docs" onClick={onDocuments}><BookOpen size={14}/>阶段文档</button></header>
     {!collapsed&&<><table className="workbook-table"><colgroup><col style={{width:48}}/>{selectedColumns.map(column=><col key={column.key} style={{width:column.width}}/>)}</colgroup><thead><tr><th scope="col" className="workbook-index-cell">#</th>{selectedColumns.map(column=><th scope="col" key={column.key} className={column.key==='code'?'workbook-code-cell':''}>{column.label}</th>)}</tr></thead><tbody>{shown.map((node,index)=>{
       const deadline=summaryDeadline({...project,due_date:node.planned_end,status:node.status==='已完成'?'已完成':project.status},today)
       const docs=linkedNodeDocuments(workspace,project.id,node)
+      const files=(data?.files||[]).filter(file=>file.milestone_id===node.id)
       return <tr key={node.id}><td className="workbook-index-cell">{index+1}</td>{selectedColumns.map(column=><td key={column.key} className={column.key==='code'?'workbook-code-cell':''}>
         {column.key==='code'&&<button className="workbook-code-link" onClick={()=>onDetails(project.id)}>{project.name}</button>}
         {column.key==='image'&&(imageURL?<a className="workbook-image" href={imageURL} target="_blank" rel="noreferrer" aria-label={`查看 ${project.name} 产品示意图`}><img src={imageURL} alt={`${project.name} 产品示意图`} loading="lazy"/></a>:<span className="workbook-image-placeholder"><ImageIcon size={20}/></span>)}
@@ -83,17 +87,18 @@ function ProjectSheet({project,workspace,columns,today,onDetails,onChanged,onDoc
         {column.key==='start'&&<button className="workbook-cell-button" onClick={()=>edit(node,'planned_start')} aria-label={`编辑 ${project.name} ${node.name} 开始日期`}>{node.planned_start||<span className="workbook-empty-value">未设置</span>}</button>}
         {column.key==='deadline'&&<button className={`workbook-cell-button deadline-${deadline.tone}`} title={deadline.hint} onClick={()=>edit(node,'planned_end')} aria-label={`编辑 ${project.name} ${node.name} 截止日期`}>{deadline.text}</button>}
         {column.key==='deliverable'&&<button className={`workbook-cell-button ${node.deliverable?'workbook-output-tag':''}`} style={node.deliverable?toneStyle(categoryTone(node.deliverable)):undefined} onClick={()=>edit(node,'deliverable')} aria-label={`编辑 ${project.name} ${node.name} 输出产物`}>{node.deliverable||<span className="workbook-empty-value">未填写</span>}</button>}
-        {column.key==='documents'&&<div className="workbook-document-cell">{docs[0]&&<button className="workbook-document-link" onClick={()=>setDocument(docs[0])}><FileText size={15}/><span>{docs[0].title}</span></button>}{docs.length>1&&<span>+{docs.length-1}</span>}<button className="workbook-associate" onClick={()=>edit(node,'document_ids')} aria-label={`关联 ${project.name} ${node.name} 文档`}>{docs.length?<Settings2 size={13}/>:'关联文档'}</button></div>}
+        {column.key==='documents'&&<div className="workbook-document-cell">{files[0]?<ProjectFileLink file={files[0]} compact onError={setError}/>:docs[0]&&<button className="workbook-document-link" onClick={()=>setDocument(docs[0])}><FileText size={15}/><span>{docs[0].title}</span></button>}{files.length+docs.length>1&&<span>+{files.length+docs.length-1}</span>}<button className="workbook-associate" onClick={()=>setFileNode(node)} aria-label={`上传 ${project.name} ${node.name} 文件`}>{files.length?'文件管理':'上传文件'}</button></div>}
         {column.key==='priority'&&<button className={`workbook-cell-button workbook-priority priority-${node.priority==='高'||node.priority==='S+'?'high':node.priority==='中'?'medium':'normal'}`} onClick={()=>edit(node,'priority')} aria-label={`编辑 ${project.name} ${node.name} 优先级`}>{node.priority||<span className="workbook-empty-value">未设置</span>}</button>}
         {column.key==='status'&&<SemanticTag kind="status" value={node.status}/>}
       </td>)}</tr>
     })}</tbody></table>{error&&<p className="form-error workbook-sheet-error" role="alert">{error}</p>}{!data&&!error&&<div className="workbook-table-empty">正在读取节点…</div>}{data&&!nodes.length&&<div className="workbook-table-empty">暂无节点</div>}<footer className="workbook-sheet-footer"><button className="text-button" onClick={()=>setEditing({project,node:null,field:'new'})}><Plus size={16}/>添加节点</button>{nodes.length>5&&<button className="text-button" aria-expanded={expanded} onClick={()=>setExpanded(!expanded)}>{expanded?'收起节点':`展开其余 ${nodes.length-5} 个节点`}<ChevronDown size={13}/></button>}</footer></>}
     {editing&&<NodeEditor key={`${editing.node?.id||'new'}-${editing.field}`} editing={editing} workspace={workspace} onClose={()=>setEditing(null)} onSaved={afterSave} onDocuments={()=>{setEditing(null);onDocuments()}}/>}{document&&<DocumentReader document={document} onClose={()=>setDocument(null)}/>}
+    {fileNode&&<ProjectFiles projectId={project.id} projectName={project.name} node={fileNode} files={(data?.files||[]).filter(file=>file.milestone_id===fileNode.id)} onClose={()=>setFileNode(null)} onSaved={afterSave}/>}
   </section>
 }
 
-type Props={projects:Project[];workspace:Workspace;query:string;stage:string;today:string;activeFilter:boolean;advancedFilters:React.ReactNode;onQuery:(value:string)=>void;onStage:(value:string)=>void;onReset:()=>void;onDetails:(id:string)=>void;onChanged:()=>Promise<void>;onDocuments:(project:Project)=>void}
-export default function ProjectWorkbook({projects,workspace,query,stage,today,activeFilter,advancedFilters,onQuery,onStage,onReset,onDetails,onChanged,onDocuments}:Props) {
+type Props={projects:Project[];workspace:Workspace;query:string;stage:string;today:string;targetProjectId?:string;activeFilter:boolean;advancedFilters:React.ReactNode;onQuery:(value:string)=>void;onStage:(value:string)=>void;onReset:()=>void;onDetails:(id:string)=>void;onChanged:()=>Promise<void>;onDocuments:(project:Project)=>void}
+export default function ProjectWorkbook({projects,workspace,query,stage,today,targetProjectId='',activeFilter,advancedFilters,onQuery,onStage,onReset,onDetails,onChanged,onDocuments}:Props) {
   const [columns,setColumns]=useState<WorkbookColumn[]>(()=>{try{return restoredWorkbookColumns(JSON.parse(localStorage.getItem(preferenceKey)||'null'))}catch{return defaultWorkbookColumns}})
   const [settings,setSettings]=useState(false)
   const [filters,setFilters]=useState(false)
@@ -101,12 +106,21 @@ export default function ProjectWorkbook({projects,workspace,query,stage,today,ac
   const tabButtons=useRef<Array<HTMLButtonElement|null>>([])
   const scroll=useRef<HTMLDivElement>(null)
   const loadMore=useRef<HTMLDivElement>(null)
+  const targetHandled=useRef('')
   const allGroups=projectWorkbookGroups(projects,stage)
   let remaining=limit
   const groups=allGroups.map(group=>{const rows=group.projects.slice(0,remaining);remaining=Math.max(0,remaining-rows.length);return {...group,projects:rows}}).filter(group=>group.projects.length)
   const total=allGroups.reduce((sum,group)=>sum+group.projects.length,0)
   const sheetWidth=50+workbookColumns.filter(column=>columns.includes(column.key)).reduce((sum,column)=>sum+column.width,0)
   useEffect(()=>{setLimit(workbookPageSize);scroll.current?.scrollTo({top:0})},[query,stage])
+  useEffect(()=>{
+    if(!targetProjectId){targetHandled.current='';return}
+    if(targetHandled.current===targetProjectId)return
+    const index=allGroups.flatMap(group=>group.projects).findIndex(project=>project.id===targetProjectId)
+    if(index>=limit){setLimit(index+1);return}
+    const target=document.getElementById('project-sheet-'+targetProjectId)
+    if(target&&scroll.current?.contains(target)){scroll.current.scrollTo({top:scroll.current.scrollTop+target.getBoundingClientRect().top-scroll.current.getBoundingClientRect().top});targetHandled.current=targetProjectId}
+  },[targetProjectId,limit,stage,projects])
   useEffect(()=>{
     if(!scroll.current||!loadMore.current||limit>=total)return
     const observer=new IntersectionObserver(entries=>{
@@ -121,6 +135,6 @@ export default function ProjectWorkbook({projects,workspace,query,stage,today,ac
     <div className="workbook-stage-tabs" role="tablist" aria-label="项目阶段">{['all',...workbookStages].map((value,index)=><button ref={element=>{tabButtons.current[index]=element}} tabIndex={stage===value?0:-1} onKeyDown={event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const values=['all',...workbookStages];const next=event.key==='Home'?0:event.key==='End'?values.length-1:(index+(event.key==='ArrowRight'?1:-1)+values.length)%values.length;onStage(values[next]);tabButtons.current[next]?.focus({preventScroll:true})}}} role="tab" aria-selected={stage===value} className={stage===value?'selected':''} style={value!=='all'?toneStyle(stageTone(value)):undefined} key={value} onClick={()=>onStage(value)}>{value==='all'?'全部阶段':value}<span>{value==='all'?workspace.projects.length:workspace.projects.filter(project=>project.stage===value).length}</span></button>)}</div>
     <div className="workbook-toolbar"><label className="search-field"><Search size={16}/><input aria-label="搜索项目" placeholder="搜索项目、阶段或负责人" value={query} onChange={event=>onQuery(event.target.value)}/></label><button className="button" aria-expanded={filters} onClick={()=>setFilters(!filters)}><Settings2 size={15}/>筛选</button>{(activeFilter||query||stage!=='all')&&<button className="text-button" onClick={onReset}>重置</button>}<span className="workbook-total">{total} 个项目</span><div className="workbook-column-control"><button className="button" aria-expanded={settings} onClick={()=>setSettings(!settings)}><Columns3 size={15}/>表格设置</button>{settings&&<div className="workbook-column-menu" aria-label="选择表格列"><strong>显示列</strong>{workbookColumns.map(column=><label key={column.key}><input type="checkbox" checked={columns.includes(column.key)} disabled={column.key==='code'} onChange={()=>toggle(column.key)}/>{column.label}</label>)}</div>}</div></div>
     {(filters||activeFilter)&&<div className="simple-advanced-filters">{advancedFilters}</div>}
-    <div className="workbook-scroll" ref={scroll} tabIndex={0} role="region" aria-label="项目节点工作表滚动区">{groups.map(group=><div className="workbook-stage-group" key={group.stage}><h2 style={toneStyle(stageTone(group.stage))}>{group.title}<span>{allGroups.find(item=>item.stage===group.stage)?.projects.length} 个项目</span></h2>{group.projects.map(project=><ProjectSheet key={project.id} project={project} workspace={workspace} columns={columns} today={today} onDetails={onDetails} onChanged={onChanged} onDocuments={()=>onDocuments(project)}/>)}</div>)}{!total&&<div className="simple-project-empty"><Search size={25}/><strong>暂无匹配项目</strong><button className="button" onClick={onReset}>重置筛选与搜索</button></div>}{total>limit&&<div ref={loadMore} className="workbook-load-sentinel" style={{width:sheetWidth}} aria-hidden="true"/>}</div>
+    <div className="workbook-scroll" ref={scroll} tabIndex={0} role="region" aria-label="项目节点工作表滚动区">{groups.map(group=><div className="workbook-stage-group" key={group.stage}><h2 style={toneStyle(stageTone(group.stage))}>{group.title}<span>{allGroups.find(item=>item.stage===group.stage)?.projects.length} 个项目</span></h2>{group.projects.map(project=><ProjectSheet key={project.id} project={project} workspace={workspace} columns={columns} today={today} focused={project.id===targetProjectId} onDetails={onDetails} onChanged={onChanged} onDocuments={()=>onDocuments(project)}/>)}</div>)}{!total&&<div className="simple-project-empty"><Search size={25}/><strong>暂无匹配项目</strong><button className="button" onClick={onReset}>重置筛选与搜索</button></div>}{total>limit&&<div ref={loadMore} className="workbook-load-sentinel" style={{width:sheetWidth}} aria-hidden="true"/>}</div>
   </section>
 }

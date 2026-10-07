@@ -6,11 +6,11 @@ import { summaryDeadline, summaryProjects } from '../src/project-summary.ts'
 const source=name=>readFileSync(new URL(`../src/${name}`,import.meta.url),'utf8')
 
 test('default project page follows a stage-grouped per-project node workbook',()=>{
-  const app=source('App.tsx'),book=source('ProjectWorkbook.tsx'),css=source('project-workbook.css')
+  const app=source('App.tsx'),book=source('ProjectWorkbook.tsx')+source('ProjectFiles.tsx'),css=source('project-workbook.css')
   assert.ok(app.includes('<ProjectWorkbook'))
   assert.equal(app.includes('<ProjectSummaryList'),false)
   assert.ok(app.includes('projectDetailOpen&&activeProject&&<ProjectDetailsDrawer'))
-  for(const label of ['表格设置','添加节点','项目阶段','输出产物','相关文档'])assert.ok(book.includes(label))
+  for(const label of ['表格设置','添加节点','项目阶段','输出产物','相关文件'])assert.ok(book.includes(label))
   assert.ok(book.includes('shown.map((node,index)'))
   assert.ok(css.includes('position:sticky;left:48px'))
   assert.ok(app.includes("projects: ['name', 'stage', 'start_date', 'due_date']"))

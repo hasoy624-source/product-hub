@@ -6,7 +6,7 @@ from fastapi import HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from pydantic import ValidationError
 from sqlalchemy import select
-from .models import Project, ProjectSchedule, ProjectProfile, ProjectMilestone, ProjectMilestoneFields, ProjectUpdate, ProjectImage, TaskContent, KnowledgeDocument, serialize
+from .models import Project, ProjectSchedule, ProjectProfile, ProjectMilestone, ProjectMilestoneFields, ProjectUpdate, ProjectImage, ProjectFile, TaskContent, KnowledgeDocument, serialize
 from .schemas import ProjectProfileIn, MilestoneIn, ProjectUpdateIn
 from .services import stamp, local_today
 
@@ -68,6 +68,7 @@ def details(session, project_id):
         'milestones': [milestone_values(session,row) for row in session.scalars(select(ProjectMilestone).where(ProjectMilestone.project_id == project_id).order_by(ProjectMilestone.sort_order, ProjectMilestone.id))],
         'updates': [serialize(row) for row in session.scalars(select(ProjectUpdate).where(ProjectUpdate.project_id == project_id).order_by(ProjectUpdate.created_at.desc(), ProjectUpdate.id))],
         'images': [serialize(row) for row in session.scalars(select(ProjectImage).where(ProjectImage.project_id == project_id).order_by(ProjectImage.sort_order, ProjectImage.id))],
+        'files': [serialize(row) for row in session.scalars(select(ProjectFile).where(ProjectFile.project_id==project_id).order_by(ProjectFile.created_at,ProjectFile.id))],
     }
 
 

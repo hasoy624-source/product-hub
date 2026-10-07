@@ -122,6 +122,18 @@ class ProjectImage(Base):
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
 
 
+class ProjectFile(Base):
+    __tablename__='project_files'
+    id: Mapped[str]=mapped_column(String(64),primary_key=True,default=uid)
+    project_id: Mapped[str]=mapped_column(ForeignKey('projects.id',ondelete='CASCADE'),index=True)
+    milestone_id: Mapped[str]=mapped_column(ForeignKey('project_milestones.id',ondelete='CASCADE'),index=True)
+    name: Mapped[str]=mapped_column(String(200))
+    content_type: Mapped[str]=mapped_column(String(100),default='application/octet-stream')
+    size: Mapped[int]=mapped_column(Integer)
+    sha256: Mapped[str]=mapped_column(String(64))
+    created_at: Mapped[str]=mapped_column(String(40))
+
+
 class TaskContent(Base):
     __tablename__ = "task_content"
     task_id: Mapped[str] = mapped_column(ForeignKey("tasks.id"), primary_key=True)

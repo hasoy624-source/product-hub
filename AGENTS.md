@@ -1,4 +1,4 @@
-# 英霏特项目管理 · Product Hub 接手指南（工作模式与部署路径）
+# 英霏特 · Product Hub 接手指南（工作模式与部署路径）
 
 > 本文件是仓库级交接入口。开始工作时，先运行 `git rev-parse --show-toplevel` 确认仓库根目录，再读本文件与当前源码；不要把本机绝对路径、演示数据或历史聊天当作部署配置。
 
@@ -129,7 +129,14 @@ curl -fsS https://<DOMAIN>/api/health
 
 ## 12. 品牌与 LOGO
 
-- 用户提供 IMPETUS 横向字标，系统显示名统一为“英霏特项目管理”。`Brand.tsx` 是侧栏、移动端顶栏和登录页共用入口，标题与页脚使用一致名称，API 标题同步更新。
+- 用户提供 IMPETUS 横向字标，系统显示名统一为“英霏特”。`Brand.tsx` 是侧栏、移动端顶栏和登录页共用入口，标题与页脚使用一致名称，API 标题同步更新。
 - `frontend/src/assets/impetus-logo.png` 保留用户原图完整字样、注册标识与原始像素，不裁切、不拉伸。Vite 导入生成带哈希的资源路径，适配 Pages 子路径；`branding.css` 控制展示宽度与高度 auto，不放大侧栏。
 - 桌面左侧使用横向字标与下方中文名，手机顶栏使用紧凑字标并保留抽屉品牌。白色背景匹配原图底色；favicon 是代码绘制的黑白 I 首字母，与完整 LOGO 分开用于小尺寸浏览器标签。
 - 不修改项目数据快照 revision、浏览器历史存储键、现有记录或部署目录；工作台的语义色和流程布局保持原样。
+
+## 13. 节点相关文件与异常跳转
+
+- 工作表“相关文件”保留 documents 列键，节点上传/下载入口为 ProjectFiles.tsx；旧知识库关联数据不删除。
+- 后端 project_files 表保存节点文件元数据；原始字节默认在 backend/project-files，PROJECT_FILES 可指定路径。POST /api/projects/{project}/milestones/{node}/files?name=filename 接收原始文件，GET 同路径/{file} 强制附件下载；单文件 20 MB、节点 30 文件、项目 200 MB。项目/节点边界必须校验；文件名不作为磁盘路径。生产 Compose 配置独立持久卷。
+- GitHub Pages 使用 IndexedDB 保存 Blob 和文件元数据，刷新后保留，同源同浏览器可下载，文件不写 localStorage、不回写数据库、不推送 GitHub。业务快照/存储 revision 不变，导出器不自动公开上传附件。
+- 风险扇区与数量入口跳 #projects?attention=risk；逾期任务跳 attention=tasks，只筛选这些任务所属项目，不等同于所有项目计划逾期；总览跳 attention=exceptions。负向反馈仍进入真实市场情报，未关联项目不猜测关系。旧异常详情中的项目链接使用 ?project=id 定位、展开工作表，不打开大详情侧栏。

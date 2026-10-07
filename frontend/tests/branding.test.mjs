@@ -15,7 +15,7 @@ test('IMPETUS asset preserves the supplied complete original and its aspect rati
 
 test('shared brand name and component cover navigation, login, mobile and footer',()=>{
   const app=source('src/App.tsx'),brand=source('src/Brand.tsx')
-  assert.ok(brand.includes("applicationName='英霏特项目管理'"))
+  assert.ok(brand.includes("applicationName='英霏特'"))
   for(const text of ['<Brand/>','<Brand variant="compact"/>','<Brand variant="login"/>','<span>{applicationName}</span>'])assert.ok(app.includes(text))
   assert.equal(app.includes('知序'),false)
   assert.equal(app.includes('className="brand-mark"'),false)
@@ -33,7 +33,7 @@ test('logo layouts retain proportional sizing and adapt to narrow navigation and
 
 test('document metadata and a readable small-size favicon match the renamed system',()=>{
   const html=source('index.html')
-  assert.ok(html.includes('<title>英霏特项目管理</title>'))
+  assert.ok(html.includes('<title>英霏特</title>'))
   assert.ok(html.includes('href="/favicon.svg"'))
   assert.equal(html.includes('知序'),false)
   const icon=source('public/favicon.svg')

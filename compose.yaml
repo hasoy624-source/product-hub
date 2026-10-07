@@ -6,6 +6,7 @@ x-app-environment: &app-environment
   ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
   PUBLIC_ORIGIN: https://${DOMAIN:?Set DOMAIN in .env}
   FRONTEND_DIST: /app/frontend/dist
+  PROJECT_FILES: /app/data/project-files
   TZ: Asia/Shanghai
 services:
   db:
@@ -27,6 +28,8 @@ services:
     build: .
     image: zhixu-product-hub:local
     environment: *app-environment
+    volumes:
+      - project_files:/app/data/project-files
     depends_on:
       db:
         condition: service_healthy
@@ -61,6 +64,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
 volumes:
+  project_files:
   postgres_data:
   caddy_data:
   caddy_config:

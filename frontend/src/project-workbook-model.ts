@@ -12,7 +12,7 @@ export const workbookColumns=[
   {key:'start',label:'开始日期',width:148},
   {key:'deadline',label:'截止日期',width:148},
   {key:'deliverable',label:'输出产物',width:220},
-  {key:'documents',label:'相关文档',width:220},
+  {key:'documents',label:'相关文件',width:220},
   {key:'priority',label:'优先级',width:112},
   {key:'status',label:'节点状态',width:124},
 ] as const
