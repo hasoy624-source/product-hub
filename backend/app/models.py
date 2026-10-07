@@ -99,6 +99,14 @@ class ProjectUpdate(Base):
     created_at: Mapped[str] = mapped_column(String(40))
 
 
+class ProjectMilestoneFields(Base):
+    __tablename__ = 'project_milestone_fields'
+    milestone_id: Mapped[str] = mapped_column(ForeignKey('project_milestones.id', ondelete='CASCADE'), primary_key=True)
+    deliverable: Mapped[str] = mapped_column(String(200), default='')
+    priority: Mapped[str] = mapped_column(String(100), default='')
+    document_ids: Mapped[list] = mapped_column(JSON, default=list)
+
+
 class ProjectImage(Base):
     __tablename__ = "project_images"
     id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)

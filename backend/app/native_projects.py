@@ -6,11 +6,29 @@ from fastapi import HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from pydantic import ValidationError
 from sqlalchemy import select
-from .models import Project, ProjectProfile, ProjectMilestone, ProjectUpdate, ProjectImage, TaskContent, serialize
+from .models import Project, ProjectProfile, ProjectMilestone, ProjectMilestoneFields, ProjectUpdate, ProjectImage, TaskContent, KnowledgeDocument, serialize
 from .schemas import ProjectProfileIn, MilestoneIn, ProjectUpdateIn
 from .services import stamp, local_today
 
 MILESTONE_TEMPLATE = ['立项', '结构设计', '手板打样', '交手板样', '确认', 'DFM', '投模', '专利', 'T0', 'T1', '试产备料', '试产', '转量产']
+EXTRA_FIELDS = ['deliverable','priority','document_ids']
+
+
+def milestone_values(session,row):
+    fields=session.get(ProjectMilestoneFields,row.id)
+    extra={key:getattr(fields,key) for key in EXTRA_FIELDS} if fields else {'deliverable':'','priority':'','document_ids':[]}
+    extra['document_ids']=[identifier for identifier in extra['document_ids'] if (document:=session.get(KnowledgeDocument,identifier)) and document.project_id==row.project_id]
+    return {**serialize(row),**extra}
+
+
+def save_milestone_fields(session,row,values):
+    ids=list(dict.fromkeys(values['document_ids']))
+    for identifier in ids:
+        document=session.get(KnowledgeDocument,identifier)
+        if not document or document.project_id!=row.project_id:raise HTTPException(422,'相关文档必须属于当前项目')
+    current=session.get(ProjectMilestoneFields,row.id)
+    if not current:current=ProjectMilestoneFields(milestone_id=row.id);session.add(current)
+    current.deliverable=values['deliverable'];current.priority=values['priority'];current.document_ids=ids
 
 
 def profile_values(profile):
@@ -34,7 +52,7 @@ def details(session, project_id):
         raise HTTPException(404, '项目不存在')
     return {
         'profile': profile_values(session.get(ProjectProfile, project_id)),
-        'milestones': [serialize(row) for row in session.scalars(select(ProjectMilestone).where(ProjectMilestone.project_id == project_id).order_by(ProjectMilestone.sort_order, ProjectMilestone.id))],
+        'milestones': [milestone_values(session,row) for row in session.scalars(select(ProjectMilestone).where(ProjectMilestone.project_id == project_id).order_by(ProjectMilestone.sort_order, ProjectMilestone.id))],
         'updates': [serialize(row) for row in session.scalars(select(ProjectUpdate).where(ProjectUpdate.project_id == project_id).order_by(ProjectUpdate.created_at.desc(), ProjectUpdate.id))],
         'images': [serialize(row) for row in session.scalars(select(ProjectImage).where(ProjectImage.project_id == project_id).order_by(ProjectImage.sort_order, ProjectImage.id))],
     }
@@ -68,6 +86,7 @@ def register_project_routes(app, factory):
 
     def add_record(project_id, payload, model, schema):
         values = validated(schema, payload)
+        extras={key:values.pop(key) for key in EXTRA_FIELDS} if model==ProjectMilestone else {}
         with factory() as session, session.begin():
             if not session.get(Project, project_id):
                 raise HTTPException(404, '项目不存在')
@@ -77,20 +96,26 @@ def register_project_routes(app, factory):
             session.add(row)
             session.flush()
             if model == ProjectMilestone:
+                save_milestone_fields(session,row,extras)
+                session.flush()
                 add_update(session, project_id, f'新增节点：{row.name}')
-            return serialize(row)
+            return milestone_values(session,row) if model==ProjectMilestone else serialize(row)
 
     def patch_record(project_id, record_id, payload, model, schema):
         with factory() as session, session.begin():
             row = session.get(model, record_id)
             if not row or row.project_id != project_id:
                 raise HTTPException(404, '项目记录不存在')
-            values = validated(schema, {**{key: getattr(row, key) for key in schema.model_fields}, **payload})
+            current=milestone_values(session,row) if model==ProjectMilestone else serialize(row)
+            values = validated(schema, {**{key:current[key] for key in schema.model_fields}, **payload})
+            extras={key:values.pop(key) for key in EXTRA_FIELDS} if model==ProjectMilestone else {}
             for key, value in values.items():
                 setattr(row, key, value)
             if model == ProjectMilestone:
+                save_milestone_fields(session,row,extras)
+                session.flush()
                 add_update(session, project_id, f'更新节点：{row.name} · {row.status}')
-            return serialize(row)
+            return milestone_values(session,row) if model==ProjectMilestone else serialize(row)
 
     @app.post('/api/projects/{project_id}/milestones', status_code=201)
     def create_milestone(project_id: str, payload: dict):

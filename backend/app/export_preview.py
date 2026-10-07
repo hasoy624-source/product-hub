@@ -32,6 +32,7 @@ def read_snapshot(database: Path):
     try:
         connection.execute('BEGIN')
         tables = {table: [dict(row) for row in connection.execute('SELECT ' + ', '.join('"' + col + '"' for col in columns.split()) + ' FROM "' + table + '" ORDER BY rowid')] for table, columns in FIELDS.items()}
+        supplemental = {row['milestone_id']:dict(row) for row in connection.execute('SELECT * FROM project_milestone_fields')} if connection.execute("SELECT 1 FROM sqlite_master WHERE name='project_milestone_fields'").fetchone() else {}
     finally:
         connection.close()
     projects = tables['projects']
@@ -52,6 +53,10 @@ def read_snapshot(database: Path):
         for resource in ['milestones', 'images']:
             detail[resource].sort(key=lambda row: (row['sort_order'], row['id']))
         detail['updates'].sort(key=lambda row: (row['created_at'], row['id']), reverse=True)
+        for node in detail['milestones']:
+            if node['id'] in supplemental:
+                extra=supplemental[node['id']]
+                node.update(deliverable=extra['deliverable'],priority=extra['priority'],document_ids=json.loads(extra['document_ids']))
     categories = tables['categories']
     for row in categories:
         row['active'] = bool(row['active'])

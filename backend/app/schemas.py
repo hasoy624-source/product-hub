@@ -89,6 +89,9 @@ class MilestoneIn(Schema):
     recorded_text: Long = ""
     note: Long = ""
     sort_order: Annotated[StrictInt, Field(ge=0, le=10000)] = 0
+    deliverable: Annotated[str, Field(max_length=200)] = ''
+    priority: Short = ''
+    document_ids: Annotated[list[Reference], Field(max_length=30)] = []
 
     @model_validator(mode="after")
     def ordered_dates(self):

@@ -188,7 +188,16 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
       if (verb === 'PATCH' && !existing) throw new ApiError('项目记录不存在', 404)
       const defaults = resource === 'milestones' ? emptyMilestone() : { content: '', occurred_on: '', author: '', kind: '进度记录', created_at: new Date().toISOString() }
       const row = { id: existing?.id || uuid(), project_id: projectId, ...defaults, ...existing, ...input }
-      if (resource === 'milestones') validateMilestone(row as ProjectMilestone)
+      if(resource==='milestones'&&existing&&Array.isArray(existing.document_ids)&&!('document_ids' in input))row.document_ids=existing.document_ids.filter(id=>workspace.knowledge_documents.some(doc=>doc.id===id&&doc.project_id===projectId))
+      if (resource === 'milestones') {
+        validateMilestone(row as ProjectMilestone)
+        if('deliverable' in row && String(row.deliverable||'').length>200)throw new ApiError('输出产物名称应不超过 200 字',422)
+        if('priority' in row && String(row.priority||'').length>100)throw new ApiError('优先级应不超过 100 字',422)
+        if('document_ids' in row){
+          if(!Array.isArray(row.document_ids)||row.document_ids.length>30||row.document_ids.some(id=>!workspace.knowledge_documents.some(doc=>doc.id===id&&doc.project_id===projectId)))throw new ApiError('相关文档必须属于当前项目',422)
+          row.document_ids=[...new Set(row.document_ids)]
+        }
+      }
       else if (!String((row as ProjectUpdate).content || '').trim()) throw new ApiError('请填写动态内容', 422)
       if (existing) Object.assign(existing, row)
       else if (resource === 'milestones') data.milestones.push(row as ProjectMilestone)
