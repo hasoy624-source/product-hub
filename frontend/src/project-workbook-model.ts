@@ -17,6 +17,8 @@ export const workbookColumns=[
 ] as const
 export type WorkbookColumn=typeof workbookColumns[number]['key']
 export const defaultWorkbookColumns:WorkbookColumn[]=['code','image','category','owner','node','deadline','deliverable','documents','priority']
+export const workbookPageSize=8
+export function nextWorkbookLimit(current:number,total:number) { return Math.min(current+workbookPageSize,total) }
 export function projectWorkbookGroups(projects:Project[],stage='all') {
   const visible=projects.filter(project=>stage==='all'||project.stage===stage)
   const stages=[...new Set(visible.map(project=>project.stage))]

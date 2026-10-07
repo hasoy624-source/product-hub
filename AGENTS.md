@@ -90,7 +90,7 @@ curl -fsS https://<DOMAIN>/api/health
 - 原生详情 API：`GET /api/projects/{id}/details`；项目资料支持嵌套 `profile` 的 POST/PATCH；节点 `milestones`、动态 `updates` 可新增/编辑；`milestone-template` 补齐标准节点；`images` 接受原始图片请求体。原图读取 `GET /api/project-assets/{hash-filename}`。完整问题措施存在原生 `TaskContent`，任务 POST/PATCH 接受 `description`。
 - `native_project_migration.py` 在启动与导入时进行幂等的一次迁移：新增 `ProjectProfile`、`ProjectMilestone`、`ProjectUpdate`、`ProjectImage`、`TaskContent`，不修改既有 Project/Task 列结构。存在 profile 的项目不再从导入台账覆盖；资料维护以后只写原生表。`ProjectSource` 留作内部导入台账，不作为运行界面依赖。未标明计划/实际的节点日期保留在可编辑“节点记录”中，不当成实际完成。
 - 项目工作区统一为“概况 / 节点计划 / 问题与任务 / 项目动态”，包括后续手工新建项目。静态预览维护原生 profile 与 project_details，数据来自发布快照，不直接带入实际项目数据库。
-- 用户最新提供阶段分区的多维表格参考，并确认“每个项目按节点展开多行”。当前入口是 `ProjectWorkbook.tsx` / `project-workbook-model.ts` / `project-workbook.css`：阶段页签、按项目工作表、多行真实节点、产品缩略图与语义色。默认每个项目折叠为标题行，左侧箭头展开后先显示 5 行，按需展开更多；所有项目共享横向滚动，编号列固定，统一列宽，表格设置可显隐字段并保存浏览器偏好。`ProjectSummaryList.tsx` 为保留的简洁备用组件，不再是默认入口。
+- 用户最新提供阶段分区的多维表格参考，并确认“每个项目按节点展开多行”。当前入口是 `ProjectWorkbook.tsx` / `project-workbook-model.ts` / `project-workbook.css`：阶段页签、按项目工作表、多行真实节点、产品缩略图与语义色。默认每个项目折叠为标题行，左侧箭头展开后先显示 5 行，按需展开更多；项目列表触底自动追加 8 个项目，没有“继续显示”按钮，新增项目保持折叠，阶段/搜索切换重置加载和滚动位置，IntersectionObserver 的 root 为工作表滚动容器；所有项目共享横向滚动，编号列固定，统一列宽，表格设置可显隐字段并保存浏览器偏好。`ProjectSummaryList.tsx` 为保留的简洁备用组件，不再是默认入口。
 - 项目名称按需打开 `ProjectDetailsDrawer.tsx` 中的完整 `ProjectWorkspace.tsx`，原有资料未删除。工作表按项目当前阶段组织原有节点，不猜历史节点所属 Gate；节点截止日期独立显示 planned_end，空缺不使用父项目日期或 recorded_text 替代，父项目截止单独显示在表标题。节点负责人空缺保持未分配；阶段色不推断完成或进度。
 - 如需真正多人协作，迁移到已有正式服务模板及受控的数据空间；静态 GitHub Pages 继续使用发布快照和浏览器私有编辑。
 

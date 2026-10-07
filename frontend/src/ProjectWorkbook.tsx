@@ -6,7 +6,7 @@ import { categoryTone, stageTone, toneStyle } from './semantics'
 import { emptyMilestone } from './project-native'
 import { summaryDeadline } from './project-summary'
 import { knowledgeTemplates } from './knowledge-catalog'
-import { defaultWorkbookColumns, linkedNodeDocuments, projectWorkbookGroups, workbookCategory, workbookColumns, workbookNodeTone, workbookStages } from './project-workbook-model'
+import { defaultWorkbookColumns, linkedNodeDocuments, nextWorkbookLimit, projectWorkbookGroups, workbookCategory, workbookColumns, workbookNodeTone, workbookPageSize, workbookStages } from './project-workbook-model'
 import type { WorkbookColumn } from './project-workbook-model'
 import type { Project, ProjectDetails, ProjectMilestone, Workspace, KnowledgeDocument } from './types'
 import type { FormEvent } from 'react'
@@ -90,20 +90,30 @@ export default function ProjectWorkbook({projects,workspace,query,stage,today,ac
   const [columns,setColumns]=useState<WorkbookColumn[]>(()=>{try{const saved=JSON.parse(localStorage.getItem(preferenceKey)||'null');if(Array.isArray(saved)){const known=workbookColumns.map(c=>c.key);return ['code',...saved.filter(key=>key!=='code'&&known.includes(key))] as WorkbookColumn[]}}catch{}return defaultWorkbookColumns})
   const [settings,setSettings]=useState(false)
   const [filters,setFilters]=useState(false)
-  const [limit,setLimit]=useState(8)
+  const [limit,setLimit]=useState(workbookPageSize)
   const tabButtons=useRef<Array<HTMLButtonElement|null>>([])
   const scroll=useRef<HTMLDivElement>(null)
+  const loadMore=useRef<HTMLDivElement>(null)
   const allGroups=projectWorkbookGroups(projects,stage)
   let remaining=limit
   const groups=allGroups.map(group=>{const rows=group.projects.slice(0,remaining);remaining=Math.max(0,remaining-rows.length);return {...group,projects:rows}}).filter(group=>group.projects.length)
   const total=allGroups.reduce((sum,group)=>sum+group.projects.length,0)
-  useEffect(()=>{setLimit(8);scroll.current?.scrollTo({top:0})},[query,stage])
+  const sheetWidth=50+workbookColumns.filter(column=>columns.includes(column.key)).reduce((sum,column)=>sum+column.width,0)
+  useEffect(()=>{setLimit(workbookPageSize);scroll.current?.scrollTo({top:0})},[query,stage])
+  useEffect(()=>{
+    if(!scroll.current||!loadMore.current||limit>=total)return
+    const observer=new IntersectionObserver(entries=>{
+      if(entries.some(entry=>entry.isIntersecting))setLimit(current=>nextWorkbookLimit(current,total))
+    },{root:scroll.current,rootMargin:'160px 0px'})
+    observer.observe(loadMore.current)
+    return()=>observer.disconnect()
+  },[limit,total,query,stage])
   useEffect(()=>{try{localStorage.setItem(preferenceKey,JSON.stringify(columns))}catch{/* View settings never overwrite business data. */}},[columns])
   function toggle(key:WorkbookColumn){if(key==='code')return;setColumns(values=>values.includes(key)?values.filter(value=>value!==key):[...values,key])}
   return <section className="project-workbook" aria-label="分阶段项目工作表">
     <div className="workbook-stage-tabs" role="tablist" aria-label="项目阶段">{['all',...workbookStages].map((value,index)=><button ref={element=>{tabButtons.current[index]=element}} tabIndex={stage===value?0:-1} onKeyDown={event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const values=['all',...workbookStages];const next=event.key==='Home'?0:event.key==='End'?values.length-1:(index+(event.key==='ArrowRight'?1:-1)+values.length)%values.length;onStage(values[next]);tabButtons.current[next]?.focus({preventScroll:true})}}} role="tab" aria-selected={stage===value} className={stage===value?'selected':''} style={value!=='all'?toneStyle(stageTone(value)):undefined} key={value} onClick={()=>onStage(value)}>{value==='all'?'全部阶段':value}<span>{value==='all'?workspace.projects.length:workspace.projects.filter(project=>project.stage===value).length}</span></button>)}</div>
     <div className="workbook-toolbar"><label className="search-field"><Search size={16}/><input aria-label="搜索项目" placeholder="搜索项目、阶段或负责人" value={query} onChange={event=>onQuery(event.target.value)}/></label><button className="button" aria-expanded={filters} onClick={()=>setFilters(!filters)}><Settings2 size={15}/>筛选</button>{(activeFilter||query||stage!=='all')&&<button className="text-button" onClick={onReset}>重置</button>}<span className="workbook-total">{total} 个项目</span><div className="workbook-column-control"><button className="button" aria-expanded={settings} onClick={()=>setSettings(!settings)}><Columns3 size={15}/>表格设置</button>{settings&&<div className="workbook-column-menu" aria-label="选择表格列"><strong>显示列</strong>{workbookColumns.map(column=><label key={column.key}><input type="checkbox" checked={columns.includes(column.key)} disabled={column.key==='code'} onChange={()=>toggle(column.key)}/>{column.label}</label>)}</div>}</div></div>
     {(filters||activeFilter)&&<div className="simple-advanced-filters">{advancedFilters}</div>}
-    <div className="workbook-scroll" ref={scroll} tabIndex={0} role="region" aria-label="项目节点工作表滚动区">{groups.map(group=><div className="workbook-stage-group" key={group.stage}><h2 style={toneStyle(stageTone(group.stage))}>{group.title}<span>{allGroups.find(item=>item.stage===group.stage)?.projects.length} 个项目</span></h2>{group.projects.map(project=><ProjectSheet key={project.id} project={project} workspace={workspace} columns={columns} today={today} onDetails={onDetails} onChanged={onChanged} onDocuments={()=>onDocuments(project)}/>)}</div>)}{!total&&<div className="simple-project-empty"><Search size={25}/><strong>暂无匹配项目</strong><button className="button" onClick={onReset}>重置筛选与搜索</button></div>}{total>limit&&<button className="button workbook-more-projects" onClick={()=>setLimit(limit+8)}>继续显示 {Math.min(8,total-limit)} 个项目<ChevronDown size={14}/></button>}</div>
+    <div className="workbook-scroll" ref={scroll} tabIndex={0} role="region" aria-label="项目节点工作表滚动区">{groups.map(group=><div className="workbook-stage-group" key={group.stage}><h2 style={toneStyle(stageTone(group.stage))}>{group.title}<span>{allGroups.find(item=>item.stage===group.stage)?.projects.length} 个项目</span></h2>{group.projects.map(project=><ProjectSheet key={project.id} project={project} workspace={workspace} columns={columns} today={today} onDetails={onDetails} onChanged={onChanged} onDocuments={()=>onDocuments(project)}/>)}</div>)}{!total&&<div className="simple-project-empty"><Search size={25}/><strong>暂无匹配项目</strong><button className="button" onClick={onReset}>重置筛选与搜索</button></div>}{total>limit&&<div ref={loadMore} className="workbook-load-sentinel" style={{width:sheetWidth}} aria-hidden="true"/>}</div>
   </section>
 }

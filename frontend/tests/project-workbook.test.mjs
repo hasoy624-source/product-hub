@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { projectWorkbookGroups, linkedNodeDocuments, workbookCategory, workbookColumns, defaultWorkbookColumns } from '../src/project-workbook-model.ts'
+import { projectWorkbookGroups, linkedNodeDocuments, workbookCategory, workbookColumns, defaultWorkbookColumns, nextWorkbookLimit } from '../src/project-workbook-model.ts'
 import { previewApi, resetPreview } from '../src/preview.ts'
 
 test('project sheets start collapsed and retain accessible manual expansion',()=>{
@@ -10,6 +10,25 @@ test('project sheets start collapsed and retain accessible manual expansion',()=
   assert.match(source,/onClick=\{\(\)=>setCollapsed\(!collapsed\)\}/)
   assert.match(source,/aria-expanded=\{!collapsed\}/)
   assert.match(source,/\{!collapsed&&<>/)
+})
+
+test('scroll batches stop at the actual project count, including short and empty stages',()=>{
+  assert.equal(nextWorkbookLimit(8,119),16)
+  assert.equal(nextWorkbookLimit(112,119),119)
+  assert.equal(nextWorkbookLimit(119,119),119)
+  assert.equal(nextWorkbookLimit(8,2),2)
+  assert.equal(nextWorkbookLimit(8,0),0)
+})
+
+test('workbook auto-loads within its scroll area and removes the manual more button',()=>{
+  const source=readFileSync(new URL('../src/ProjectWorkbook.tsx',import.meta.url),'utf8')
+  assert.match(source,/new IntersectionObserver/)
+  assert.match(source,/root:scroll.current/)
+  assert.match(source,/observer.observe\(loadMore.current\)/)
+  assert.match(source,/observer.disconnect\(\)/)
+  assert.match(source,/setLimit\(workbookPageSize\);scroll.current\?\.scrollTo\(\{top:0\}\)/)
+  assert.match(source,/className="workbook-load-sentinel" style=\{\{width:sheetWidth\}\}/)
+  assert.equal(source.includes('继续显示'),false)
 })
 
 test('stage workbook groups existing projects without inventing gates or nodes',()=>{
