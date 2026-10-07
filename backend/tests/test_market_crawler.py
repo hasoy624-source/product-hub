@@ -112,6 +112,8 @@ def test_native_source_api_deduplication_and_persistent_review_signal_link(tmp_p
         response=client.post('/api/market/sources',json=payload);assert response.status_code==201
         identifier=response.json()['id']
         assert client.post('/api/market/sources',json=payload).status_code==409
+        assert client.post('/api/market/sources',json={**payload,'collection_url':SOURCE['collection_url'].replace('page=2','page=1')}).status_code==409
+        assert client.patch('/api/market/sources/pulsar-puffco',json=payload).status_code==409
         assert client.post('/api/market/sources',json={**payload,'collection_url':'https://127.0.0.1/'}).status_code==422
         execute_source(app.state.Session,identifier,FakeClient())
         execute_source(app.state.Session,identifier,FakeClient())

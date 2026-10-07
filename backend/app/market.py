@@ -22,6 +22,7 @@ def next_daily(now=None):
 
 
 class SourceIn(BaseModel):
+    model_config={'str_strip_whitespace':True,'extra':'forbid'}
     name: str = Field(min_length=1,max_length=200)
     collection_url: str = Field(max_length=2000)
     enabled: bool = True
@@ -114,7 +115,7 @@ def register_market_routes(app,factory):
         identity=url.split('?')[0]
         identifier='source-'+hashlib.sha256(identity.encode()).hexdigest()[:20]
         with factory() as session,session.begin():
-            if session.scalar(select(MarketSource).where(MarketSource.collection_url==url)) or session.get(MarketSource,identifier):raise HTTPException(409,'该采集来源已存在')
+            if any(row.collection_url.split('?')[0]==identity for row in session.scalars(select(MarketSource))) or session.get(MarketSource,identifier):raise HTTPException(409,'该采集来源已存在')
             row=MarketSource(id=identifier,name=values['name'].strip(),collection_url=url,enabled=values['enabled'],interval_hours=values['interval_hours'],config={k:values[k] for k in ['max_products','max_collection_pages','max_review_pages']},next_run_at=next_daily())
             session.add(row);session.flush();return source_values(row)
 
@@ -127,6 +128,7 @@ def register_market_routes(app,factory):
             row=session.get(MarketSource,identifier)
             if not row:raise HTTPException(404,'采集来源不存在')
             if row.last_status=='running':raise HTTPException(409,'来源正在采集，请稍后修改')
+            if any(other.id!=identifier and other.collection_url.split('?')[0]==url.split('?')[0] for other in session.scalars(select(MarketSource))):raise HTTPException(409,'该采集来源已存在')
             row.name=values['name'].strip();row.collection_url=url;row.enabled=values['enabled'];row.interval_hours=values['interval_hours'];row.config={k:values[k] for k in ['max_products','max_collection_pages','max_review_pages']}
             row.next_run_at=next_daily();return source_values(row)
 
