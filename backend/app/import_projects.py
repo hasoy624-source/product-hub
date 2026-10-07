@@ -6,7 +6,7 @@ from pathlib import Path
 from sqlalchemy import select
 from .database import database, initialize
 from .excel_reader import identifier, read_register
-from .models import Category, CustomField, EntityMeta, Project, ProjectSource, Task
+from .models import Category, CustomField, EntityMeta, Project, ProjectSchedule, ProjectSource, Task
 from .schemas import ProjectIn, TaskIn
 from .services import log, stamp
 from .native_project_migration import migrate_native_projects
@@ -35,8 +35,11 @@ def import_register(factory, package):
                     skipped += 1
                     continue
                 raise ValueError(f"项目 {item['name']} 已存在且来源不同；本次导入未覆盖任何记录。")
+            start_date=values.pop('start_date','')
             session.add(Project(id=item['id'], **values))
             session.flush()
+            if start_date:
+                session.add(ProjectSchedule(project_id=item['id'],start_date=start_date))
             session.add(ProjectSource(project_id=item['id'], file_sha256=package['sha256'], progress_known=False, payload=item['source']))
             category = item['category']
             if category and category not in categories:

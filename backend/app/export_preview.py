@@ -33,6 +33,7 @@ def read_snapshot(database: Path):
         connection.execute('BEGIN')
         tables = {table: [dict(row) for row in connection.execute('SELECT ' + ', '.join('"' + col + '"' for col in columns.split()) + ' FROM "' + table + '" ORDER BY rowid')] for table, columns in FIELDS.items()}
         supplemental = {row['milestone_id']:dict(row) for row in connection.execute('SELECT * FROM project_milestone_fields')} if connection.execute("SELECT 1 FROM sqlite_master WHERE name='project_milestone_fields'").fetchone() else {}
+        schedules = {row['project_id']:row['start_date'] for row in connection.execute('SELECT project_id,start_date FROM project_schedules')} if connection.execute("SELECT 1 FROM sqlite_master WHERE name='project_schedules'").fetchone() else {}
     finally:
         connection.close()
     projects = tables['projects']
@@ -42,6 +43,8 @@ def read_snapshot(database: Path):
         raise ValueError('Native project profiles are incomplete; finish native migration first')
     for project in projects:
         project['profile'] = profiles[project['id']]
+        if project['id'] in schedules:
+            project['start_date'] = schedules[project['id']]
     contents = {row['task_id']: row['description'] for row in tables['task_content']}
     tasks = [dict(row, description=contents.get(row['id'], '')) for row in tables['tasks'] if row['project_id'] in ids]
     details = {project['id']: {'profile': profiles[project['id']], 'milestones': [], 'updates': [], 'images': []} for project in projects}

@@ -119,3 +119,10 @@ curl -fsS https://<DOMAIN>/api/health
 - 原表 `ProjectMilestone` 保持原列结构；新增补充表 `ProjectMilestoneFields` 记录 deliverable、priority、document_ids，启动 create_all 可为 SQLite/PostgreSQL 创建新表。POST/PATCH milestones 保留补充字段，部分日期编辑不清空其它字段；相关文档必须属于当前项目。
 - Pages 预览同样持久化这些字段。关联文档是现有知识库记录，未填内容不显示虚构 PRD/PDF。`export_preview.py` 在补充表存在时携带节点字段，旧数据库没有补充表也能导出。
 - 表格布局检查必须验证明确像素宽度，避免 max-content 父容器配合 100% 表格导致异常横向尺寸；移动端只允许工作表内部滚动，不使整个页面横向溢出。
+
+## 11. 研发项目开始日期
+
+- `Project.start_date` 是项目整体开始日期；新建/编辑项目的基本表单、折叠标题行、完整详情均显示。节点开始日期使用已有的 `ProjectMilestone.planned_start`，两者独立维护，不按节点、导入时间或当前日期估算。空缺显示未设置。
+- 项目开始日期持久化在新补充表 `ProjectSchedule` / `project_schedules`，不改既有 projects 列。应用启动 create_all 建表；POST/PATCH projects 与 workspace 返回 start_date，部分编辑保留日期，日期清空使用空字符串。项目和节点均校验真实日历日期及开始不晚于截止。
+- 导出器在补充表存在时携带已维护的开始日期；旧数据库无补充表仍可导出。不要为加界面字段重写现有发布快照或推测原始项目开始日期。
+- 表格开始日期列默认可见；原 v1 列偏好数组迁移为同键 version=2 对象并补入开始日期，保留其它显隐设置。v2 用户主动隐藏开始日期后刷新仍保持。项目数据存储 revision 不变，不清空历史浏览器编辑。

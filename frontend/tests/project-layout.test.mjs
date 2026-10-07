@@ -13,7 +13,7 @@ test('default project page follows a stage-grouped per-project node workbook',()
   for(const label of ['表格设置','添加节点','项目阶段','输出产物','相关文档'])assert.ok(book.includes(label))
   assert.ok(book.includes('shown.map((node,index)'))
   assert.ok(css.includes('position:sticky;left:48px'))
-  assert.ok(app.includes("projects: ['name', 'stage', 'due_date']"))
+  assert.ok(app.includes("projects: ['name', 'stage', 'start_date', 'due_date']"))
 })
 
 test('summary scrolling, mobile widths and optional original detail functions are retained',()=>{

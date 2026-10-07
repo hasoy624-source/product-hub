@@ -17,9 +17,9 @@ from pydantic import ValidationError
 from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
 from .database import database, initialize
-from .models import ENTITIES, Activity, Category, CustomField, EntityMeta, Job, JobRun, Product, Project, ProjectSource, ProjectProfile, TaskContent, Report, SessionToken, serialize
+from .models import ENTITIES, Activity, Category, CustomField, EntityMeta, Job, JobRun, Product, Project, ProjectSchedule, ProjectSource, ProjectProfile, TaskContent, Report, SessionToken, serialize
 from .schemas import SCHEMAS, CategoryIn, CustomFieldIn, EntityMetaIn, LoginIn, ReportIn, ProjectProfileIn, date_value, month_value
-from .native_projects import register_project_routes, profile_values, ensure_profile, add_update
+from .native_projects import register_project_routes, profile_values, ensure_profile, add_update, project_start_date, save_project_start_date
 from .native_project_migration import migrate_native_projects
 from .seed import seed
 from .services import claim_job, dashboard, execute_run, local_today, log, stamp, utcnow
@@ -181,8 +181,10 @@ def create_app(database_url=None, seed_demo=True):
         with factory() as session:
             result = {name: [serialize(row) for row in session.scalars(select(model))] for name, model in ENTITIES.items()}
             profiles = {row.project_id: row for row in session.scalars(select(ProjectProfile))}
+            schedules = {row.project_id: row.start_date for row in session.scalars(select(ProjectSchedule))}
             for project in result["projects"]:
                 project["profile"] = profile_values(profiles.get(project['id']))
+                project['start_date'] = schedules.get(project['id'], '')
             contents = {row.task_id: row.description for row in session.scalars(select(TaskContent))}
             for task in result['tasks']:
                 task['description'] = contents.get(task['id'], '')
@@ -237,6 +239,7 @@ def create_app(database_url=None, seed_demo=True):
             with factory() as session:
                 validate_references(session, name, values)
                 nested_profile = values.pop('profile', None) if name == 'projects' else None
+                start_date = values.pop('start_date') if name == 'projects' else None
                 task_description = values.pop('description') if name == 'tasks' else None
                 row = model(**values)
                 if name == "knowledge_documents":
@@ -245,6 +248,7 @@ def create_app(database_url=None, seed_demo=True):
                 if name in ('projects', 'tasks'):
                     session.flush()
                 if name == 'projects':
+                    save_project_start_date(session,row.id,start_date)
                     profile = ensure_profile(session, row.id)
                     for key, value in (nested_profile or {}).items():
                         setattr(profile, key, value)
@@ -259,15 +263,16 @@ def create_app(database_url=None, seed_demo=True):
                 except IntegrityError:
                     session.rollback()
                     raise HTTPException(409, "记录冲突：SKU 或产品、月份、渠道组合已存在")
-                return serialize(row)
+                return {**serialize(row),'start_date':project_start_date(session,row.id)} if name=='projects' else serialize(row)
 
         def patch(row_id: str, payload: dict):
             with factory() as session:
                 row = session.get(model, row_id)
                 if not row:
                     raise HTTPException(404, "记录不存在")
-                current = {field: getattr(row, field) for field in schema.model_fields if field not in (('profile',) if name == 'projects' else ('description',) if name == 'tasks' else ())}
+                current = {field: getattr(row, field) for field in schema.model_fields if field not in (('profile','start_date') if name == 'projects' else ('description',) if name == 'tasks' else ())}
                 if name == 'projects':
+                    current['start_date'] = project_start_date(session,row_id)
                     profile = ensure_profile(session, row_id)
                     current['profile'] = {key: getattr(profile, key) for key in ProjectProfileIn.model_fields}
                     if isinstance(payload.get('profile'), dict):
@@ -281,10 +286,13 @@ def create_app(database_url=None, seed_demo=True):
                     raise HTTPException(422, jsonable_encoder(error.errors(), custom_encoder={ValueError: str}))
                 validate_references(session, name, values)
                 nested_profile = values.pop('profile', None) if name == 'projects' else None
+                start_date = values.pop('start_date') if name == 'projects' else None
                 task_description = values.pop('description') if name == 'tasks' else None
                 for key, value in values.items():
                     setattr(row, key, value)
                 if name == 'projects':
+                    if 'start_date' in payload:
+                        save_project_start_date(session,row_id,start_date)
                     for key, value in (nested_profile or {}).items():
                         setattr(profile, key, value)
                     if 'progress' in payload:
@@ -308,7 +316,7 @@ def create_app(database_url=None, seed_demo=True):
                 except IntegrityError:
                     session.rollback()
                     raise HTTPException(409, "记录冲突：SKU 或产品、月份、渠道组合已存在")
-                return serialize(row)
+                return {**serialize(row),'start_date':project_start_date(session,row_id)} if name=='projects' else serialize(row)
         app.add_api_route(f"/api/{name}", create, methods=["POST"], status_code=201, name=f"create_{name}")
         app.add_api_route(f"/api/{name}/{{row_id}}", patch, methods=["PATCH"], name=f"patch_{name}")
 

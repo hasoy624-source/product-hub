@@ -6,12 +6,25 @@ from fastapi import HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from pydantic import ValidationError
 from sqlalchemy import select
-from .models import Project, ProjectProfile, ProjectMilestone, ProjectMilestoneFields, ProjectUpdate, ProjectImage, TaskContent, KnowledgeDocument, serialize
+from .models import Project, ProjectSchedule, ProjectProfile, ProjectMilestone, ProjectMilestoneFields, ProjectUpdate, ProjectImage, TaskContent, KnowledgeDocument, serialize
 from .schemas import ProjectProfileIn, MilestoneIn, ProjectUpdateIn
 from .services import stamp, local_today
 
 MILESTONE_TEMPLATE = ['立项', '结构设计', '手板打样', '交手板样', '确认', 'DFM', '投模', '专利', 'T0', 'T1', '试产备料', '试产', '转量产']
 EXTRA_FIELDS = ['deliverable','priority','document_ids']
+
+
+def project_start_date(session,project_id):
+    schedule=session.get(ProjectSchedule,project_id)
+    return schedule.start_date if schedule else ''
+
+
+def save_project_start_date(session,project_id,start_date):
+    schedule=session.get(ProjectSchedule,project_id)
+    if not schedule:
+        schedule=ProjectSchedule(project_id=project_id)
+        session.add(schedule)
+    schedule.start_date=start_date
 
 
 def milestone_values(session,row):

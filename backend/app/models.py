@@ -51,6 +51,12 @@ class Project(Base):
     description: Mapped[str] = mapped_column(Text, default="")
 
 
+class ProjectSchedule(Base):
+    __tablename__ = 'project_schedules'
+    project_id: Mapped[str] = mapped_column(ForeignKey('projects.id', ondelete='CASCADE'), primary_key=True)
+    start_date: Mapped[str] = mapped_column(String(10), default='')
+
+
 class ProjectSource(Base):
     __tablename__ = "project_sources"
     project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), primary_key=True)

@@ -115,10 +115,17 @@ class ProjectIn(Schema):
     stage: Literal["概念与启动", "设计与开发", "EVT", "DVT", "MP", "待确认"] = "概念与启动"
     status: Literal["正常", "风险", "暂停", "已完成", "待立项", "已终止", "待确认"] = "正常"
     owner: Short = ""
+    start_date: OptionalDate = ""
     due_date: OptionalDate = ""
     progress: Annotated[StrictInt, Field(ge=0, le=100)] = 0
     description: Long = ""
     profile: ProjectProfileIn | None = None
+
+    @model_validator(mode="after")
+    def ordered_dates(self):
+        if self.start_date and self.due_date and self.start_date > self.due_date:
+            raise ValueError("截止日期应不早于开始日期")
+        return self
 
 
 class TaskIn(Schema):

@@ -6,19 +6,23 @@ import { categoryTone, stageTone, toneStyle } from './semantics'
 import { emptyMilestone } from './project-native'
 import { summaryDeadline } from './project-summary'
 import { knowledgeTemplates } from './knowledge-catalog'
-import { defaultWorkbookColumns, linkedNodeDocuments, nextWorkbookLimit, projectWorkbookGroups, workbookCategory, workbookColumns, workbookNodeTone, workbookPageSize, workbookStages } from './project-workbook-model'
+import { defaultWorkbookColumns, linkedNodeDocuments, nextWorkbookLimit, projectWorkbookGroups, restoredWorkbookColumns, workbookCategory, workbookColumns, workbookNodeTone, workbookPageSize, workbookStages } from './project-workbook-model'
 import type { WorkbookColumn } from './project-workbook-model'
 import type { Project, ProjectDetails, ProjectMilestone, Workspace, KnowledgeDocument } from './types'
 import type { FormEvent } from 'react'
 
 const preferenceKey='zhixu-project-workbook-columns-v1'
-type Editable='name'|'owner'|'planned_end'|'deliverable'|'priority'|'document_ids'
+type Editable='name'|'owner'|'planned_start'|'planned_end'|'deliverable'|'priority'|'document_ids'
 type Editing={project:Project;node:ProjectMilestone|null;field:Editable|'new'}
-const fieldNames:Record<Editable,string>={name:'项目节点',owner:'节点负责人',planned_end:'节点截止日期',deliverable:'输出产物',priority:'节点优先级',document_ids:'相关文档'}
+const fieldNames:Record<Editable,string>={name:'项目节点',owner:'节点负责人',planned_start:'节点开始日期',planned_end:'节点截止日期',deliverable:'输出产物',priority:'节点优先级',document_ids:'相关文档'}
 
 function NodeEditor({editing,workspace,onClose,onSaved,onDocuments}:{editing:Editing;workspace:Workspace;onClose:()=>void;onSaved:()=>Promise<void>;onDocuments:()=>void}) {
   const dialog=useRef<HTMLDialogElement>(null)
-  const [value,setValue]=useState(editing.node&&editing.field!=='new'?String(editing.node[editing.field]||''):'')
+  const projectStart=!editing.node&&editing.field==='planned_start'
+  const title=editing.field==='new'?'添加项目节点':projectStart?'项目开始日期':fieldNames[editing.field]
+  const dateField=editing.field==='planned_start'||editing.field==='planned_end'
+  const [value,setValue]=useState(projectStart?editing.project.start_date||'':editing.node&&editing.field!=='new'?String(editing.node[editing.field]||''):'')
+  const [start,setStart]=useState('')
   const [date,setDate]=useState('')
   const [selected,setSelected]=useState<string[]>(editing.node?.document_ids||[])
   const [busy,setBusy]=useState(false)
@@ -28,15 +32,17 @@ function NodeEditor({editing,workspace,onClose,onSaved,onDocuments}:{editing:Edi
   async function save(event:FormEvent){
     event.preventDefault();setBusy(true);setError('')
     try{
-      const body=editing.field==='new'?{...emptyMilestone(),name:value,planned_end:date,sort_order:10000}:editing.field==='document_ids'?{document_ids:selected}:{[editing.field]:value}
-      await api(`/projects/${editing.project.id}/milestones${editing.node?'/'+editing.node.id:''}`,editing.node?'PATCH':'POST',body)
+      const body=editing.field==='new'?{...emptyMilestone(),name:value,planned_start:start,planned_end:date,sort_order:10000}:editing.field==='document_ids'?{document_ids:selected}:{[editing.field]:value}
+      if(projectStart)await api(`/projects/${editing.project.id}`,'PATCH',{start_date:value})
+      else await api(`/projects/${editing.project.id}/milestones${editing.node?'/'+editing.node.id:''}`,editing.node?'PATCH':'POST',body)
       await onSaved();onClose()
     }catch(cause){setError(cause instanceof Error?cause.message:'保存失败')}finally{setBusy(false)}
   }
-  return <dialog ref={dialog} className="editor workbook-cell-editor" onCancel={event=>{if(busy)event.preventDefault();else onClose()}} aria-label={editing.field==='new'?'添加项目节点':`编辑${fieldNames[editing.field]}`}><form onSubmit={save}><div className="dialog-head"><div><h2>{editing.field==='new'?'添加项目节点':fieldNames[editing.field]}</h2><span className="workbook-edit-context">{editing.project.name}{editing.node&&` · ${editing.node.name}`}</span></div><button type="button" className="icon-button" aria-label="关闭节点编辑" onClick={onClose} disabled={busy}><X size={18}/></button></div><div className="form-body workbook-cell-form">
-    {editing.field==='document_ids'?<><div className="workbook-document-picker">{docs.map(doc=><label key={doc.id}><input type="checkbox" checked={selected.includes(doc.id)} onChange={event=>setSelected(ids=>event.target.checked?[...ids,doc.id]:ids.filter(id=>id!==doc.id))}/><FileText size={15}/><span>{doc.title}</span><small>{doc.status}</small></label>)}{!docs.length&&<div className="workbook-no-documents">暂无项目文档<button type="button" className="text-button" onClick={onDocuments}>创建阶段文档</button></div>}</div></>:editing.field==='priority'?<div className="field full"><label htmlFor="workbook-cell-value">优先级</label><select id="workbook-cell-value" value={value} onChange={event=>setValue(event.target.value)}><option value="">未设置</option>{['低','中','高','S+'].map(item=><option key={item}>{item}</option>)}</select></div>:<div className="field full"><label htmlFor="workbook-cell-value">{editing.field==='new'?'节点名称':fieldNames[editing.field]}</label><input autoFocus id="workbook-cell-value" type={editing.field==='planned_end'?'date':'text'} required={editing.field==='name'||editing.field==='new'} maxLength={editing.field==='owner'?100:200} value={value} list={editing.field==='deliverable'?'workbook-deliverables':undefined} onInput={editing.field==='planned_end'?event=>setValue(event.currentTarget.value):undefined} onChange={event=>setValue(event.target.value)}/>{editing.field==='deliverable'&&<datalist id="workbook-deliverables">{knowledgeTemplates.map(template=><option key={template.id} value={template.title}/>)}</datalist>}</div>}
+  return <dialog ref={dialog} className="editor workbook-cell-editor" onCancel={event=>{if(busy)event.preventDefault();else onClose()}} aria-label={editing.field==='new'?title:`编辑${title}`}><form onSubmit={save}><div className="dialog-head"><div><h2>{title}</h2><span className="workbook-edit-context">{editing.project.name}{editing.node&&` · ${editing.node.name}`}</span></div><button type="button" className="icon-button" aria-label="关闭节点编辑" onClick={onClose} disabled={busy}><X size={18}/></button></div><div className="form-body workbook-cell-form">
+    {editing.field==='document_ids'?<><div className="workbook-document-picker">{docs.map(doc=><label key={doc.id}><input type="checkbox" checked={selected.includes(doc.id)} onChange={event=>setSelected(ids=>event.target.checked?[...ids,doc.id]:ids.filter(id=>id!==doc.id))}/><FileText size={15}/><span>{doc.title}</span><small>{doc.status}</small></label>)}{!docs.length&&<div className="workbook-no-documents">暂无项目文档<button type="button" className="text-button" onClick={onDocuments}>创建阶段文档</button></div>}</div></>:editing.field==='priority'?<div className="field full"><label htmlFor="workbook-cell-value">优先级</label><select id="workbook-cell-value" value={value} onChange={event=>setValue(event.target.value)}><option value="">未设置</option>{['低','中','高','S+'].map(item=><option key={item}>{item}</option>)}</select></div>:<div className="field full"><label htmlFor="workbook-cell-value">{editing.field==='new'?'节点名称':projectStart?'项目开始日期':fieldNames[editing.field]}</label><input autoFocus id="workbook-cell-value" type={dateField?'date':'text'} required={editing.field==='name'||editing.field==='new'} maxLength={editing.field==='owner'?100:200} value={value} list={editing.field==='deliverable'?'workbook-deliverables':undefined} onInput={dateField?event=>setValue(event.currentTarget.value):undefined} onChange={event=>setValue(event.target.value)}/>{editing.field==='deliverable'&&<datalist id="workbook-deliverables">{knowledgeTemplates.map(template=><option key={template.id} value={template.title}/>)}</datalist>}</div>}
+    {editing.field==='new'&&<div className="field full"><label htmlFor="workbook-new-start">开始日期</label><input id="workbook-new-start" type="date" value={start} onInput={event=>setStart(event.currentTarget.value)} onChange={event=>setStart(event.target.value)}/></div>}
     {editing.field==='new'&&<div className="field full"><label htmlFor="workbook-new-date">截止日期</label><input id="workbook-new-date" type="date" value={date} onInput={event=>setDate(event.currentTarget.value)} onChange={event=>setDate(event.target.value)}/></div>}
-    </div>{error&&<p className="form-error editor-error" role="alert">{error}</p>}<div className="dialog-footer"><button className="button" type="button" onClick={onClose} disabled={busy}>取消</button><button className="button primary" disabled={busy}>{busy?'保存中…':'保存节点'}</button></div></form></dialog>
+    </div>{error&&<p className="form-error editor-error" role="alert">{error}</p>}<div className="dialog-footer"><button className="button" type="button" onClick={onClose} disabled={busy}>取消</button><button className="button primary" disabled={busy}>{busy?'保存中…':projectStart?'保存日期':'保存节点'}</button></div></form></dialog>
 }
 
 function DocumentReader({document,onClose}:{document:KnowledgeDocument;onClose:()=>void}) {
@@ -64,7 +70,7 @@ function ProjectSheet({project,workspace,columns,today,onDetails,onChanged,onDoc
   const edit=(node:ProjectMilestone,field:Editable)=>setEditing({project,node,field})
   const afterSave=async()=>{await Promise.all([load(),onChanged()])}
   return <section className="workbook-project-sheet" style={{width:minWidth+2,minWidth:minWidth+2}} aria-label={`${project.name} 节点工作表`}>
-    <header className="workbook-sheet-heading"><button className="workbook-collapse" onClick={()=>setCollapsed(!collapsed)} aria-expanded={!collapsed} aria-label={`${collapsed?'展开':'收起'} ${project.name} 工作表`}>{collapsed?<ChevronRight size={16}/>:<ChevronDown size={16}/>}</button><button className="workbook-sheet-name" onClick={()=>onDetails(project.id)}>{project.name}</button><SemanticTag kind="stage" value={project.stage}/><span className="workbook-node-count">{nodes.length} 个节点</span><span className="workbook-project-due">项目截止 {project.due_date||'未设置'}</span><button className="text-button workbook-sheet-docs" onClick={onDocuments}><BookOpen size={14}/>阶段文档</button></header>
+    <header className="workbook-sheet-heading"><button className="workbook-collapse" onClick={()=>setCollapsed(!collapsed)} aria-expanded={!collapsed} aria-label={`${collapsed?'展开':'收起'} ${project.name} 工作表`}>{collapsed?<ChevronRight size={16}/>:<ChevronDown size={16}/>}</button><button className="workbook-sheet-name" onClick={()=>onDetails(project.id)}>{project.name}</button><SemanticTag kind="stage" value={project.stage}/><span className="workbook-node-count">{nodes.length} 个节点</span><button className="workbook-cell-button workbook-project-start" onClick={()=>setEditing({project,node:null,field:'planned_start'})} aria-label={`编辑 ${project.name} 项目开始日期`}>开始日期 {project.start_date||'未设置'}</button><span className="workbook-project-due">项目截止 {project.due_date||'未设置'}</span><button className="text-button workbook-sheet-docs" onClick={onDocuments}><BookOpen size={14}/>阶段文档</button></header>
     {!collapsed&&<><table className="workbook-table"><colgroup><col style={{width:48}}/>{selectedColumns.map(column=><col key={column.key} style={{width:column.width}}/>)}</colgroup><thead><tr><th scope="col" className="workbook-index-cell">#</th>{selectedColumns.map(column=><th scope="col" key={column.key} className={column.key==='code'?'workbook-code-cell':''}>{column.label}</th>)}</tr></thead><tbody>{shown.map((node,index)=>{
       const deadline=summaryDeadline({...project,due_date:node.planned_end,status:node.status==='已完成'?'已完成':project.status},today)
       const docs=linkedNodeDocuments(workspace,project.id,node)
@@ -74,6 +80,7 @@ function ProjectSheet({project,workspace,columns,today,onDetails,onChanged,onDoc
         {column.key==='category'&&<SemanticTag kind="category" value={category}/>}
         {column.key==='owner'&&<button className="workbook-cell-button workbook-owner" onClick={()=>edit(node,'owner')} aria-label={`编辑 ${project.name} ${node.name} 负责人`}><UserRound size={13}/>{node.owner||<span className="workbook-empty-value">未分配</span>}</button>}
         {column.key==='node'&&<button className="workbook-node-tag" style={toneStyle(workbookNodeTone(node))} onClick={()=>edit(node,'name')} aria-label={`编辑 ${project.name} 节点 ${node.name}`}>{node.name}</button>}
+        {column.key==='start'&&<button className="workbook-cell-button" onClick={()=>edit(node,'planned_start')} aria-label={`编辑 ${project.name} ${node.name} 开始日期`}>{node.planned_start||<span className="workbook-empty-value">未设置</span>}</button>}
         {column.key==='deadline'&&<button className={`workbook-cell-button deadline-${deadline.tone}`} title={deadline.hint} onClick={()=>edit(node,'planned_end')} aria-label={`编辑 ${project.name} ${node.name} 截止日期`}>{deadline.text}</button>}
         {column.key==='deliverable'&&<button className={`workbook-cell-button ${node.deliverable?'workbook-output-tag':''}`} style={node.deliverable?toneStyle(categoryTone(node.deliverable)):undefined} onClick={()=>edit(node,'deliverable')} aria-label={`编辑 ${project.name} ${node.name} 输出产物`}>{node.deliverable||<span className="workbook-empty-value">未填写</span>}</button>}
         {column.key==='documents'&&<div className="workbook-document-cell">{docs[0]&&<button className="workbook-document-link" onClick={()=>setDocument(docs[0])}><FileText size={15}/><span>{docs[0].title}</span></button>}{docs.length>1&&<span>+{docs.length-1}</span>}<button className="workbook-associate" onClick={()=>edit(node,'document_ids')} aria-label={`关联 ${project.name} ${node.name} 文档`}>{docs.length?<Settings2 size={13}/>:'关联文档'}</button></div>}
@@ -87,7 +94,7 @@ function ProjectSheet({project,workspace,columns,today,onDetails,onChanged,onDoc
 
 type Props={projects:Project[];workspace:Workspace;query:string;stage:string;today:string;activeFilter:boolean;advancedFilters:React.ReactNode;onQuery:(value:string)=>void;onStage:(value:string)=>void;onReset:()=>void;onDetails:(id:string)=>void;onChanged:()=>Promise<void>;onDocuments:(project:Project)=>void}
 export default function ProjectWorkbook({projects,workspace,query,stage,today,activeFilter,advancedFilters,onQuery,onStage,onReset,onDetails,onChanged,onDocuments}:Props) {
-  const [columns,setColumns]=useState<WorkbookColumn[]>(()=>{try{const saved=JSON.parse(localStorage.getItem(preferenceKey)||'null');if(Array.isArray(saved)){const known=workbookColumns.map(c=>c.key);return ['code',...saved.filter(key=>key!=='code'&&known.includes(key))] as WorkbookColumn[]}}catch{}return defaultWorkbookColumns})
+  const [columns,setColumns]=useState<WorkbookColumn[]>(()=>{try{return restoredWorkbookColumns(JSON.parse(localStorage.getItem(preferenceKey)||'null'))}catch{return defaultWorkbookColumns}})
   const [settings,setSettings]=useState(false)
   const [filters,setFilters]=useState(false)
   const [limit,setLimit]=useState(workbookPageSize)
@@ -108,7 +115,7 @@ export default function ProjectWorkbook({projects,workspace,query,stage,today,ac
     observer.observe(loadMore.current)
     return()=>observer.disconnect()
   },[limit,total,query,stage])
-  useEffect(()=>{try{localStorage.setItem(preferenceKey,JSON.stringify(columns))}catch{/* View settings never overwrite business data. */}},[columns])
+  useEffect(()=>{try{localStorage.setItem(preferenceKey,JSON.stringify({version:2,columns}))}catch{/* View settings never overwrite business data. */}},[columns])
   function toggle(key:WorkbookColumn){if(key==='code')return;setColumns(values=>values.includes(key)?values.filter(value=>value!==key):[...values,key])}
   return <section className="project-workbook" aria-label="分阶段项目工作表">
     <div className="workbook-stage-tabs" role="tablist" aria-label="项目阶段">{['all',...workbookStages].map((value,index)=><button ref={element=>{tabButtons.current[index]=element}} tabIndex={stage===value?0:-1} onKeyDown={event=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){event.preventDefault();const values=['all',...workbookStages];const next=event.key==='Home'?0:event.key==='End'?values.length-1:(index+(event.key==='ArrowRight'?1:-1)+values.length)%values.length;onStage(values[next]);tabButtons.current[next]?.focus({preventScroll:true})}}} role="tab" aria-selected={stage===value} className={stage===value?'selected':''} style={value!=='all'?toneStyle(stageTone(value)):undefined} key={value} onClick={()=>onStage(value)}>{value==='all'?'全部阶段':value}<span>{value==='all'?workspace.projects.length:workspace.projects.filter(project=>project.stage===value).length}</span></button>)}</div>

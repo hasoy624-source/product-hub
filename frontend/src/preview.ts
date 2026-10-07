@@ -1,6 +1,6 @@
 import type { Dashboard, Job, Product, Project, ProjectDetails, ProjectMilestone, ProjectUpdate, Report, Sale, Seat, Signal, Task, Workspace } from './types'
 import { defaultCategories } from './classification.ts'
-import { emptyProfile, emptyMilestone, milestoneTemplate, validateMilestone } from './project-native.ts'
+import { emptyProfile, emptyMilestone, milestoneTemplate, validateMilestone, validateProjectDates } from './project-native.ts'
 import projectSnapshot from './data/published-projects.json' with { type: 'json' }
 import { publishedStorageKey, publishedWorkspace } from './published-preview.ts'
 import type { PublishedProjectSnapshot } from './published-preview.ts'
@@ -152,7 +152,7 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
     workspace.signals = mergeReviewSignals(workspace.signals, await publicMarketSnapshot(import.meta.env.BASE_URL))
   }
   workspace.project_details ||= {}
-  for (const project of workspace.projects) project.profile ||= { ...emptyProfile(), progress_known: true }
+  for (const project of workspace.projects) { project.profile ||= { ...emptyProfile(), progress_known: true }; project.start_date ??= '' }
   if (pathname === '/workspace' && verb === 'GET') {
     const result = structuredClone(workspace)
     if (publishedPreviewEnabled) result.signals = mergeReviewSignals(result.signals, await publicMarketSnapshot(import.meta.env.BASE_URL))
@@ -278,6 +278,7 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
       const target = collection.find(item => item.id === id)
       if (!target) throw new ApiError('记录不存在', 404)
       if (entity === 'projects') {
+        try { validateProjectDates({...target,...input}) } catch(error) { throw new ApiError(error instanceof Error?error.message:'日期格式不正确',422) }
         input.profile = { ...(target.profile || emptyProfile()) as object, ...(input.profile || {}) as object, ...('progress' in input ? { progress_known: true } : {}) }
       }
       Object.assign(target, input)
@@ -291,6 +292,7 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
       if (collection.some(item => item.product_id === sale.product_id && item.month === sale.month && item.channel === sale.channel)) throw new ApiError('记录冲突：产品、月份、渠道组合已存在', 409)
       if (!workspace.products.some(product => product.id === sale.product_id)) throw new ApiError('关联产品不存在', 422)
     }
+    if(entity==='projects') { try { validateProjectDates(input) } catch(error) { throw new ApiError(error instanceof Error?error.message:'日期格式不正确',422) } }
     if (entity === 'projects' && input.product_id && !workspace.products.some(product => product.id === input.product_id)) throw new ApiError('关联产品不存在', 422)
     if (entity === 'tasks' && !workspace.projects.some(project => project.id === input.project_id)) throw new ApiError('关联项目不存在', 422)
     if (entity === 'knowledge_documents') {
@@ -298,7 +300,7 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
       if (collection.some(item => item.project_id === input.project_id && item.template_id === input.template_id)) throw new ApiError('该项目的此文档已存在', 409)
     }
     const created = { id: uuid(), ...input, ...(entity === 'knowledge_documents' ? { updated_at: new Date().toISOString() } : {}) } as Record<string, unknown>
-    if (entity === 'projects') { created.progress ??= 0; created.profile = { ...emptyProfile(), ...(input.profile || {}) as object, progress_known: 'progress' in input } }
+    if (entity === 'projects') { created.progress ??= 0; created.start_date ??= ''; created.profile = { ...emptyProfile(), ...(input.profile || {}) as object, progress_known: 'progress' in input } }
     collection.push(created)
     record(workspace, `新增 ${entity}：${String(created.name || created.title || '预览记录')}`)
     save(workspace)

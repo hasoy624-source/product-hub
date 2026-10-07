@@ -7,11 +7,19 @@ export const emptyMilestone = () => ({ name: '', owner: '', planned_start: '', p
 export const displayProjectText = (value: string) => value.replace(/[ \t]{8,}/g, '\n').replace(/[ \t]{2,}/g, ' ').split('\n').map(line => line.trim()).filter(Boolean).join('\n')
 export function projectBody(values: Record<string, unknown>) {
   const result = { ...values }
+  validateProjectDates(result)
   const profile: Record<string, string> = {}
   for (const key of projectProfileKeys) { profile[key] = String(result[key] || ''); delete result[key] }
   delete result.profile; delete result.import_info
   if (result.progress === '') delete result.progress
   return { ...result, profile }
+}
+export function validateProjectDates(value:{start_date?:unknown;due_date?:unknown}) {
+  for(const date of [value.start_date,value.due_date]) {
+    if(date===undefined)continue
+    if(typeof date!=='string'||date&&(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(Date.parse(date))||new Date(`${date}T00:00:00Z`).toISOString().slice(0,10)!==date))throw new Error('日期格式不正确')
+  }
+  if(value.start_date&&value.due_date&&String(value.start_date)>String(value.due_date))throw new Error('截止日期应不早于开始日期')
 }
 export function validateMilestone(value: ReturnType<typeof emptyMilestone>) {
   if (!value.name.trim()) throw new Error('请填写节点名称')

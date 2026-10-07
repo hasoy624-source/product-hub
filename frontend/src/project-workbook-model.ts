@@ -9,6 +9,7 @@ export const workbookColumns=[
   {key:'category',label:'项目类别',width:125},
   {key:'owner',label:'负责人',width:132},
   {key:'node',label:'项目节点',width:190},
+  {key:'start',label:'开始日期',width:148},
   {key:'deadline',label:'截止日期',width:148},
   {key:'deliverable',label:'输出产物',width:220},
   {key:'documents',label:'相关文档',width:220},
@@ -16,7 +17,12 @@ export const workbookColumns=[
   {key:'status',label:'节点状态',width:124},
 ] as const
 export type WorkbookColumn=typeof workbookColumns[number]['key']
-export const defaultWorkbookColumns:WorkbookColumn[]=['code','image','category','owner','node','deadline','deliverable','documents','priority']
+export const defaultWorkbookColumns:WorkbookColumn[]=['code','image','category','owner','node','start','deadline','deliverable','documents','priority']
+export function restoredWorkbookColumns(saved:unknown):WorkbookColumn[] {
+  const values=Array.isArray(saved)?[...saved,'start']:saved&&typeof saved==='object'&&'version' in saved&&saved.version===2&&'columns' in saved&&Array.isArray(saved.columns)?saved.columns:defaultWorkbookColumns
+  const known=new Set<string>(workbookColumns.map(column=>column.key))
+  return ['code',...new Set(values.filter((key):key is WorkbookColumn=>typeof key==='string'&&key!=='code'&&known.has(key)))]
+}
 export const workbookPageSize=8
 export function nextWorkbookLimit(current:number,total:number) { return Math.min(current+workbookPageSize,total) }
 export function projectWorkbookGroups(projects:Project[],stage='all') {
