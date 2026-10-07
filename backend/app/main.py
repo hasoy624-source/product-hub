@@ -103,7 +103,7 @@ def create_app(database_url=None, seed_demo=True):
         yield
         engine.dispose()
 
-    app = FastAPI(title="Product Hub · 产品运营工作台", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(title="英霏特项目管理", version="0.1.0", lifespan=lifespan)
     app.state.Session = factory
     app.state.engine = engine
     app.state.mode = mode

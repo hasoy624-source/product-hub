@@ -1,0 +1,21 @@
+/* The supplied horizontal wordmark retains its original image and proportions. */
+.brand-lockup{display:flex;flex-direction:column;align-items:flex-start;gap:11px;min-width:0;max-width:100%}
+.brand-logo{display:block;width:176px;max-width:100%;height:auto;object-fit:contain}
+.brand-name{display:block;color:#253041;font-size:15px;font-weight:600;line-height:1.4;letter-spacing:.035em;white-space:nowrap}
+.sidebar .brand{display:block;padding:0 8px;min-width:0;max-width:100%;letter-spacing:0}
+.sidebar .workspace-label{margin-top:24px}
+.topbar .topbar-brand{display:none}
+.login-page{background:#fff}
+.login-page .login-brand{margin-bottom:32px;max-width:100%;justify-content:center}
+.login-page .login-brand>.brand-lockup{border:0;padding:0;color:inherit;font-weight:inherit;font-size:inherit}
+.brand-lockup-login{align-items:center;gap:13px}
+.brand-lockup-login .brand-logo{width:240px}
+.brand-lockup-login .brand-name{font-size:18px;letter-spacing:.05em}
+@media(max-width:760px){
+  .topbar .breadcrumb{gap:10px;min-width:0}
+  .topbar .topbar-brand{display:block;flex-shrink:0}
+  .topbar .breadcrumb>span,.topbar .breadcrumb>svg,.topbar .breadcrumb>strong{display:none}
+  .brand-lockup-compact{gap:4px}
+  .brand-lockup-compact .brand-logo{width:112px}
+  .brand-lockup-compact .brand-name{font-size:11px;letter-spacing:.03em}
+}
