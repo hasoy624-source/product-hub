@@ -148,6 +148,9 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
   if (pathname === '/auth/login' && verb === 'POST') return { authenticated: true, username: '预览访客', mode: 'demo' } as T
   if (pathname === '/auth/logout' && verb === 'POST') return { authenticated: false } as T
   const workspace = load()
+  if (publishedPreviewEnabled && (pathname === '/reports/generate' || /^\/jobs\/[^/]+\/run$/.test(pathname))) {
+    workspace.signals = mergeReviewSignals(workspace.signals, await publicMarketSnapshot(import.meta.env.BASE_URL))
+  }
   workspace.project_details ||= {}
   for (const project of workspace.projects) project.profile ||= { ...emptyProfile(), progress_known: true }
   if (pathname === '/workspace' && verb === 'GET') {

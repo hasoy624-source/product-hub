@@ -14,7 +14,7 @@ export function reviewSignals(snapshot:MarketSnapshot):Signal[] {
 }
 export function mergeReviewSignals(manual:Signal[],snapshot:MarketSnapshot) {
   const rows=new Map(manual.map(row=>[row.id,row]))
-  for(const row of reviewSignals(snapshot)) if(!rows.has(row.id)) rows.set(row.id,row)
+  for(const row of reviewSignals(snapshot)) rows.set(row.id,row)
   return [...rows.values()]
 }
 let cached:MarketSnapshot|null=null

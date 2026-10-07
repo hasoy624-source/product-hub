@@ -16,6 +16,9 @@ test('review signals preserve rating-based sentiment, source and unknown dates',
   assert.equal(signals[0].kind,'独立站评价');assert.equal(signals[0].sentiment,'负向')
   assert.equal(signals[1].occurred_on,'');assert.equal(signals[0].source_url,reviews[0].source_url)
   assert.equal(mergeReviewSignals([signals[0],{id:'manual'}],snapshot).length,3)
+  assert.equal(mergeReviewSignals([{...signals[0],content:'old cached text'}],snapshot)[0].content,reviews[0].content)
+  const api=readFileSync(new URL('../src/preview.ts',import.meta.url),'utf8')
+  assert.ok(api.includes("pathname === '/reports/generate' || /^\\/jobs\\/[^/]+\\/run$/.test(pathname)"))
 })
 test('published review fetch follows Pages base and errors are not fake zero-review success',async()=>{
   clearMarketCache();let url
