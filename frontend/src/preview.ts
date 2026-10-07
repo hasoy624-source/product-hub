@@ -188,7 +188,8 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
       if (verb === 'PATCH' && !existing) throw new ApiError('项目记录不存在', 404)
       const defaults = resource === 'milestones' ? emptyMilestone() : { content: '', occurred_on: '', author: '', kind: '进度记录', created_at: new Date().toISOString() }
       const row = { id: existing?.id || uuid(), project_id: projectId, ...defaults, ...existing, ...input }
-      if(resource==='milestones'&&existing&&Array.isArray(existing.document_ids)&&!('document_ids' in input))row.document_ids=existing.document_ids.filter(id=>workspace.knowledge_documents.some(doc=>doc.id===id&&doc.project_id===projectId))
+      const milestoneExisting=existing as ProjectMilestone|undefined
+      if(resource==='milestones'&&Array.isArray(milestoneExisting?.document_ids)&&!('document_ids' in input))(row as ProjectMilestone).document_ids=milestoneExisting.document_ids.filter(id=>workspace.knowledge_documents.some(doc=>doc.id===id&&doc.project_id===projectId))
       if (resource === 'milestones') {
         validateMilestone(row as ProjectMilestone)
         if('deliverable' in row && String(row.deliverable||'').length>200)throw new ApiError('输出产物名称应不超过 200 字',422)
