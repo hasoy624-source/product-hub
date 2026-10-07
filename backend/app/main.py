@@ -23,6 +23,7 @@ from .native_projects import register_project_routes, profile_values, ensure_pro
 from .native_project_migration import migrate_native_projects
 from .seed import seed
 from .services import claim_job, dashboard, execute_run, local_today, log, stamp, utcnow
+from .market import register_market_routes, ensure_sources
 
 
 COOKIE = "product_hub_session"
@@ -94,6 +95,7 @@ def create_app(database_url=None, seed_demo=True):
             except IntegrityError:
                 session.rollback()  # Another initializer inserted the same defaults first.
         with factory() as session, session.begin():
+            ensure_sources(session)
             migrate_native_projects(session)
             for project in session.scalars(select(Project)):
                 if not session.get(ProjectProfile, project.id):
@@ -106,6 +108,7 @@ def create_app(database_url=None, seed_demo=True):
     app.state.engine = engine
     app.state.mode = mode
     register_project_routes(app, factory)
+    register_market_routes(app, factory)
     app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"] if mode == "demo" else [], allow_credentials=True, allow_methods=["GET", "POST", "PATCH", "PUT", "OPTIONS"], allow_headers=["Content-Type"])
     attempts = {}
 

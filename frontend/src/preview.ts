@@ -4,6 +4,7 @@ import { emptyProfile, emptyMilestone, milestoneTemplate, validateMilestone } fr
 import projectSnapshot from './data/published-projects.json' with { type: 'json' }
 import { publishedStorageKey, publishedWorkspace } from './published-preview.ts'
 import type { PublishedProjectSnapshot } from './published-preview.ts'
+import { publicMarketSnapshot, mergeReviewSignals } from './market-model.ts'
 
 export const publishedPreviewEnabled = import.meta.env?.VITE_PREVIEW_MODE === 'true'
 const snapshot = projectSnapshot as unknown as PublishedProjectSnapshot
@@ -138,13 +139,22 @@ export async function previewApi<T>(path: string, method = 'GET', body?: unknown
   const [pathname, queryString = ''] = path.split('?', 2)
   const query = new URLSearchParams(queryString)
   const verb = method.toUpperCase()
+  if (pathname === '/market' && verb === 'GET') {
+    if (publishedPreviewEnabled) return await publicMarketSnapshot(import.meta.env.BASE_URL) as T
+    return {schema_version:1,updated_at:'',available:true,sources:[],reviews:[],products:[],runs:[],schedule:{timezone:'Asia/Shanghai',daily_time:'09:00'}} as T
+  }
+  if (pathname.startsWith('/market/')) throw new ApiError('静态预览的采集与站点配置通过 GitHub 任务管理', 422)
   if (pathname === '/health' && verb === 'GET') return { status: 'ok', mode: 'demo' } as T
   if (pathname === '/auth/login' && verb === 'POST') return { authenticated: true, username: '预览访客', mode: 'demo' } as T
   if (pathname === '/auth/logout' && verb === 'POST') return { authenticated: false } as T
   const workspace = load()
   workspace.project_details ||= {}
   for (const project of workspace.projects) project.profile ||= { ...emptyProfile(), progress_known: true }
-  if (pathname === '/workspace' && verb === 'GET') return structuredClone(workspace) as T
+  if (pathname === '/workspace' && verb === 'GET') {
+    const result = structuredClone(workspace)
+    if (publishedPreviewEnabled) result.signals = mergeReviewSignals(result.signals, await publicMarketSnapshot(import.meta.env.BASE_URL))
+    return result as T
+  }
   if (pathname === '/dashboard' && verb === 'GET') return dashboard(workspace, query.get('month') || currentMonth()) as T
   const projectMatch = pathname.match(/^\/projects\/([^/]+)\/(details|profile|milestones|updates|milestone-template|images)(?:\/([^/]+))?$/)
   if (projectMatch) {

@@ -1,0 +1,69 @@
+name: Collect public market reviews daily
+
+on:
+  schedule:
+    # 09:00 Asia/Shanghai; GitHub scheduled runs may start later during busy periods.
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/crawl-market.yml'
+      - 'config/market-sources.json'
+      - 'backend/app/market_crawler.py'
+      - 'backend/app/market_sync.py'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: market-review-collection
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      ref: ${{ steps.snapshot.outputs.ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Collect published reviews and retain history on errors
+        working-directory: backend
+        run: python -m app.market_sync
+      - name: Commit only the public review snapshot
+        id: snapshot
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- frontend/public/market/latest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh public market review snapshot"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+          echo "ref=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Write collection summary
+        shell: python
+        run: |
+          import json, os
+          data=json.load(open('frontend/public/market/latest.json',encoding='utf-8'))
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as f:
+            f.write('# Public review collection\n')
+            for s in data['sources']:
+              f.write(f"- {s['name']}: {s.get('last_status','pending')}; products={s.get('product_count',0)}; reviews={s.get('review_count',0)}\n")
+
+  publish:
+    needs: crawl
+    uses: ./.github/workflows/deploy-preview.yml
+    with:
+      ref: ${{ needs.crawl.outputs.ref }}

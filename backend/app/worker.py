@@ -1,9 +1,10 @@
-"""Run separately from API: python -m app.worker. Never calls external APIs."""
+"""Report scheduler and daily public-review collection: python -m app.worker."""
 import logging
 import os
 import time
 from .database import database, initialize
 from .services import tick
+from .market import tick_market
 
 
 def main():
@@ -18,6 +19,9 @@ def main():
         while True:
             try:
                 runs = tick(factory)
+                market_runs = tick_market(factory)
+                if market_runs:
+                    logging.info('Review crawl statuses: %s', ', '.join(run['status'] for run in market_runs if run))
                 if runs:
                     logging.info("Processed run IDs: %s", ", ".join(runs))
             except Exception:

@@ -136,6 +136,42 @@ class Signal(Base):
     occurred_on: Mapped[str] = mapped_column(String(10), index=True)
 
 
+class MarketSource(Base):
+    __tablename__ = 'market_sources'
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(String(200))
+    collection_url: Mapped[str] = mapped_column(Text, unique=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    interval_hours: Mapped[int] = mapped_column(Integer, default=24)
+    config: Mapped[dict] = mapped_column(JSON, default=dict)
+    next_run_at: Mapped[str] = mapped_column(String(40), default='')
+    last_run_at: Mapped[str] = mapped_column(String(40), default='')
+    last_status: Mapped[str] = mapped_column(String(40), default='pending')
+    message: Mapped[str] = mapped_column(Text, default='')
+
+
+class MarketReview(Base):
+    __tablename__ = 'market_reviews'
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    source_id: Mapped[str] = mapped_column(ForeignKey('market_sources.id'), index=True)
+    payload: Mapped[dict] = mapped_column(JSON)
+
+
+class MarketRun(Base):
+    __tablename__ = 'market_runs'
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    source_id: Mapped[str] = mapped_column(ForeignKey('market_sources.id'), index=True)
+    started_at: Mapped[str] = mapped_column(String(40), index=True)
+    payload: Mapped[dict] = mapped_column(JSON)
+
+
+class MarketProduct(Base):
+    __tablename__ = 'market_products'
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    source_id: Mapped[str] = mapped_column(ForeignKey('market_sources.id'), index=True)
+    payload: Mapped[dict] = mapped_column(JSON)
+
+
 class Seat(Base):
     __tablename__ = "seats"
     id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)

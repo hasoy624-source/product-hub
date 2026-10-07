@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-10-07T03:28:31+00:00",
+  "sources": [
+    {
+      "id": "pulsar-puffco",
+      "name": "Pulsar · Puffco",
+      "collection_url": "https://www.pulsarshop.com/collections/puffco?page=2",
+      "enabled": true,
+      "interval_hours": 24,
+      "max_products": 80,
+      "max_collection_pages": 5,
+      "max_review_pages": 10,
+      "last_run_at": "2026-10-07T03:28:33+00:00",
+      "last_status": "rate_limited",
+      "message": "HTTP 429，等待重试（至少 60 秒）",
+      "retry_after": 60,
+      "review_count": 0,
+      "product_count": 0
+    }
+  ],
+  "reviews": [],
+  "products": [],
+  "runs": [
+    {
+      "id": "run-e3c9927565677d0587abf87e",
+      "source_id": "pulsar-puffco",
+      "started_at": "2026-10-07T03:28:31+00:00",
+      "finished_at": "2026-10-07T03:28:33+00:00",
+      "status": "rate_limited",
+      "products_found": 0,
+      "products_scanned": 0,
+      "reviews_found": 0,
+      "new_reviews": 0,
+      "message": "HTTP 429，等待重试（至少 60 秒）",
+      "retry_after": 60
+    }
+  ],
+  "schedule": {
+    "timezone": "Asia/Shanghai",
+    "daily_time": "09:00"
+  },
+  "available": true
+}

@@ -7,6 +7,12 @@ on:
       - '.github/workflows/deploy-preview.yml'
       - 'frontend/**'
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -26,6 +32,8 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:

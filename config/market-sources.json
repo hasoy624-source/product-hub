@@ -1,0 +1,16 @@
+{
+  "timezone": "Asia/Shanghai",
+  "daily_time": "09:00",
+  "sources": [
+    {
+      "id": "pulsar-puffco",
+      "name": "Pulsar · Puffco",
+      "collection_url": "https://www.pulsarshop.com/collections/puffco?page=2",
+      "enabled": true,
+      "interval_hours": 24,
+      "max_products": 80,
+      "max_collection_pages": 5,
+      "max_review_pages": 10
+    }
+  ]
+}
