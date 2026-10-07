@@ -90,7 +90,8 @@ curl -fsS https://<DOMAIN>/api/health
 - 原生详情 API：`GET /api/projects/{id}/details`；项目资料支持嵌套 `profile` 的 POST/PATCH；节点 `milestones`、动态 `updates` 可新增/编辑；`milestone-template` 补齐标准节点；`images` 接受原始图片请求体。原图读取 `GET /api/project-assets/{hash-filename}`。完整问题措施存在原生 `TaskContent`，任务 POST/PATCH 接受 `description`。
 - `native_project_migration.py` 在启动与导入时进行幂等的一次迁移：新增 `ProjectProfile`、`ProjectMilestone`、`ProjectUpdate`、`ProjectImage`、`TaskContent`，不修改既有 Project/Task 列结构。存在 profile 的项目不再从导入台账覆盖；资料维护以后只写原生表。`ProjectSource` 留作内部导入台账，不作为运行界面依赖。未标明计划/实际的节点日期保留在可编辑“节点记录”中，不当成实际完成。
 - 项目工作区统一为“概况 / 节点计划 / 问题与任务 / 项目动态”，包括后续手工新建项目。静态预览维护原生 profile 与 project_details，数据来自发布快照，不直接带入实际项目数据库。
-- 项目页布局由 `ProjectNavigator.tsx`（列表/搜索）、`ProjectBoard.tsx`（快捷筛选与下拉）、`ProjectWorkspace.tsx`（详情）组成。桌面 `.project-workbench` 使用等高双栏，只有 `.project-list-scroll` 与 `.native-panel` 内部滚动；不要重新只把左栏设为 sticky，或恢复两块各自按内容撑高。900px 以下使用列表/详情切换和“返回项目列表”。概况先展示待推进，团队/图片/阶段路径/自定义字段属于次级资料；五阶段标记不推断节点完成。
+- 用户于 2026-10-07 要求研发项目默认只关注阶段与截止日期。`ProjectSummaryList.tsx` / `project-summary.ts` / `project-simple.css` 提供“项目 / 当前阶段 / 截止日期”三列，默认不加载大块详情；保留阶段颜色、搜索、阶段筛选、截止日期排序。其它状态/品类筛选通过“筛选”展开。日期缺失显示“未设置”，已完成/已终止项目不因计划日期过去而标成逾期。
+- 项目名称按需打开 `ProjectDetailsDrawer.tsx` 中的完整 `ProjectWorkspace.tsx`，原有任务、节点、动态、图片、文档、团队与自定义字段未删除；关闭恢复列表焦点与滚动。原 `ProjectNavigator.tsx` 是旧视图组件，不是当前主入口。新建/编辑项目默认只显示项目名称、阶段、截止日期，其余值在“更多信息”中保留。阶段色不推断节点完成，也不生成虚构进度。
 - 如需真正多人协作，迁移到已有正式服务模板及受控的数据空间；静态 GitHub Pages 继续使用发布快照和浏览器私有编辑。
 
 ## 8. 将本地原生项目同步到 GitHub 预览
