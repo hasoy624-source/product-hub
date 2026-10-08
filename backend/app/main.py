@@ -184,6 +184,9 @@ def create_app(database_url=None, seed_demo=True):
     def workspace():
         with factory() as session:
             result = {name: [serialize(row) for row in session.scalars(select(model))] for name, model in ENTITIES.items()}
+            from .product_taxonomy import config_view,canonical_name
+            taxonomy=config_view(session)['config']
+            for product in result['products']:product['category']=canonical_name(product['category'],taxonomy)
             profiles = {row.project_id: row for row in session.scalars(select(ProjectProfile))}
             schedules = {row.project_id: row.start_date for row in session.scalars(select(ProjectSchedule))}
             for project in result["projects"]:

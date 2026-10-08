@@ -1,4 +1,5 @@
 import type { Category, EntityMeta, Product, Project, Task, Report, Sale } from './types'
+import {currentProductTaxonomy,canonicalProductTypeName} from './product-taxonomy-model.ts'
 
 export const featuredProductCategories = ['配件类', '电池类', '干烧类', '雾化器', '一次性'] as const
 export type ProductFilter = 'all' | string
@@ -12,7 +13,8 @@ export function filterSalesByProducts(sales: Sale[], products: Product[], filter
   return sales.filter(sale => sale.month === month && ids.has(sale.product_id))
 }
 export function productCategoryCards(products: Product[], sales: Sale[], month: string) {
-  const categories = [...featuredProductCategories, ...new Set(products.map(product => product.category).filter(category => category && !featuredProductCategories.includes(category as typeof featuredProductCategories[number])))]
+  const configured=currentProductTaxonomy.categories.filter(row=>row.id!==currentProductTaxonomy.fallback_id&&(row.active||products.some(product=>canonicalProductTypeName(product.category)===row.name))).map(row=>row.name)
+  const categories = [...configured,...new Set(products.map(product=>product.category).filter(category=>category&&!configured.includes(category)))]
   return [{ id: 'all', label: '全部产品', count: products.length, revenue_cents: sales.filter(sale => sale.month === month).reduce((sum, sale) => sum + sale.revenue_cents, 0) },
     ...categories.map(category => ({ id: category, label: category, count: products.filter(product => product.category === category).length,
       revenue_cents: filterSalesByProducts(sales, products, category, month).reduce((sum, sale) => sum + sale.revenue_cents, 0) }))]

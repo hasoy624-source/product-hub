@@ -8,6 +8,7 @@ from sqlalchemy import select,update
 from sqlalchemy.exc import IntegrityError
 from .models import SalesDataState,SalesDataChange
 from .sales_import import normalize_model,category
+from .product_taxonomy import config_view,classify_history
 
 class SalesCellIn(BaseModel):
     year: Annotated[StrictInt,Field(ge=1900,le=9998)]
@@ -83,11 +84,11 @@ def view(base,session):
     changes=session.scalars(select(SalesDataChange).order_by(SalesDataChange.created_at.desc(),SalesDataChange.id.desc()).limit(20))
     last=session.scalar(select(SalesDataChange).where(SalesDataChange.undone==False).order_by(SalesDataChange.created_at.desc(),SalesDataChange.id.desc()).limit(1))
     def public(row):return {'id':row.id,'label':row.label,'created_at':row.created_at,'count':row.count,'undone':row.undone}
-    return {'history':build_history(base,patches),'revision':revision(base,version),'changes':[public(row) for row in changes],'latest_undoable':public(last) if last else None,'storage':'server'}
+    return {'history':classify_history(build_history(base,patches),config_view(session)['config']),'revision':revision(base,version),'changes':[public(row) for row in changes],'latest_undoable':public(last) if last else None,'storage':'server'}
 
 def effective_history(base,factory):
     with factory() as session:
-        state=current_state(session);return build_history(base,state.patches if state else [])
+        state=current_state(session);return classify_history(build_history(base,state.patches if state else []),config_view(session)['config'])
 
 def register_maintenance_routes(app,factory,read_base):
     @app.get('/api/sales-data')

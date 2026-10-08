@@ -32,6 +32,7 @@ export async function buildSalesHistory(base:SalesDataset[],patches:SalesCell[])
     product.monthly_units[patch.month-1]=patch.units;product.recorded_rows[patch.month-1]=Number(patch.units!==null);product.aggregate_months=[...new Set([...(product.aggregate_months||[]),patch.month])].sort((a,b)=>a-b);affected.add(data.year)
   }
   for(const data of result){if(!affected.has(data.year))continue;data.aggregation=data.products.every(row=>row.source_rows===1)?'model-month':'mixed';data.source_rows=data.products.reduce((sum,row)=>sum+row.source_rows,0);data.missing_model_records=data.products.filter(row=>row.missing_model&&row.monthly_units.some(value=>value!==null)).length;data.monthly_totals=data.months.map((_,i)=>data.products.reduce((sum,row)=>sum+(row.monthly_units[i]??0),0));data.summary_difference=Array(data.through_month).fill(null);data.revision=await digest(JSON.stringify(data))}
+  for(const data of result)for(const product of data.products)product.category=salesModelCategory(product.model)
   return result.sort((a,b)=>b.year-a.year)
 }
 export function planSalesCells(history:SalesDataset[],rows:SalesCell[],mode:SalesBatch['mode']):SalesPlan{

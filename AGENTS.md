@@ -188,3 +188,16 @@ curl -fsS https://<DOMAIN>/api/health
 - 分类标签与图表共用 semanticPalette：电池紫、配件青、干烧橙、雾化器蓝、一次性玫红、待分类灰。产品分类固定入口也包含两类新类型，项目阶段与风险颜色不改。
 - Docker 前端阶段将 config 复制到 /config 以支持跨目录规则导入；运行镜像原 config 复制继续保留。后端查找本地仓库与运行镜像的 config 路径，不在部署后退回旧的三类硬编码。
 - 回归：sales-category-pie.test.mjs / test_sales_categories.py；验证每个指定名称和前缀、所有月份数量与 ID 不变、六类份额合计精确等于范围销量、单类/无数据/零值、键盘明细与移动布局。工作方法仍为测试、Pages 模式构建、提交、部署与实际页面验证。
+
+
+## 19. 人员可维护配置与产品类型
+
+- `#settings` 默认打开“产品类型”；同页保留研发项目、报告档案的分类/自定义字段配置，并增加“操作入口”的逐模块维护索引。`#guide/settings` 提供真实操作步骤。不要宣称任意算法、账号权限、流程引擎和服务器部署都已无代码化。
+- `ProductTypeSettings.tsx` 支持类型新增/改名、显示颜色（七种非绿色语义色）、排序、启停、完整型号/前缀规则、规则优先级、单型号覆盖、JSON 导入导出、最近一次配置撤销。表单进入草稿后先预览年度型号归类变化，再确认应用；无变化的配色/新类型也可保存。
+- `product-taxonomy-model.ts` 为前端纯规则与运行配置；`product-taxonomy-storage.ts` 用独立 IndexedDB `impetus-product-taxonomy-v1/catalog` 保存 config/revision/previous。不更改项目 localStorage、售价或销量 IndexedDB 的原键和发布快照 revision。预览配置是同源同浏览器私有编辑，不同步到 GitHub 或其他访客。
+- 后端 `product_taxonomy.py` 和新表 `product_taxonomy_state` 保存共享配置。GET/PUT `/api/product-taxonomy`，POST `/api/product-taxonomy/preview` 与 `/api/product-taxonomy/undo`；写入携带 revision，校验引用和重复规则，CAS 防止旧版本覆盖。既有 production 身份验证与同源保护继续应用；只在临时测试数据库验证，不启动服务迁移用户原 SQLite。
+- `config/sales-category-rules.json` 只作为无运行配置时的默认 seed。日常维护走页面/数据库，别要求人员修改 JSON 源码；源站快照和导入器仍可输出默认分类，读取有效销量时重新按运行配置归类。
+- 归类次序为单型号覆盖 > 完整型号 > 前缀；同类 priority 数字小的先匹配，其次较长匹配内容和稳定规则 ID。NFKC、空格和大小写归一仅用于规则匹配，不合并原型号/ID。稳定类型 ID 与历史名称 aliases 使改名同步到产品档案和仪表盘；销售数量、空缺、售价、日期不改。
+- 停用类型不删除已有归类或规则：空类型退出新候选项，有历史数据的类型保留可查看。停止自动归类应停用对应规则；兜底类型必须存在且启用。不要把停用误实现为删除历史销量。
+- 类型排序和配色同步用于销售筛选、结论饼图、产品编辑候选与分类标签；新增类型应在下一次 Excel/手工维护时自动参与规则归类。配置与销量使用独立版本和撤销，不相互恢复业务数量。
+- 目前固定的工程逻辑：研发五阶段、知识库模板目录、报告算法、新站点解析适配、正式账号权限与部署。现有项目/节点/任务/文档/销量/售价/分类字段均有前端维护入口；集成席位保存接入记录，不等同于已接通外部服务。

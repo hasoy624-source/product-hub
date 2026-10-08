@@ -1,7 +1,7 @@
 import {useEffect,useState} from 'react'
 import {ChevronDown,ChevronUp,FileText,Copy,Check} from 'lucide-react'
 import {api} from './api'
-import {salesCategories} from './sales-lifecycle-model'
+import {visibleProductTypeNames} from './product-taxonomy-model'
 import type {SalesDataset} from './sales-lifecycle-model'
 import {defaultConclusionFilters,generateSalesConclusion,priceCents} from './sales-conclusions-model'
 import type {ConclusionFilters,SalesConclusion,SalesPrice} from './sales-conclusions-model'
@@ -25,7 +25,7 @@ export default function SalesConclusions({data,previous}:{data:SalesDataset;prev
       <form className="conclusion-filters" onSubmit={event=>{event.preventDefault();generate()}}>
         <label>开始月份<select aria-label="开始月份" value={filters.from} onChange={event=>update('from',event.target.value)}>{data.months.map(month=><option key={month}>{month}</option>)}</select></label>
         <label>结束月份<select aria-label="结束月份" value={filters.to} onChange={event=>update('to',event.target.value)}>{data.months.map(month=><option key={month}>{month}</option>)}</select></label>
-        <label>产品类型<select aria-label="产品类型" value={filters.category} onChange={event=>update('category',event.target.value)}><option value="all">全部产品</option>{salesCategories.map(category=><option key={category}>{category}</option>)}</select></label>
+        <label>产品类型<select aria-label="产品类型" value={filters.category} onChange={event=>update('category',event.target.value)}><option value="all">全部产品</option>{visibleProductTypeNames(data.products).map(category=><option key={category}>{category}</option>)}</select></label>
         <label>售价区间<select aria-label="售价区间" value={filters.price_mode} onChange={event=>update('price_mode',event.target.value as ConclusionFilters['price_mode'])}><option value="all">全部（含未录入）</option><option value="range">自定义区间</option><option value="missing">未录入售价</option></select></label>
         {filters.price_mode==='range'&&<><label>筛选币种<select aria-label="筛选币种" value={filters.currency} onChange={event=>update('currency',event.target.value as 'USD'|'CNY')}><option value="USD">USD 美元</option><option value="CNY">CNY 人民币</option></select></label><label>最低参考售价<input aria-label="最低参考售价" inputMode="decimal" placeholder="不限" value={filters.min} onChange={event=>update('min',event.target.value)}/></label><label>最高参考售价<input aria-label="最高参考售价" inputMode="decimal" placeholder="不限" value={filters.max} onChange={event=>update('max',event.target.value)}/></label></>}
         <button className="button primary" type="submit" disabled={!loaded}>生成结论</button>

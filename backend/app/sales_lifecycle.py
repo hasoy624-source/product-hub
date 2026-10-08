@@ -7,6 +7,7 @@ from sqlalchemy import select
 from .models import SalesReferencePrice,serialize
 from .sales_maintenance import effective_history,register_maintenance_routes
 from .sales_import import category
+from .product_taxonomy import register_taxonomy_routes,config_view,classify_history
 
 class SalesPriceIn(BaseModel):
     currency: Literal['USD','CNY']
@@ -49,9 +50,14 @@ def sales_history():
     except (ValueError,OSError,KeyError,TypeError):raise HTTPException(500,'销售年度数据读取失败')
 
 def register_sales_routes(app,factory):
-    app.get('/api/sales-lifecycle')(sales_dataset)
+    @app.get('/api/sales-lifecycle')
+    def current_dataset():
+        data=sales_dataset()
+        if data is None:return None
+        with factory() as session:return classify_history([data],config_view(session)['config'])[0]
     app.get('/api/sales-history')(lambda:effective_history(sales_history(),factory))
     register_maintenance_routes(app,factory,sales_history)
+    register_taxonomy_routes(app,factory,lambda:effective_history(sales_history(),factory))
 
     @app.get('/api/sales-prices')
     def prices():

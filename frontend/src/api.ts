@@ -6,6 +6,10 @@ import {previewSalesPrices} from './sales-conclusions-model'
 import {fetchSalesHistory} from './sales-history-model'
 import {maintainedSalesHistory,previewSalesDataApi} from './sales-maintenance-storage'
 import {priceCatalog} from './sales-maintenance-model'
+import {browserProductTaxonomy,saveBrowserProductTaxonomy,undoBrowserProductTaxonomy} from './product-taxonomy-storage'
+import {activateProductTaxonomy,taxonomyPreview,canonicalProductTypeName,canonicalProductDashboard} from './product-taxonomy-model'
+import type {Dashboard} from './types'
+import type {ProductTaxonomy,ProductTaxonomyView} from './product-taxonomy-model'
 
 export { ApiError, publishedPreviewEnabled } from './preview'
 export async function uploadProjectFile(projectId:string,nodeId:string,file:File):Promise<ProjectFile>{
@@ -37,6 +41,11 @@ export async function uploadProjectImage(projectId: string, file: File) {
 }
 export async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   if (import.meta.env.VITE_PREVIEW_MODE === 'true') {
+    if(path==='/product-taxonomy'&&method==='GET')return await browserProductTaxonomy() as T
+    if(path==='/product-taxonomy'&&method==='PUT'){const payload=body as {config:ProductTaxonomy;revision:string};const result=await saveBrowserProductTaxonomy(payload.config,payload.revision);window.dispatchEvent(new Event('product-taxonomy-changed'));return result as T}
+    if(path==='/product-taxonomy/undo'&&method==='POST'){const result=await undoBrowserProductTaxonomy((body as {revision:string}).revision);window.dispatchEvent(new Event('product-taxonomy-changed'));return result as T}
+    if(path==='/product-taxonomy/preview'&&method==='POST'){const payload=body as {config:ProductTaxonomy;revision:string},view=await browserProductTaxonomy();if(payload.revision!==view.revision)throw new ApiError('配置已更新，请重新读取并预览',409);const history=await maintainedSalesHistory(await fetchSalesHistory(import.meta.env.BASE_URL)),changes=taxonomyPreview(history.flatMap(data=>data.products.map(row=>({model:row.model,category:row.category,year:data.year}))),payload.config);return {changes,count:changes.length} as T}
+    if(['/sales-lifecycle','/sales-history','/sales-prices','/sales-data','/workspace','/dashboard'].some(prefix=>path===prefix||path.startsWith(prefix+'/')||path.startsWith(prefix+'?')))await browserProductTaxonomy()
     if(path==='/sales-lifecycle'&&method==='GET')return await fetchSalesDataset(import.meta.env.BASE_URL) as T
     if(path==='/sales-history'&&method==='GET')return await maintainedSalesHistory(await fetchSalesHistory(import.meta.env.BASE_URL)) as T
     if(path==='/sales-data'||path.startsWith('/sales-data/'))return await previewSalesDataApi(path,method,body,await fetchSalesHistory(import.meta.env.BASE_URL)) as T
@@ -46,9 +55,12 @@ export async function api<T>(path: string, method = 'GET', body?: unknown): Prom
       const products=priceCatalog(history)
       return previewSalesPrices(path,method,body,{...history[0],products},localStorage) as T
     }
-    const result=await previewApi<T>(path,method,body),match=path.match(/^\/projects\/([^/]+)\/details$/)
+    let result:T=await previewApi<T>(path,method,body);const match=path.match(/^\/projects\/([^/]+)\/details$/)
+    if(path==='/workspace'&&method==='GET'){const workspace=result as {products:{category:string}[]};result={...workspace,products:workspace.products.map(row=>({...row,category:canonicalProductTypeName(row.category)}))} as T}
+    if(path.startsWith('/dashboard')&&method==='GET')result=canonicalProductDashboard(result as Dashboard) as T
     return method==='GET'&&match?{...result,files:await previewProjectFiles(match[1])} as T:result
   }
+  if(!path.startsWith('/product-taxonomy')&&(['/sales-lifecycle','/sales-history','/sales-data','/sales-prices','/workspace','/dashboard'].some(prefix=>path===prefix||path.startsWith(prefix+'/')||path.startsWith(prefix+'?'))))await api<ProductTaxonomyView>('/product-taxonomy')
   const response = await fetch(`/api${path}`, { method, credentials: 'same-origin', headers: body === undefined ? {} : { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) })
   const data = await response.json().catch(() => null)
   if (!response.ok) {
@@ -56,5 +68,8 @@ export async function api<T>(path: string, method = 'GET', body?: unknown): Prom
     const message = typeof detail === 'string' ? detail : Array.isArray(detail) ? detail.map((e: {msg?: string; loc?: string[]}) => `${e.loc?.slice(1).join('.') || '输入'}：${e.msg || '格式不正确'}`).join('；') : `请求失败（${response.status}）`
     throw new ApiError(message, response.status)
   }
+  if(path==='/product-taxonomy'||path==='/product-taxonomy/undo'){activateProductTaxonomy(data);if(method!=='GET')window.dispatchEvent(new Event('product-taxonomy-changed'))}
+  if(path==='/workspace'&&method==='GET'&&data?.products)data.products=data.products.map((row:{category:string})=>({...row,category:canonicalProductTypeName(row.category)}))
+  if(path.startsWith('/dashboard')&&method==='GET')return canonicalProductDashboard(data) as T
   return data as T
 }

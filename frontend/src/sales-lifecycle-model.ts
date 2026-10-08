@@ -1,5 +1,5 @@
 import type { Project } from './types'
-import {salesModelCategory,salesCategories} from './sales-categories.ts'
+import {salesModelCategory} from './sales-categories.ts'
 export {salesCategories} from './sales-categories.ts'
 
 export type SalesModel={id:string;model:string;category:string;monthly_units:(number|null)[];recorded_rows:number[];source_rows:number;missing_model:boolean;aggregate_months?:number[]}
@@ -20,7 +20,7 @@ export function matchedSalesProject(row:SalesModel,projects:Project[]){return pr
 export function validateSalesDataset(data:SalesDataset):SalesDataset{
   if(data.schema_version!==1||!Array.isArray(data.products)||data.blank_policy!=='missing'||!Array.isArray(data.months)||data.months.length!==data.through_month||!Number.isInteger(data.year)||data.year<1900||data.year>9998||data.through_month<1||data.through_month>12)throw new Error('销售数据格式不匹配')
   if(data.months.some((month,index)=>month!==`${data.year}-${String(index+1).padStart(2,'0')}`)||new Set(data.products.map(row=>row.id)).size!==data.products.length)throw new Error('销售月份或型号重复')
-  if(data.products.some(row=>typeof row.id!=='string'||typeof row.model!=='string'||!salesCategories.includes(row.category)||!Array.isArray(row.monthly_units)||row.monthly_units.length!==data.through_month||row.monthly_units.some(value=>value!==null&&(!Number.isSafeInteger(value)||value<0))||!Array.isArray(row.recorded_rows)||row.recorded_rows.length!==data.through_month||!Number.isInteger(row.source_rows)||row.source_rows<1||row.recorded_rows.some(value=>!Number.isInteger(value)||value<0||value>row.source_rows)))throw new Error('销售数量格式不匹配')
+  if(data.products.some(row=>typeof row.id!=='string'||typeof row.model!=='string'||typeof row.category!=='string'||!row.category||!Array.isArray(row.monthly_units)||row.monthly_units.length!==data.through_month||row.monthly_units.some(value=>value!==null&&(!Number.isSafeInteger(value)||value<0))||!Array.isArray(row.recorded_rows)||row.recorded_rows.length!==data.through_month||!Number.isInteger(row.source_rows)||row.source_rows<1||row.recorded_rows.some(value=>!Number.isInteger(value)||value<0||value>row.source_rows)))throw new Error('销售数量格式不匹配')
   return data
 }
 export async function fetchSalesDataset(base:string):Promise<SalesDataset|null>{

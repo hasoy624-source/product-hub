@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import {configuredTypeTone} from './product-taxonomy-model.ts'
 
 // One palette drives tags, stage navigation, progress and classification filters.
 // Business-stage colors are not severity levels; text labels always remain visible.
@@ -34,6 +35,8 @@ const customTones: SemanticTone[] = ['cyan', 'blue', 'violet', 'amber', 'rose']
 export const stageTone = (stage: string): SemanticTone => Object.hasOwn(stageTones, stage) ? stageTones[stage] : 'neutral'
 export const statusTone = (status: string): SemanticTone => Object.hasOwn(statusTones, status) ? statusTones[status] : 'neutral'
 export function categoryTone(name: string): SemanticTone {
+  const configured=configuredTypeTone(name)
+  if(configured)return configured
   if (neutralLabels.has(name)) return 'neutral'
   if (Object.hasOwn(categoryTones, name)) return categoryTones[name]
   let hash = 0

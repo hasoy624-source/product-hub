@@ -42,12 +42,14 @@ def dashboard(session, month, today=None):
             per_product[sale.product_id] += sale.revenue_cents
     total = totals[month]
     previous = totals[shift_month(month, -1)]
+    from .product_taxonomy import config_view,canonical_name
+    taxonomy=config_view(session)['config']
     product_sales, categories = [], defaultdict(int)
     for product in products:
         amount = per_product[product.id]
-        product_sales.append({"product_id": product.id, "name": product.name, "category": product.category,
+        product_sales.append({"product_id": product.id, "name": product.name, "category": canonical_name(product.category,taxonomy),
                               "revenue_cents": amount, "share": round(amount / total * 100, 2) if total else 0})
-        categories[product.category] += amount
+        categories[canonical_name(product.category,taxonomy)] += amount
     product_sales.sort(key=lambda item: (-item["revenue_cents"], item["name"]))
     projects = session.scalars(select(Project)).all()
     tasks = session.scalars(select(Task)).all()
