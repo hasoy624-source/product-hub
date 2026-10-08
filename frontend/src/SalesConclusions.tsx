@@ -7,12 +7,12 @@ import {defaultConclusionFilters,generateSalesConclusion,priceCents} from './sal
 import type {ConclusionFilters,SalesConclusion,SalesPrice} from './sales-conclusions-model'
 import './sales-conclusions.css'
 
-export default function SalesConclusions({data}:{data:SalesDataset}){
+export default function SalesConclusions({data,previous}:{data:SalesDataset;previous?:SalesDataset}){
   const [open,setOpen]=useState(false),[filters,setFilters]=useState(()=>defaultConclusionFilters(data)),[prices,setPrices]=useState<SalesPrice[]>([]),[loaded,setLoaded]=useState(false),[error,setError]=useState('')
   const [report,setReport]=useState<SalesConclusion|null>(null),[stale,setStale]=useState(false),[copied,setCopied]=useState(false),[saving,setSaving]=useState(false)
   const [model,setModel]=useState(''),[currency,setCurrency]=useState<'USD'|'CNY'>('USD'),[amount,setAmount]=useState(''),[saved,setSaved]=useState('')
   useEffect(()=>{let active=true;void api<SalesPrice[]>('/sales-prices').then(value=>{if(active){setPrices(value);setLoaded(true)}}).catch(cause=>{if(active)setError(cause.message)});return()=>{active=false}},[])
-  function generate(){setError('');setCopied(false);try{setReport(generateSalesConclusion(data,filters,prices));setStale(false)}catch(cause){setError((cause as Error).message)}}
+  function generate(){setError('');setCopied(false);try{setReport(generateSalesConclusion(data,filters,prices,previous));setStale(false)}catch(cause){setError((cause as Error).message)}}
   function toggle(){if(!open&&!report&&loaded)generate();setOpen(!open)}
   function update<K extends keyof ConclusionFilters>(key:K,value:ConclusionFilters[K]){setFilters({...filters,[key]:value});setStale(true);setCopied(false)}
   function selectModel(id:string){const price=prices.find(row=>row.product_id===id);setModel(id);setCurrency(price?.currency||'USD');setAmount(price?(price.amount_cents/100).toFixed(2):'');setSaved('')}

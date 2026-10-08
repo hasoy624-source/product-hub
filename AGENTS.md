@@ -158,3 +158,14 @@ curl -fsS https://<DOMAIN>/api/health
 - 管理接口 `GET /api/sales-prices`、`PUT /api/sales-prices/{sales_model_id}`，请求 `{currency:'USD'|'CNY',amount_cents:integer|null}`；null 清除、0 明确免费。校验型号属于导入数据且不是未标注汇总，金额 0–1,000,000,000 分。真实后端补充表 `sales_reference_prices`，不改变项目或销量表；生产沿用 API 身份验证。
 - Pages 分支保存到浏览器独立键 `impetus-sales-reference-prices-v1`，不写公开快照、不修改项目缓存。测试不能把临时价格写入线上用户浏览器；浏览器回归只在独立 localhost 来源维护临时售价。发布代码不发布手工参考售价或原 Excel。
 - 回归：前端 `tests/sales-conclusions.test.mjs` 覆盖月/类型/价格范围、币种、空缺/0、生成结论与浏览器售价管理；后端 `tests/test_sales_prices.py` 使用临时 SQLite 验证持久化与校验。发布仍走第 4 节 GitHub Pages，不重启正在运行的原生项目服务或重写本地数据库。
+
+## 16. 历年销量与同期展示
+
+- 用户于 2026-10-08 追加 2025 年销量并确认公开发布型号、月份数量与图表。`frontend/public/sales/history.json` 是年度目录，2026 仍使用原 `lifecycle.json`，2025 使用 `lifecycle-2025.json`；原 2026 文件字节与 revision 不变，项目/市场快照及浏览器售价键不变。仅导入销量，不发布客户代码、备注、报价、隐藏展会页和原 Excel。
+- 2025 主明细是 Monthly Sales by Product 的 C4:O202：199 条记录、127 个型号，全年 3,039,874 件，1–9 月 2,124,328 件。207 行数量汇总漏计 201 行 9 月 8,508 件；208 行金额引用报错；之后为重复分析区。`sales_import.py` 从 Jan 列推导型号与月份列，在第一条数量 SUM 汇总前停止，不重复加后面的分析数据，也不从错误金额行提取售价。缓存销量公式按数值读取，缺缓存报错；空白维持未知。
+- `SalesLifecycle.tsx` 默认最新年份同期图，只对比两年都有导入的相同月份；2026 当前 1–9 月与 2025 同期比较，而不是与 2025 全年。年度销量可看 2025 十二个月。分类/搜索同时作用两年；型号排名只显示前十；全部型号明细默认折叠，表内滚动。`SalesYearComparison.tsx` 绘制带缺口的双年曲线；`sales-history-model.ts` 计算同月记录差异。
+- 型号仅按完整规范化 ID 精确关联，不把 mouthpiece 与吸嘴、组合型号与单品自行合并。上年没有型号或月记录返回 null，不当成 0。差额与百分比明确称“已录入量差异”，不宣称真实经营增长、上市或衰退。
+- API `GET /api/sales-history` 返回降序年度数据；`SALES_HISTORY_INDEX` 可指定目录 JSON，默认与 `SALES_LIFECYCLE_DATA` 同目录，缺目录回退到单年。年度目录只允许本目录 `lifecycle.json` / `lifecycle-YYYY.json` 文件名；缺文件、重复年份和年份不符为实际错误，不静默漏一年。旧 `/api/sales-lifecycle` 保留最新数据契约。参考售价校验允许历史年度中的真实型号。
+- Pages `fetchSalesHistory` 读取年度目录与同子路径的规范化 JSON；切换年份重置型号选择与结论。结论生成器可接收上一年数据，按用户当前时间/类型/售价筛选对比同月份，记录覆盖差異不作为真实同比增长。手工参考售价不升级为历史成交价。
+- 回归：前端 `sales-history.test.mjs`、后端 `test_sales_history.py`。独立源表审计、原文件哈希和发布/回滚证据位于被忽略的 test-results；未来追加年度先校验主明细和重复区域，再写新年 JSON 与目录，不覆盖既有年度和原生项目数据库。
+- 2025 导入命令（在 backend 目录）：`.venv/Scripts/python.exe -m app.sales_import <2025_LOCAL.xlsx> --year 2025 --through 12 --output ../frontend/public/sales/lifecycle-2025.json`。必须明确指定新年文件，默认 output 仍为旧单年 lifecycle.json；未来新增年份同时更新 history.json 的 year/file 条目，核对年份一致后再发布，原 Excel 不改。

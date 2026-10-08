@@ -15,12 +15,16 @@ export function recordedLife(row:SalesModel,months:string[]){
   return {first:first===undefined?null:months[first],last:last===undefined?null:months[last],recordedMonths:row.monthly_units.filter(qty=>qty!==null).length,peak:Math.max(...row.monthly_units.map(qty=>qty??0)),total:salesTotal(row)}
 }
 export function matchedSalesProject(row:SalesModel,projects:Project[]){return projects.find(project=>modelKey(project.name)===modelKey(row.model))}
+export function validateSalesDataset(data:SalesDataset):SalesDataset{
+  if(data.schema_version!==1||!Array.isArray(data.products)||data.blank_policy!=='missing'||!Array.isArray(data.months)||data.months.length!==data.through_month||!Number.isInteger(data.year)||data.year<1900||data.year>9998||data.through_month<1||data.through_month>12)throw new Error('销售数据格式不匹配')
+  if(data.months.some((month,index)=>month!==`${data.year}-${String(index+1).padStart(2,'0')}`)||new Set(data.products.map(row=>row.id)).size!==data.products.length)throw new Error('销售月份或型号重复')
+  if(data.products.some(row=>typeof row.id!=='string'||typeof row.model!=='string'||!salesCategories.includes(row.category)||!Array.isArray(row.monthly_units)||row.monthly_units.length!==data.through_month||row.monthly_units.some(value=>value!==null&&(!Number.isSafeInteger(value)||value<0))||!Array.isArray(row.recorded_rows)||row.recorded_rows.length!==data.through_month||!Number.isInteger(row.source_rows)||row.source_rows<1||row.recorded_rows.some(value=>!Number.isInteger(value)||value<0||value>row.source_rows)))throw new Error('销售数量格式不匹配')
+  return data
+}
 export async function fetchSalesDataset(base:string):Promise<SalesDataset|null>{
   const response=await fetch(`${base}sales/lifecycle.json`,{cache:'no-store'})
   if(response.status===404)return null
   if(!response.ok)throw new Error('销售数据读取失败')
   const data=await response.json() as SalesDataset
-  if(data.schema_version!==1||!Array.isArray(data.products)||data.blank_policy!=='missing'||!Array.isArray(data.months)||data.months.length!==data.through_month||!Number.isInteger(data.year)||data.year<1900||data.year>9998||data.through_month<1||data.through_month>12)throw new Error('销售数据格式不匹配')
-  if(data.products.some(row=>typeof row.id!=='string'||typeof row.model!=='string'||!salesCategories.includes(row.category)||!Array.isArray(row.monthly_units)||row.monthly_units.length!==data.through_month||row.monthly_units.some(value=>value!==null&&(!Number.isSafeInteger(value)||value<0))))throw new Error('销售数量格式不匹配')
-  return data
+  return validateSalesDataset(data)
 }

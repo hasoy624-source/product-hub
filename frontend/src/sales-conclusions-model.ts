@@ -15,7 +15,7 @@ export function priceCents(value:string):number|null{
 export function defaultConclusionFilters(data:SalesDataset):ConclusionFilters{
   return {from:data.months[0],to:data.months.at(-1)!,category:'all',price_mode:'all',currency:'USD',min:'',max:''}
 }
-export function generateSalesConclusion(data:SalesDataset,filters:ConclusionFilters,prices:SalesPrice[]):SalesConclusion{
+export function generateSalesConclusion(data:SalesDataset,filters:ConclusionFilters,prices:SalesPrice[],previous?:SalesDataset):SalesConclusion{
   const start=data.months.indexOf(filters.from),end=data.months.indexOf(filters.to)
   if(start<0||end<start)throw new Error('请选择有效时间范围，开始月份不晚于结束月份')
   if(!['all','电池类','配件类','干烧类','待分类'].includes(filters.category))throw new Error('产品类型无效')
@@ -50,6 +50,15 @@ export function generateSalesConclusion(data:SalesDataset,filters:ConclusionFilt
     points.push({title:'时间分布',text:`${peaks.map(row=>row.month).join('、')}为已录入销量峰值${peaks.length>1?'（并列）':''}，${peaks.length>1?'每月':'当月'} ${number(peak)} 件，占所选累计销量 ${percent(peak/total)}。`})
     if(monthCount>1&&known===possible){const first=monthly[0],last=monthly.at(-1)!;points.push({title:'首末月比较',text:first.total>0?`${last.month}较 ${first.month} ${last.total>=first.total?'增加':'减少'} ${percent(Math.abs(last.total-first.total)/first.total)}（${number(first.total)} → ${number(last.total)} 件）。`:`${first.month}已录入 0 件，${last.month}已录入 ${number(last.total)} 件，不计算增长百分比。`})}
   }else points.push({title:'已录入结果',text:'所选月份的已录入销量为 0 件；尚未录入的格子仍为空缺。'})
+  if(previous&&previous.year===data.year-1){
+    if(end>=previous.months.length)notes.push('上年对应月份尚未完整导入，本次不计算同期记录差异。')
+    else{
+      const prior=generateSalesConclusion(previous,{...filters,from:previous.months[start],to:previous.months[end]},prices)
+      if(prior.empty)points.push({title:'同期记录',text:`${previous.year} 年同月份没有匹配的已录入记录，不按 0 计算差额或百分比。`})
+      else{const delta=total-prior.total;points.push({title:'同期记录对比',text:`${previous.year} 年同月份已录入 ${number(prior.total)} 件；${data.year} 年比上年记录${delta>=0?'多':'少'} ${number(Math.abs(delta))} 件${prior.total>0?`，已录入量差异为 ${delta>=0?'+':'-'}${percent(Math.abs(delta)/prior.total)}`:'，上年已录入为 0，不计算百分比'}。`})}
+      notes.push('同期按相同月份及相同筛选条件比较已录入数量；两年记录覆盖与型号结构不同，记录差异不等同真实经营增长或衰退。')
+    }
+  }
   return {scope,total,models,rows,points,notes,empty:false}
 }
 

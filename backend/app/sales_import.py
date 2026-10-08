@@ -32,18 +32,22 @@ def import_sales(source:Path,year:int,through:int):
         if cell.attrib.get('t')=='e':return raw.text
         try:return float(raw.text)
         except ValueError:return raw.text
-    products={};header=False;controls=None;source_rows=0;missing_models=0
+    products={};header=False;controls=None;source_rows=0;missing_models=0;model_column=2;month_column=3
     for row in xml.findall('m:sheetData/m:row',NS):
         number=int(row.attrib['r']);cells={column(c.attrib['r']):c for c in row.findall('m:c',NS)}
         if not header:
-            if 2 in cells and value(cells[2])=='Model No.' and 3 in cells and value(cells[3])=='Jan':header=True
+            january=next((key for key,cell in cells.items() if value(cell)=='Jan'),None)
+            if january and january>=2:
+                label=str(value(cells[january-1]) or '').strip() if january-1 in cells else ''
+                if label in ('Model No.','Model','型号',''):
+                    header=True;model_column=january-1;month_column=january
             continue
-        model=str(value(cells[2]) or '').strip() if 2 in cells else ''
-        if not model and any(c.find('m:f',NS) is not None and (c.find('m:f',NS).text or '').upper().startswith('SUM(') for k,c in cells.items() if 3<=k<=14):
-            controls=[value(cells.get(3+i)) if 3+i in cells else None for i in range(through)];break
+        model=str(value(cells[model_column]) or '').strip() if model_column in cells else ''
+        if not model and any(c.find('m:f',NS) is not None and (c.find('m:f',NS).text or '').upper().startswith('SUM(') for k,c in cells.items() if month_column<=k<month_column+12):
+            controls=[value(cells.get(month_column+i)) if month_column+i in cells else None for i in range(through)];break
         quantities=[]
         for index in range(through):
-            cell=cells.get(index+3);raw=value(cell) if cell is not None else None
+            cell=cells.get(index+month_column);raw=value(cell) if cell is not None else None
             if raw is not None and (not isinstance(raw,(int,float)) or raw<0 or int(raw)!=raw):raise ValueError(f'销量单元格 {number}/{index+1} 不是非负整数')
             if cell is not None and cell.find('m:f',NS) is not None and raw is None:raise ValueError('销量公式缺少缓存结果')
             quantities.append(int(raw) if raw is not None else None)
