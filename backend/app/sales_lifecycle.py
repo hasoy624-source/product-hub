@@ -5,6 +5,7 @@ from typing import Annotated,Literal
 from pydantic import BaseModel,Field,StrictInt
 from sqlalchemy import select
 from .models import SalesReferencePrice,serialize
+from .sales_maintenance import effective_history,register_maintenance_routes
 
 class SalesPriceIn(BaseModel):
     currency: Literal['USD','CNY']
@@ -42,7 +43,8 @@ def sales_history():
 
 def register_sales_routes(app,factory):
     app.get('/api/sales-lifecycle')(sales_dataset)
-    app.get('/api/sales-history')(sales_history)
+    app.get('/api/sales-history')(lambda:effective_history(sales_history(),factory))
+    register_maintenance_routes(app,factory,sales_history)
 
     @app.get('/api/sales-prices')
     def prices():
@@ -51,7 +53,7 @@ def register_sales_routes(app,factory):
 
     @app.put('/api/sales-prices/{product_id}')
     def save_price(product_id:str,payload:SalesPriceIn):
-        history=sales_history()
+        history=effective_history(sales_history(),factory)
         if not any(row['id']==product_id and not row.get('missing_model') for data in history for row in data.get('products',[])):
             raise HTTPException(404,'销售型号不存在')
         with factory() as session,session.begin():

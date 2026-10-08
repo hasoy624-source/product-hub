@@ -1,7 +1,7 @@
 import type { Project } from './types'
 
-export type SalesModel={id:string;model:string;category:string;monthly_units:(number|null)[];recorded_rows:number[];source_rows:number;missing_model:boolean}
-export type SalesDataset={schema_version:number;year:number;through_month:number;blank_policy:'missing';months:string[];products:SalesModel[];source_rows:number;missing_model_records:number;monthly_totals:number[];summary_difference:(number|null)[];revision:string}
+export type SalesModel={id:string;model:string;category:string;monthly_units:(number|null)[];recorded_rows:number[];source_rows:number;missing_model:boolean;aggregate_months?:number[]}
+export type SalesDataset={schema_version:number;year:number;through_month:number;blank_policy:'missing';months:string[];products:SalesModel[];source_rows:number;missing_model_records:number;monthly_totals:number[];summary_difference:(number|null)[];revision:string;aggregation?:'model-month'|'mixed'}
 export const salesCategories=['电池类','配件类','干烧类','待分类']
 export function modelKey(value:string){return value.normalize('NFKC').replace(/\s+/g,'').toUpperCase()}
 export function salesRows(data:SalesDataset,category='all',query=''){

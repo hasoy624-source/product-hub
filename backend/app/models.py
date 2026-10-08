@@ -225,6 +225,23 @@ class SalesReferencePrice(Base):
     amount_cents: Mapped[int] = mapped_column(Integer)
 
 
+class SalesDataState(Base):
+    __tablename__ = "sales_data_state"
+    id: Mapped[str] = mapped_column(String(20), primary_key=True)
+    version: Mapped[str] = mapped_column(String(64))
+    patches: Mapped[list] = mapped_column(JSON, default=list)
+
+
+class SalesDataChange(Base):
+    __tablename__ = "sales_data_changes"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    label: Mapped[str] = mapped_column(String(40))
+    created_at: Mapped[str] = mapped_column(String(40))
+    count: Mapped[int] = mapped_column(Integer)
+    before_patches: Mapped[list] = mapped_column(JSON)
+    undone: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
 class Report(Base):
     __tablename__ = "reports"
     id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)

@@ -4,6 +4,8 @@ import type { ProjectDetails,ProjectFile } from './types'
 import { fetchSalesDataset } from './sales-lifecycle-model'
 import {previewSalesPrices} from './sales-conclusions-model'
 import {fetchSalesHistory} from './sales-history-model'
+import {maintainedSalesHistory,previewSalesDataApi} from './sales-maintenance-storage'
+import {priceCatalog} from './sales-maintenance-model'
 
 export { ApiError, publishedPreviewEnabled } from './preview'
 export async function uploadProjectFile(projectId:string,nodeId:string,file:File):Promise<ProjectFile>{
@@ -36,11 +38,12 @@ export async function uploadProjectImage(projectId: string, file: File) {
 export async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   if (import.meta.env.VITE_PREVIEW_MODE === 'true') {
     if(path==='/sales-lifecycle'&&method==='GET')return await fetchSalesDataset(import.meta.env.BASE_URL) as T
-    if(path==='/sales-history'&&method==='GET')return await fetchSalesHistory(import.meta.env.BASE_URL) as T
+    if(path==='/sales-history'&&method==='GET')return await maintainedSalesHistory(await fetchSalesHistory(import.meta.env.BASE_URL)) as T
+    if(path==='/sales-data'||path.startsWith('/sales-data/'))return await previewSalesDataApi(path,method,body,await fetchSalesHistory(import.meta.env.BASE_URL)) as T
     if(path==='/sales-prices'||path.startsWith('/sales-prices/')){
-      const history=await fetchSalesHistory(import.meta.env.BASE_URL)
+      const history=await maintainedSalesHistory(await fetchSalesHistory(import.meta.env.BASE_URL))
       if(!history.length)throw new ApiError('销量数据尚未导入',404)
-      const products=[...new Map(history.flatMap(data=>data.products).map(row=>[row.id,row])).values()]
+      const products=priceCatalog(history)
       return previewSalesPrices(path,method,body,{...history[0],products},localStorage) as T
     }
     const result=await previewApi<T>(path,method,body),match=path.match(/^\/projects\/([^/]+)\/details$/)

@@ -169,3 +169,13 @@ curl -fsS https://<DOMAIN>/api/health
 - Pages `fetchSalesHistory` 读取年度目录与同子路径的规范化 JSON；切换年份重置型号选择与结论。结论生成器可接收上一年数据，按用户当前时间/类型/售价筛选对比同月份，记录覆盖差異不作为真实同比增长。手工参考售价不升级为历史成交价。
 - 回归：前端 `sales-history.test.mjs`、后端 `test_sales_history.py`。独立源表审计、原文件哈希和发布/回滚证据位于被忽略的 test-results；未来追加年度先校验主明细和重复区域，再写新年 JSON 与目录，不覆盖既有年度和原生项目数据库。
 - 2025 导入命令（在 backend 目录）：`.venv/Scripts/python.exe -m app.sales_import <2025_LOCAL.xlsx> --year 2025 --through 12 --output ../frontend/public/sales/lifecycle-2025.json`。必须明确指定新年文件，默认 output 仍为旧单年 lifecycle.json；未来新增年份同时更新 history.json 的 year/file 条目，核对年份一致后再发布，原 Excel 不改。
+
+## 17. 持续数据维护接口
+
+- `SalesDataManager.tsx` 是首页及产品与销售右上“数据维护”弹窗，支持手动月合计、Excel/CSV 解析预览、确认保存、最近变更撤销、年度销量 JSON 备份。操作不写原 Excel 或 public 基础快照；以完整规范化型号 + 年份 + 月份为唯一业务键，数量是合计替换而非追加。
+- API：GET `/api/sales-data` 返回 history/revision/changes/storage；POST `/api/sales-data/preview` 和 `/commit` 接受 `{revision,mode:'fill'|'replace',source:'manual'|'excel'|'backup',rows:[{year,model,month,units:integer|null}]}`。fill 默认仅补空缺；replace 明确覆盖；null 明确清空，0 明确零销量；完全相同不生成新变更、不叠加。每批 1–5000 条，年份 1900–9998、月份 1–12、数量 0–1,000,000,000。重复键整批失败。写入必须携带当前 revision，冲突 HTTP 409 后重新读取预览。
+- `sales_maintenance.py` / `sales-maintenance-model.ts` 实现维护覆盖层。服务端新增补充表 sales_data_state（版本/覆盖记录）与 sales_data_changes（维护记录/此前覆盖，微秒时间排序）。事务 + 版本 CAS 避免并发静默丢更新；POST `/api/sales-data/changes/{id}/undo` 只恢复最近一次未撤销的覆盖，仍校验当前 revision。原生 project-workspace.db 的现有业务表不因开发测试改动；测试使用临时库。
+- GET `/api/sales-history` 返回已维护的有效数据，保留原 `/sales-lifecycle` 基础快照契约。新增型号可维护参考售价。维护后的年度 aggregation=model-month/mixed，逐格 aggregate_months 标记已维护合计，未编辑型号及月份的 source_rows/recorded_rows 保留原覆盖缺口；缺失月份保持 null。新年份需要显示未配齐上年的较晚月份时默认年度销量，避免保存后刷新却只看较短同期范围。
+- Pages 分支 `sales-maintenance-storage.ts` 存独立 IndexedDB impetus-sales-data-v1/workspace，单记录原子版本比较，不用本地存储塞大文件、不修改项目缓存或售价键。原始文件仅在浏览器解析，fflate 0.8.3 懒加载解包限定销售 XML；只输出业务合计，10 MB 文件/32 MB XML/20000 行/5000 合计上限，拒绝外部工作表关系和 DTD。原宽表型号换行规范成空格、后缀保留、客户行同型号合并，首次数量 SUM 后停止。长表重复键拒绝。CSV 仅支持长表，必须严格 UTF-8，JSON 备份按年含 null；同一业务层处理手动、Excel 与备份。
+- 当前 GitHub Pages 的编辑仍保存在本浏览器，不是写 GitHub 的后台；生产环境保存在数据库、沿用身份验证与同源检查，可由团队共同使用。浏览器维护不自动扩展公开内容。需要发布维护结果时，先导出授权年度合计，核对再更新对应 public 年度文件与目录、测试构建、提交部署；不要用浏览器保存成功反馈冒充全员同步。
+- 接手代码示例：先 GET sales-data 拿 revision；POST preview 核对差异；POST commit 使用同一 revision 与 body；409 重读；对当前最新 change POST undo。前端 tests/sales-maintenance.test.mjs、后端 tests/test_sales_maintenance.py 覆盖重复/覆盖/空缺/0/新年/撤销/并发过期版本/备份，浏览器必须测试真实 Excel，不在公开用户来源写临时测试值。

@@ -29,12 +29,14 @@ export function generateSalesConclusion(data:SalesDataset,filters:ConclusionFilt
   const total=rows.reduce((value,row)=>value+sum(row),0),models=rows.filter(row=>!row.missing_model&&row.monthly_units.slice(start,end+1).some(value=>value!==null)).length
   const priceScope=filters.price_mode==='all'?'全部售价（含未录入）':filters.price_mode==='missing'?'未录入售价':`${filters.currency} ${min===null?'不限':number(min/100)}–${max===null?'不限':number(max/100)}（参考售价）`
   const scope=`${filters.from} 至 ${filters.to} · ${filters.category==='all'?'全部产品':filters.category} · ${priceScope}`
-  const known=rows.reduce((n,row)=>n+row.recorded_rows.slice(start,end+1).reduce((a,b)=>a+b,0),0),possible=rows.reduce((n,row)=>n+row.source_rows*monthCount,0)
+  let known=0,possible=0
+  for(const row of rows)for(let i=start;i<=end;i++){const aggregate=row.aggregate_months?.includes(i+1);known+=aggregate?Number(row.monthly_units[i]!==null):row.recorded_rows[i];possible+=aggregate?1:row.source_rows}
   const missingPrices=base.filter(row=>!priceMap.has(row.id)).length
   const notes:string[]=[]
   if(missingPrices)notes.push(`所选类型有 ${missingPrices} 个型号汇总未录入售价${filters.price_mode==='range'?'，已排除在售价区间统计之外':'，不推算售价或销售额'}。`)
   if(filters.price_mode==='range')notes.push('售价区间按当前维护的参考售价筛选，不代表历史成交价；不同币种不混算。')
-  if(possible&&known<possible)notes.push(`所选范围 ${number(possible)} 个明细月份格中，${number(known)} 个已录入，${number(possible-known)} 个空缺；空缺不按 0 计算，月份差异不作为真实增长或衰退结论。`)
+  if(possible&&known<possible)notes.push(`所选范围 ${number(possible)} 个${data.aggregation?'统计记录':'明细'}月份格中，${number(known)} 个已录入，${number(possible-known)} 个空缺；空缺不按 0 计算，月份差异不作为真实增长或衰退结论。`)
+  if(data.aggregation)notes.push('已维护月份使用型号月合计；未修改月份保留原明细覆盖缺口，维护值替换合计而非追加。')
   if(rows.some(row=>row.missing_model))notes.push(`未标注型号的 ${number(rows.filter(row=>row.missing_model).reduce((n,row)=>n+sum(row),0))} 件保留在总量中，不参与型号排名。`)
   const points:SalesConclusion['points']=[]
   const hasRecords=rows.some(row=>row.monthly_units.slice(start,end+1).some(value=>value!==null))
