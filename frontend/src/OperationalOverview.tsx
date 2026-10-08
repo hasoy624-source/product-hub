@@ -7,6 +7,9 @@ import SemanticTag from './SemanticTag'
 import { categoryTone, stageTone, toneStyle } from './semantics'
 import type { Stage } from './knowledge-catalog'
 import type { Dashboard, Project, Report, Workspace } from './types'
+import {useState} from 'react'
+import SalesLifecycle from './SalesLifecycle'
+import './sales-lifecycle.css'
 
 type Props = {
   workspace: Workspace
@@ -38,9 +41,11 @@ function SalesTrend({ dashboard }: { dashboard: Dashboard }) {
 }
 
 export default function OperationalOverview({ workspace, dashboard, today, monthControl, onNavigate, onProject, onStage, onDocuments, onReport }: Props) {
+  const [hasSalesVolume,setHasSalesVolume]=useState(false)
   const model = operationalOverview(workspace, today)
   const productSales = dashboard.product_sales.filter(product => product.revenue_cents > 0).slice(0, 3)
   return <div className="operational-overview">
+    <SalesLifecycle projects={workspace.projects} onReady={setHasSalesVolume}/>
     <div className="ops-summary" aria-label="工作状态">
       <span><FlaskConical size={15}/><strong>{model.activeCount}</strong> 个在研项目</span>
       <span><ListTodo size={15}/><strong>{model.openTaskCount}</strong> 项待完成任务</span>
@@ -76,7 +81,7 @@ export default function OperationalOverview({ workspace, dashboard, today, month
       </div>
     </section>
 
-    <section className="ops-business ops-surface" aria-label="经营监测">
+    {(!hasSalesVolume||workspace.sales.length>0)&&<section className="ops-business ops-surface" aria-label="经营监测">
       <div className="ops-performance"><div className="ops-section-head"><div><h2>经营表现</h2><p>所选月净销售额 · CNY</p></div>{monthControl}</div>
         <div className="ops-revenue"><strong>{money(dashboard.revenue_cents)}</strong>{dashboard.growth_pct !== null ? <span className={dashboard.growth_pct < 0 ? 'down' : ''}>{dashboard.growth_pct < 0 ? <ArrowDownRight size={16}/> : <ArrowUpRight size={16}/>} {Math.abs(dashboard.growth_pct).toFixed(1)}%<small>较上月</small></span> : <small>上月无销售，暂无环比</small>}</div>
         <SalesTrend dashboard={dashboard}/>
@@ -85,7 +90,7 @@ export default function OperationalOverview({ workspace, dashboard, today, month
         {productSales.map((product, index) => <button className="ops-product-sale" key={product.product_id} data-tone={categoryTone(product.category)} style={toneStyle(categoryTone(product.category))} onClick={() => onNavigate('products')}><span className="ops-product-sale-title"><small>{String(index + 1).padStart(2, '0')}</small><strong>{product.name}</strong><span>{product.share.toFixed(1)}%</span></span><span className="ops-product-bar"><i style={{ width: `${product.share}%` }}/></span><span className="ops-product-sale-foot"><SemanticTag kind="category" value={product.category}/><strong>{money(product.revenue_cents)}</strong></span></button>)}
         {!productSales.length && <p className="ops-empty">所选月暂无销售记录。</p>}
       </div>
-    </section>
+    </section>}
 
     <div className="ops-secondary">
       <section><div className="ops-section-head"><h2>近期市场反馈</h2><button className="text-button" onClick={() => onNavigate('signals')}>全部情报<ArrowRight size={15}/></button></div>{model.signals.map(signal => <button key={signal.id} className="ops-secondary-row" onClick={() => onNavigate('signals')}><span className={`ops-signal-dot ${signal.sentiment === '负向' ? 'negative' : ''}`}/><span><strong>{signal.title}</strong><small><SemanticTag kind="signal" value={signal.kind}/> · {signal.brand}</small></span><time>{signal.occurred_on.slice(5).replace('-', '/')}</time><ArrowRight size={14}/></button>)}{!model.signals.length && <p className="ops-empty">暂无市场反馈。</p>}</section>

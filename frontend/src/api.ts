@@ -1,6 +1,7 @@
 import { ApiError, previewApi } from './preview'
 import { previewProjectFiles,previewFileBlob,storeProjectFile,validateProjectFile } from './project-files'
 import type { ProjectDetails,ProjectFile } from './types'
+import { fetchSalesDataset } from './sales-lifecycle-model'
 
 export { ApiError, publishedPreviewEnabled } from './preview'
 export async function uploadProjectFile(projectId:string,nodeId:string,file:File):Promise<ProjectFile>{
@@ -32,6 +33,7 @@ export async function uploadProjectImage(projectId: string, file: File) {
 }
 export async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   if (import.meta.env.VITE_PREVIEW_MODE === 'true') {
+    if(path==='/sales-lifecycle'&&method==='GET')return await fetchSalesDataset(import.meta.env.BASE_URL) as T
     const result=await previewApi<T>(path,method,body),match=path.match(/^\/projects\/([^/]+)\/details$/)
     return method==='GET'&&match?{...result,files:await previewProjectFiles(match[1])} as T:result
   }

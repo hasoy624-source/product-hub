@@ -140,3 +140,12 @@ curl -fsS https://<DOMAIN>/api/health
 - 后端 project_files 表保存节点文件元数据；原始字节默认在 backend/project-files，PROJECT_FILES 可指定路径。POST /api/projects/{project}/milestones/{node}/files?name=filename 接收原始文件，GET 同路径/{file} 强制附件下载；单文件 20 MB、节点 30 文件、项目 200 MB。项目/节点边界必须校验；文件名不作为磁盘路径。生产 Compose 配置独立持久卷。
 - GitHub Pages 使用 IndexedDB 保存 Blob 和文件元数据，刷新后保留，同源同浏览器可下载，文件不写 localStorage、不回写数据库、不推送 GitHub。业务快照/存储 revision 不变，导出器不自动公开上传附件。
 - 风险扇区与数量入口跳 #projects?attention=risk；逾期任务跳 attention=tasks，只筛选这些任务所属项目，不等同于所有项目计划逾期；总览跳 attention=exceptions。负向反馈仍进入真实市场情报，未关联项目不猜测关系。旧异常详情中的项目链接使用 ?project=id 定位、展开工作表，不打开大详情侧栏。
+
+## 14. 销售产品生命周期与销量
+
+- 用户于 2026-10-08 提供 ADVC 销售表，并确认按 2026 年 1–9 月处理；空白表示未录入，不补 0；授权公开同步仅产品型号、按月销量和图表。Monthly Sales by Product 是唯一导入页，客户代码、Notes、展会安排、报价和原文件不进入发布数据。
+- `python -m app.sales_import SOURCE.xlsx --year 2026 --through 9` 从 backend 运行，生成 frontend/public/sales/lifecycle.json。标准库解析 xlsx，不需要服务器安装 Excel/openpyxl。同型号重复客户行按标准化完整型号汇总；型号的组件后缀不剥离，不把吸嘴/包装合并到主机。D/P/G 按用户规则分类，其他保留待分类，无型号但有销量的行单独保留。
+- 该表原月汇总只覆盖到第 216 行，末尾 11 行合计 20,000 件未纳入原汇总。本次 165 条明细、126 个标准化型号，累计已录入 2,280,143 件。导入器独立重算并记录原汇总差，不使用错误的外链引用行，也不重写原 Excel。
+- 首页 SalesLifecycle.tsx 使用分类月度柱图和型号月份热力轨迹；点击型号展示真实已录入曲线与精确同编号研发项目。首笔/最近观测只代表本期记录，不猜上市、成熟、衰退或退市，不把研发阶段当作市场生命周期。
+- 文件/API 是原生型号与月销量记录，不显示源表资料；原项目快照和 119 个项目不改。没有金额，保持与财务 Sale 分离，不制造 0 元营收；首页有销量数据而无金额记录时不显示旧的空金额面板。
+- GET /api/sales-lifecycle 读取标准化文件，SALES_LIFECYCLE_DATA 可配置持久数据路径；Pages 从同子路径静态 JSON 读取。更新数据重复执行导入、测试、构建和 GitHub 发布。
