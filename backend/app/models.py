@@ -218,6 +218,13 @@ class Job(Base):
     last_run_at: Mapped[str | None] = mapped_column(String(40), nullable=True)
 
 
+class SalesReferencePrice(Base):
+    __tablename__ = "sales_reference_prices"
+    product_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    currency: Mapped[str] = mapped_column(String(3))
+    amount_cents: Mapped[int] = mapped_column(Integer)
+
+
 class Report(Base):
     __tablename__ = "reports"
     id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)

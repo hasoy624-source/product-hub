@@ -111,7 +111,7 @@ def create_app(database_url=None, seed_demo=True):
     app.state.mode = mode
     register_project_routes(app, factory)
     register_file_routes(app,factory)
-    register_sales_routes(app)
+    register_sales_routes(app,factory)
     register_market_routes(app, factory)
     app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"] if mode == "demo" else [], allow_credentials=True, allow_methods=["GET", "POST", "PATCH", "PUT", "OPTIONS"], allow_headers=["Content-Type"])
     attempts = {}

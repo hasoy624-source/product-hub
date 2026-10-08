@@ -149,3 +149,12 @@ curl -fsS https://<DOMAIN>/api/health
 - 首页 SalesLifecycle.tsx 使用分类月度柱图和型号月份热力轨迹；点击型号展示真实已录入曲线与精确同编号研发项目。首笔/最近观测只代表本期记录，不猜上市、成熟、衰退或退市，不把研发阶段当作市场生命周期。
 - 文件/API 是原生型号与月销量记录，不显示源表资料；原项目快照和 119 个项目不改。没有金额，保持与财务 Sale 分离，不制造 0 元营收；首页有销量数据而无金额记录时不显示旧的空金额面板。
 - GET /api/sales-lifecycle 读取标准化文件，SALES_LIFECYCLE_DATA 可配置持久数据路径；Pages 从同子路径静态 JSON 读取。更新数据重复执行导入、测试、构建和 GitHub 发布。
+
+## 15. 销售结论与参考售价
+
+- `SalesConclusions.tsx` 在首页和产品与销售的销量图下提供折叠分析区；`sales-conclusions-model.ts` 是可测试的确定性结论生成器，无外部 AI 调用。时间区间、产品类型、售价区间独立于原图表筛选；筛选和售价变化后旧结论标记过期，重新生成才更新。
+- 只汇总已录入销量：规模、分类占比、重点完整型号、峰值月份。空缺保持未知；按原生 `recorded_rows` / `source_rows` 计算明细月份录入覆盖，覆盖不完整不生成真实增长或衰退判断。未标注型号计入总量，不进入型号排名；并列峰值保留并列。
+- 原销售导入没有 SKU 售价，禁止从展会安排、客户报价或平均收入猜售价。参考售价是用户另行维护的每件金额（整数分、USD/CNY），仅用于当前价格区间筛选，不是历史成交价格，不乘数量推算营收。区间上下界包含边界值，不同币种不混算；全部售价含未录入，区间排除未录入，“未录入售价”只取空缺。
+- 管理接口 `GET /api/sales-prices`、`PUT /api/sales-prices/{sales_model_id}`，请求 `{currency:'USD'|'CNY',amount_cents:integer|null}`；null 清除、0 明确免费。校验型号属于导入数据且不是未标注汇总，金额 0–1,000,000,000 分。真实后端补充表 `sales_reference_prices`，不改变项目或销量表；生产沿用 API 身份验证。
+- Pages 分支保存到浏览器独立键 `impetus-sales-reference-prices-v1`，不写公开快照、不修改项目缓存。测试不能把临时价格写入线上用户浏览器；浏览器回归只在独立 localhost 来源维护临时售价。发布代码不发布手工参考售价或原 Excel。
+- 回归：前端 `tests/sales-conclusions.test.mjs` 覆盖月/类型/价格范围、币种、空缺/0、生成结论与浏览器售价管理；后端 `tests/test_sales_prices.py` 使用临时 SQLite 验证持久化与校验。发布仍走第 4 节 GitHub Pages，不重启正在运行的原生项目服务或重写本地数据库。
