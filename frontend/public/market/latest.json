@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-07T03:37:07+00:00",
+  "updated_at": "2026-10-08T07:01:57+00:00",
   "sources": [
     {
       "id": "pulsar-puffco",
@@ -11,13 +11,13 @@
       "max_products": 80,
       "max_collection_pages": 5,
       "max_review_pages": 10,
-      "last_run_at": "2026-10-07T03:38:47+00:00",
+      "last_run_at": "2026-10-08T07:03:42+00:00",
       "last_status": "success",
       "message": "采集完成",
       "retry_after": 0,
-      "review_count": 110,
-      "product_count": 48,
-      "last_success_at": "2026-10-07T03:38:47+00:00"
+      "review_count": 120,
+      "product_count": 50,
+      "last_success_at": "2026-10-08T07:03:42+00:00"
     }
   ],
   "reviews": [
@@ -37,7 +37,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/ocean-aquarium-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-bfdd65251e7af8814c16ee15f577c782",
@@ -55,7 +55,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-proxy-3d-chamber#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-68ce6d913237412d7b6cdf206b930697",
@@ -73,7 +73,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/giddy-ghost-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-4df00df6b12e8cb4b9c3167935c50477",
@@ -91,7 +91,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-3d-chamber#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-c7a64714773b5f3296b7b8fa5235d0c3",
@@ -109,7 +109,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-a4fe301c81fcaab0a5582e3d1a0d438a",
@@ -130,12 +130,12 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-27e143cf8fdb0e7acb59b8222f48bac3",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "fccc13e5-c42b-4442-90e6-e5997d65c065",
       "title": "",
@@ -148,7 +148,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-d53835a7da15b7afc6e49d94cfec7fdd",
@@ -168,7 +168,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-c31827afc9d28d4bcf66fba1be50bdd0",
@@ -188,7 +188,43 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
+    },
+    {
+      "id": "review-fee295e2e4d3bfe9588ec3026d9a5a03",
+      "source_id": "pulsar-puffco",
+      "product_title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
+      "product_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
+      "remote_id": "",
+      "title": "",
+      "content": "Ordered this with glob mops and I got the glob mops but instead of the Poki ball attachment i got a little blue dab rig.",
+      "rating": 1,
+      "sentiment": "负向",
+      "published_on": "2026-01-20",
+      "published_raw": "2026-01-20T14:47:57Z",
+      "verified_purchase": false,
+      "tags": [],
+      "source_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak#judgeme_product_reviews",
+      "first_seen_at": "2026-10-08T07:01:57+00:00",
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
+    },
+    {
+      "id": "review-9a4ade359e8576cdf56f213874880b9e",
+      "source_id": "pulsar-puffco",
+      "product_title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
+      "product_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
+      "remote_id": "1006cba0-173e-49c5-af8d-2c3fb7350109",
+      "title": "Wrong Product",
+      "content": "Ordered this with glob mops and I got the glob mops but instead of the Poki ball attachment i got a little blue dab rig.",
+      "rating": 1,
+      "sentiment": "负向",
+      "published_on": "2026-01-20",
+      "published_raw": "2026-01-20 14:47:57 UTC",
+      "verified_purchase": false,
+      "tags": [],
+      "source_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak#judgeme_product_reviews",
+      "first_seen_at": "2026-10-08T07:01:57+00:00",
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-4872676ed0bfc92ba4e53db863322f28",
@@ -208,12 +244,12 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-pivot-3d-chamber#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-a7905131c40748c6e3f5156b56c68cb7",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "",
       "title": "",
@@ -226,12 +262,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-06ad9857dcf7ed51bfe8c2547d5da418",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "06bd3a45-b495-5013-aed8-1a64677ed5f4",
       "title": "Love them all thank you.",
@@ -244,12 +280,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-38bc27b89e74b82ad317cb06f9da4dbf",
       "source_id": "pulsar-puffco",
-      "product_title": "Swiss Bubbler Attachment for Puffco Pivot",
+      "product_title": "Swiss Bubbler for Puffco Pivot",
       "product_url": "https://www.pulsarshop.com/products/swiss-bubbler-attachment-puffco-pivot",
       "remote_id": "6477276e-c09d-4088-9dd5-95dddf31c8f5",
       "title": "A Great Addition",
@@ -262,7 +298,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/swiss-bubbler-attachment-puffco-pivot#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-0c0a59dc49a2157a7a4478aa90502055",
@@ -282,7 +318,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-pivot-concentrate-vaporizer#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-cd2ec52212770fba3a5c00120123a83a",
@@ -300,7 +336,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-pivot-water-pipe-adapter#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-32a04eb340e0e0dab477f1855f043bb7",
@@ -318,12 +354,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-pivot-water-pipe-adapter#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-bc5c64597a74a5ca60bd3abcdcf82633",
       "source_id": "pulsar-puffco",
-      "product_title": "Swiss Bubbler Attachment for Puffco Pivot",
+      "product_title": "Swiss Bubbler for Puffco Pivot",
       "product_url": "https://www.pulsarshop.com/products/swiss-bubbler-attachment-puffco-pivot",
       "remote_id": "0536cce7-e9d6-40f3-869c-97b612f66898",
       "title": "Love the product I will",
@@ -336,7 +372,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/swiss-bubbler-attachment-puffco-pivot#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-5c870f1b2c4fd024ba58e9e9b98071e6",
@@ -354,7 +390,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-3584fb783fdd611cb8228dba1fc13584",
@@ -372,12 +408,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-625dd672e2d2f97b2221ee6e0bfd9564",
       "source_id": "pulsar-puffco",
-      "product_title": "Candy Cane Mouthpiece Attachment for Puffco Pivot",
+      "product_title": "Candy Cane Attachment for Puffco Pivot",
       "product_url": "https://www.pulsarshop.com/products/candy-cane-mouthpiece-attachment-puffco-pivot",
       "remote_id": "d0b269a7-1903-4b6e-b5e1-a83c44508bf4",
       "title": "Great mouthpiece definitely will purchase",
@@ -390,7 +426,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/candy-cane-mouthpiece-attachment-puffco-pivot#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-3325373cd7abfd794c9eaaf5ee1bf7ae",
@@ -408,7 +444,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-1813fd491ccadc07a4b85457ab1be7a0",
@@ -426,7 +462,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-51ee170e7ec59f209baed79283326bd7",
@@ -444,7 +480,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-pivot-concentrate-vaporizer#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-8e527e3ba3b363b42b465762a8696c8a",
@@ -462,7 +498,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-369fe8df0c1a921fb7d89cd94f7c1777",
@@ -480,7 +516,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-450658c442d0bcba3f04e811f315163d",
@@ -500,7 +536,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-pivot-water-pipe-adapter#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-2a1abfe907b70133b1472e1a9d41f60e",
@@ -520,12 +556,12 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-pivot-water-pipe-adapter#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-dbbeebea759907eb5219016e731db020",
       "source_id": "pulsar-puffco",
-      "product_title": "Snowman Mouthpiece Attachment for Puffco Pivot",
+      "product_title": "Snowman Attachment for Puffco Pivot",
       "product_url": "https://www.pulsarshop.com/products/snowman-mouthpiece-attachment-puffco-pivot",
       "remote_id": "d18ccd1f-7e20-4bab-a5cf-effec1af49a9",
       "title": "so cool",
@@ -540,7 +576,47 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/snowman-mouthpiece-attachment-puffco-pivot#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
+    },
+    {
+      "id": "review-b29542f6415b297fc7818cb5b92b8245",
+      "source_id": "pulsar-puffco",
+      "product_title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
+      "product_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
+      "remote_id": "",
+      "title": "",
+      "content": "Looks so cool on the Puffco Peak. Incredibly cheap price for an amazing quality attachment. Not too heavy so it doesn’t lean forward like some do. High crafting quality, so we would highly recommend!",
+      "rating": 5,
+      "sentiment": "正向",
+      "published_on": "2025-09-27",
+      "published_raw": "2025-09-27T18:19:39Z",
+      "verified_purchase": false,
+      "tags": [
+        "质量"
+      ],
+      "source_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak#judgeme_product_reviews",
+      "first_seen_at": "2026-10-08T07:01:57+00:00",
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
+    },
+    {
+      "id": "review-83bab67b0a986a338f269e9fae5c559a",
+      "source_id": "pulsar-puffco",
+      "product_title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
+      "product_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
+      "remote_id": "eed68c27-edcc-4585-9b2c-8f376613bfe3",
+      "title": "10/10 Attachment",
+      "content": "Looks so cool on the Puffco Peak. Incredibly cheap price for an amazing quality attachment. Not too heavy so it doesn’t lean forward like some do. High crafting quality, so we would highly recommend!",
+      "rating": 5,
+      "sentiment": "正向",
+      "published_on": "2025-09-27",
+      "published_raw": "2025-09-27 18:19:39 UTC",
+      "verified_purchase": false,
+      "tags": [
+        "质量"
+      ],
+      "source_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak#judgeme_product_reviews",
+      "first_seen_at": "2026-10-08T07:01:57+00:00",
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-c5e5217379b768a5283458495a33210c",
@@ -560,7 +636,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/kandyland-rig-puffco-peak-series#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-e2926ee2703c36a0b351e2175373788e",
@@ -578,7 +654,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-1a4d74032387e1794d65adfef508cff8",
@@ -596,7 +672,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-b105cd17723cd104d8d56eb868bcdadc",
@@ -614,12 +690,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/kandyland-rig-puffco-peak-series#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-d94c4f6370e29583683d0ee28f1f7edc",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "",
       "title": "",
@@ -632,12 +708,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-062c5e22d023086b75bf5d109ee2b981",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "9f1c4f2f-90f7-4f31-9181-4b5b09f9a75e",
       "title": "Great addition",
@@ -650,7 +726,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-ac97947a10dce3de00f23b6da76f84ea",
@@ -668,7 +744,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-8e4810e42ffd4032c1009193fcc087b8",
@@ -686,7 +762,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-e4fab314beece9005bb243543171b04d",
@@ -707,7 +783,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-797e435f745dacf2050ced68c37c858b",
@@ -728,7 +804,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-a899fd233569266c587084fabbdc36a7",
@@ -748,7 +824,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-3d-chamber#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-5d6518ec3df3c016fde7f545592208c0",
@@ -768,7 +844,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-3d-chamber#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-5e41a718ee96d47bd1f38d33a5224a54",
@@ -786,7 +862,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-383082075bee6f94debaf70dbca73e8d",
@@ -804,7 +880,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-8e099a5e391cb870806832ea4e380e5c",
@@ -822,7 +898,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-794e781f44b7b390151aafde13680755",
@@ -840,7 +916,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-37ca3e33b5cd952f4d90f005127c1d93",
@@ -858,7 +934,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-03887680b80fafe5caa171c6bfc53f07",
@@ -876,12 +952,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-50170ec216254a9a3104cc5f2e1ecdc5",
       "source_id": "pulsar-puffco",
-      "product_title": "Grateful Dead x Pulsar Stealied Out Rig Set for Puffco Peak Series",
+      "product_title": "Grateful Dead x Pulsar Stealied Out Bubbler Set for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/grateful-dead-stealied-out-rig-puffco-peak-series",
       "remote_id": "6f699f41-d202-49a8-bae3-5b46cc885c09",
       "title": "Great",
@@ -894,7 +970,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/grateful-dead-stealied-out-rig-puffco-peak-series#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-d50b16ba174617fe109fe3e446f057eb",
@@ -914,7 +990,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-2564108f2604f96969c46f9f2bfec729",
@@ -934,7 +1010,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-dc444a229f95a0ef9c4130069283f2ff",
@@ -952,7 +1028,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/triple-tube-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-6f6776425044822614e90da8b5b05015",
@@ -970,7 +1046,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-57dc60a20da30bbdc573cc187ba6f141",
@@ -988,7 +1064,43 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
+    },
+    {
+      "id": "review-4d1195e9bdbe44811de133ccd6162fb7",
+      "source_id": "pulsar-puffco",
+      "product_title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
+      "product_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
+      "remote_id": "b7d0c953-38ab-4050-9cf0-fd85e9f48b8d",
+      "title": "Awesome",
+      "content": "Nice top for the peak. Hits great",
+      "rating": 5,
+      "sentiment": "正向",
+      "published_on": "2025-01-14",
+      "published_raw": "2025-01-14 19:39:27 UTC",
+      "verified_purchase": false,
+      "tags": [],
+      "source_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak#judgeme_product_reviews",
+      "first_seen_at": "2026-10-08T07:01:57+00:00",
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
+    },
+    {
+      "id": "review-3116b9f59959032da469061db974ca68",
+      "source_id": "pulsar-puffco",
+      "product_title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
+      "product_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
+      "remote_id": "",
+      "title": "",
+      "content": "Nice top for the peak. Hits great",
+      "rating": 5,
+      "sentiment": "正向",
+      "published_on": "2025-01-14",
+      "published_raw": "2025-01-14T19:39:27Z",
+      "verified_purchase": false,
+      "tags": [],
+      "source_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak#judgeme_product_reviews",
+      "first_seen_at": "2026-10-08T07:01:57+00:00",
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-a197dba5f2ee1805a7a8b56bca29e54c",
@@ -1008,7 +1120,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-pivot-concentrate-vaporizer#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-38b8b4cbe39a4056bcc053af3aca05d8",
@@ -1026,7 +1138,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-pivot-concentrate-vaporizer#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-8a9e3aa889fa4e66dd70c427e3547656",
@@ -1044,7 +1156,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-3c01a121ec3031ab0fcb42787c2bdf8a",
@@ -1062,12 +1174,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-23ab08f1a3642c251c07d6fc15fa64c1",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Donut Staxx Rig for Puffco Peak Series",
+      "product_title": "Pulsar Donut Staxx Attachment for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/donut-staxx-rig-puffco-peak",
       "remote_id": "9227114d-4cec-54da-ad51-449bf40ebb45",
       "title": "Great Dry Dab",
@@ -1080,7 +1192,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/donut-staxx-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-0bb41759e2c9308ebaf6d0e360348805",
@@ -1098,7 +1210,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-peak-pro-3d-xl-chamber#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-cdf565b4cfaec4d7ab9159fe81d33ff0",
@@ -1116,7 +1228,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/mushroom-groove-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-089e06c74cc3e803bedacf2d11188daa",
@@ -1134,7 +1246,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/mushroom-groove-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-d4fb110a0e1bc6d54a55c7425bfb728f",
@@ -1152,7 +1264,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/ocean-aquarium-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-336931381349993050e1ad53b941a554",
@@ -1170,12 +1282,84 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/ocean-aquarium-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
+    },
+    {
+      "id": "review-414973e4427b744e57179974a2cd525f",
+      "source_id": "pulsar-puffco",
+      "product_title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
+      "product_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
+      "remote_id": "",
+      "title": "",
+      "content": "I’m OBSESSED with this piece. It’s well made and rips. Props to the artist",
+      "rating": 5,
+      "sentiment": "正向",
+      "published_on": "2024-09-12",
+      "published_raw": "2024-09-12T20:03:31Z",
+      "verified_purchase": false,
+      "tags": [],
+      "source_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak#judgeme_product_reviews",
+      "first_seen_at": "2026-10-08T07:01:57+00:00",
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
+    },
+    {
+      "id": "review-051efb8b2242fce29591e784b9c569c5",
+      "source_id": "pulsar-puffco",
+      "product_title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
+      "product_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
+      "remote_id": "8a5f4324-299f-4c62-a77b-a57dd954ced5",
+      "title": "Pokemon fan dream Piece",
+      "content": "I’m OBSESSED with this piece. It’s well made and rips. Props to the artist",
+      "rating": 5,
+      "sentiment": "正向",
+      "published_on": "2024-09-12",
+      "published_raw": "2024-09-12 20:03:31 UTC",
+      "verified_purchase": false,
+      "tags": [],
+      "source_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak#judgeme_product_reviews",
+      "first_seen_at": "2026-10-08T07:01:57+00:00",
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
+    },
+    {
+      "id": "review-fc2e9db0d318d9949eab7dfbe5cf51e2",
+      "source_id": "pulsar-puffco",
+      "product_title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
+      "product_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
+      "remote_id": "bf2eec0a-9c32-4fcb-bc2c-113417b26099",
+      "title": "Hits super smooth looks super",
+      "content": "Hits super smooth looks super cool seeing the globe fill up with smoke",
+      "rating": 5,
+      "sentiment": "正向",
+      "published_on": "2024-09-08",
+      "published_raw": "2024-09-08 22:56:33 UTC",
+      "verified_purchase": false,
+      "tags": [],
+      "source_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak#judgeme_product_reviews",
+      "first_seen_at": "2026-10-08T07:01:57+00:00",
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
+    },
+    {
+      "id": "review-75959ba22fffe9c2e7b2e7832a562af2",
+      "source_id": "pulsar-puffco",
+      "product_title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
+      "product_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
+      "remote_id": "",
+      "title": "",
+      "content": "Hits super smooth looks super cool seeing the globe fill up with smoke",
+      "rating": 5,
+      "sentiment": "正向",
+      "published_on": "2024-09-08",
+      "published_raw": "2024-09-08T22:56:33Z",
+      "verified_purchase": false,
+      "tags": [],
+      "source_url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak#judgeme_product_reviews",
+      "first_seen_at": "2026-10-08T07:01:57+00:00",
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-fc178d3a1e774aaf53de221ff6580119",
       "source_id": "pulsar-puffco",
-      "product_title": "Puffco Peak Pro Glass 2.0",
+      "product_title": "Puffco Peak Pro Glass Bubbler 2.0",
       "product_url": "https://www.pulsarshop.com/products/puffco-peak-pro-glass-2",
       "remote_id": "f05e90eb-4727-54d6-a0c1-f2040721b70b",
       "title": "SATISFY",
@@ -1188,7 +1372,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-peak-pro-glass-2#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-9e4c866f5d2ebcdbea3b1d4ff7f42185",
@@ -1206,7 +1390,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-3284a45418d757ba91379af5bfd395a2",
@@ -1224,7 +1408,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-c1a7a38cb13ec8f8a9105a4e7da67de9",
@@ -1242,7 +1426,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-47bc0371391b20af153c25c3e208f92f",
@@ -1262,7 +1446,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-ff30705c233451e6157e197881839b23",
@@ -1280,7 +1464,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-86f1d2c46c333113a0cd0195a77701cc",
@@ -1298,7 +1482,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-cc2aee987999d13787ffcd80a4b34c5b",
@@ -1316,7 +1500,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-c364fac55ff006be53839ee4280284ad",
@@ -1334,7 +1518,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-ccad5d6e79b9adeffe0b6656ed5206e0",
@@ -1354,7 +1538,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-9660e089c004d4d63cb9ba7fbf9f3efb",
@@ -1374,7 +1558,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-8b78b13cf9b6d8b36a7dcf3becc6dfe4",
@@ -1392,7 +1576,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-718f6d2c102e8800e95bcbd5ff8ac038",
@@ -1410,7 +1594,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-f13839adcc36f3b6b02a223a5a630e6f",
@@ -1428,7 +1612,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-450befc54e4659f9130fc5709cb84939",
@@ -1446,7 +1630,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-e2730549cfc8eede900096330b7512fc",
@@ -1464,7 +1648,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-0f181de26c5ed734e5aa6a2fbb47e0f2",
@@ -1482,7 +1666,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-98107507f63fabef1b683ef3d5e337e5",
@@ -1502,7 +1686,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-866090e1003bde00107fab4963f92033",
@@ -1522,7 +1706,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-d2014c6c6dc48ab76c321f1c4b4497ff",
@@ -1540,7 +1724,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-9df2852ca733060d4f33e811538e1e6d",
@@ -1558,7 +1742,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-erig#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-a592e9349e3cd40f77148f10743405db",
@@ -1576,7 +1760,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-03e45d608155011e05ed474a61c900ab",
@@ -1594,7 +1778,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-9f26fa321135c30539aa2857511b096b",
@@ -1612,7 +1796,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/ocean-aquarium-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-6aa29de12b9ec0194ada774254e13232",
@@ -1630,7 +1814,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/ocean-aquarium-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-6f0589b4586ef976fefd42e98ea40c95",
@@ -1648,7 +1832,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-2e6ef4ac01b81ef61b471c383727b9a9",
@@ -1666,7 +1850,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-a639e9d959785ed1cd1b3780375caa18",
@@ -1684,7 +1868,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-911f49890d306fa5c0509b713b92774c",
@@ -1702,7 +1886,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-ca76fb63e952db827bf4fbcaa82d64ea",
@@ -1720,7 +1904,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-a70055f8e88985b94121b102981522b6",
@@ -1738,12 +1922,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-6c2d4775fc978e2de367d81e7935d772",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "",
       "title": "",
@@ -1756,12 +1940,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-3838a04e789507b538aeb089b62d13ad",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "91f0fd96-0d0e-499a-a0f0-481a49360fb6",
       "title": "Doesn’t recycle",
@@ -1774,7 +1958,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-d0cccd8d0324424601fa282410149e38",
@@ -1792,7 +1976,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-afd9b8b0fe5e27800e5496b71dfcb7b4",
@@ -1810,7 +1994,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/puffco-new-peak-pro#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-8b001a49bf02e67be44bee633cf451fe",
@@ -1831,12 +2015,12 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-70245ea3b5a6330b78d9ced31997f924",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "",
       "title": "",
@@ -1852,12 +2036,12 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-5ced16cbac4f2a52dd83aa50ea3e0736",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "a7103bc5-000a-44ad-aa33-10bed3a2a8d0",
       "title": "Smoother hits for sure.",
@@ -1873,7 +2057,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-599185f6fef1217b76015cdba6591549",
@@ -1894,12 +2078,12 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-80993ebbecfa1d94d20e72b882320b9b",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "97aaa016-2df7-456a-b637-c829e9dfe505",
       "title": "Finally clouds and flavor",
@@ -1912,12 +2096,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-7c2cb9269a289ac23b60241dca245577",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "",
       "title": "",
@@ -1930,12 +2114,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-b3a2579ba2ef047c62d94a94fe3d6b03",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "",
       "title": "",
@@ -1950,12 +2134,12 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-8b4898e2e79bf8a5d23a30e312eb20ec",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "6cd3a284-84b4-4b2b-8d87-35f4f185d771",
       "title": "pulsar 2",
@@ -1970,12 +2154,12 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-93b1dd7cffbe0124111eda25788ff8f1",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "2cbc722a-e43f-490d-a2ce-436404d52efa",
       "title": "Doesnt recycle very well",
@@ -1988,12 +2172,12 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-560cd20ed9a700a0ed8a8f5259f5cb3b",
       "source_id": "pulsar-puffco",
-      "product_title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "product_title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "product_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
       "remote_id": "",
       "title": "",
@@ -2006,7 +2190,7 @@
       "tags": [],
       "source_url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-e5b103db88db87b0fe967845a3857c24",
@@ -2026,7 +2210,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/puffco-peak-pro-3d-chamber#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-c656bfa675ee2097f1ac9972c50cecb7",
@@ -2046,7 +2230,7 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     },
     {
       "id": "review-143ea2ec52e5bea617619d80c59bb546",
@@ -2066,27 +2250,27 @@
       ],
       "source_url": "https://www.pulsarshop.com/products/bong-attachment-puffco-proxy#judgeme_product_reviews",
       "first_seen_at": "2026-10-07T03:37:07+00:00",
-      "last_seen_at": "2026-10-07T03:37:07+00:00"
+      "last_seen_at": "2026-10-08T07:01:57+00:00"
     }
   ],
   "products": [
     {
       "url": "https://www.pulsarshop.com/products/hemper-chinese-takeout-attachment-puffco-peak",
-      "title": "Hemper Chinese Takeout Attachment for Puffco Peak Series",
+      "title": "Hemper Chinese Takeout Bubbler for Puffco Peak Series",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/death-bunny-rig-puffco-peak",
-      "title": "Pulsar Death Bunny Rig for Puffco Peak Series",
+      "title": "Pulsar Death Bunny Bubbler for Puffco Peak Series",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/grateful-dead-stealied-out-rig-puffco-peak-series",
-      "title": "Grateful Dead x Pulsar Stealied Out Rig Set for Puffco Peak Series",
+      "title": "Grateful Dead x Pulsar Stealied Out Bubbler Set for Puffco Peak Series",
       "status": "success",
       "review_count": 1,
       "source_id": "pulsar-puffco"
@@ -2100,21 +2284,21 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/mushroom-mayhem-rig-puffco-peak",
-      "title": "Pulsar Mushroom Mayhem Rig for Puffco Peak Series",
+      "title": "Pulsar Mushroom Mayhem Bubbler for Puffco Peak Series",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/fab-egg-bubbler-attachment-puffco-pivot",
-      "title": "Fab Egg Bubbler Attachment for Puffco Pivot",
+      "title": "Fab Egg Bubbler for Puffco Pivot",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/swiss-bubbler-attachment-puffco-pivot",
-      "title": "Swiss Bubbler Attachment for Puffco Pivot",
+      "title": "Swiss Bubbler for Puffco Pivot",
       "status": "success",
       "review_count": 2,
       "source_id": "pulsar-puffco"
@@ -2128,49 +2312,49 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/candy-cane-mouthpiece-attachment-puffco-pivot",
-      "title": "Candy Cane Mouthpiece Attachment for Puffco Pivot",
+      "title": "Candy Cane Attachment for Puffco Pivot",
       "status": "success",
       "review_count": 1,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/snowman-mouthpiece-attachment-puffco-pivot",
-      "title": "Snowman Mouthpiece Attachment for Puffco Pivot",
+      "title": "Snowman Attachment for Puffco Pivot",
       "status": "success",
       "review_count": 1,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/ducky-mouthpiece-attachment-puffco-pivot",
-      "title": "Ducky Mouthpiece Attachment for Puffco Pivot",
+      "title": "Ducky Attachment for Puffco Pivot",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/love-machine-rig-puffco-peak",
-      "title": "Pulsar Love Machine Rig for Puffco Peak Series",
+      "title": "Pulsar Love Machine Bubbler for Puffco Peak Series",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/heart-mouthpiece-attachment-puffco-pivot",
-      "title": "Pulsar Heart Mouthpiece Attachment for Puffco Pivot",
+      "title": "Pulsar Heart Attachment for Puffco Pivot",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/cubez-rig-puffco-peak",
-      "title": "Pulsar Cubez Rig for Puffco Peak Series",
+      "title": "Pulsar Cubez Attachment for Puffco Peak Series",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/dichro-mouthpiece-attachment-puffco-pivot",
-      "title": "Pulsar Dichro Mouthpiece Attachment for Puffco Pivot",
+      "title": "Pulsar Dichro Attachment for Puffco Pivot",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
@@ -2191,21 +2375,21 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/seshgear-8-ball-rig-for-puffco-peak-series",
-      "title": "SeshGear 8-Ball Rig for Puffco Peak Series",
+      "title": "SeshGear 8-Ball Bubbler for Puffco Peak Series",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/opal-marble-bubbler-attachment-puffco-pivot",
-      "title": "Opal Marble Bubbler Attachment for Puffco Pivot",
+      "title": "Opal Marble Bubbler for Puffco Pivot",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/seshgear-swiss-donut-rig-puffco-peak-series",
-      "title": "SeshGear Swiss Donut Rig for Puffco Peak Series",
+      "title": "SeshGear Swiss Donut Attachment for Puffco Peak Series",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
@@ -2296,7 +2480,7 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/puffco-new-peak-glass",
-      "title": "Puffco Peak Glass 2.0",
+      "title": "Puffco Peak Glass Bubbler 2.0",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
@@ -2310,7 +2494,7 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/puffco-peak-pro-glass-2",
-      "title": "Puffco Peak Pro Glass 2.0",
+      "title": "Puffco Peak Pro Glass Bubbler 2.0",
       "status": "success",
       "review_count": 1,
       "source_id": "pulsar-puffco"
@@ -2345,7 +2529,7 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/grateful-dead-sandblasted-stealie-rig-set-puffco-peak-series",
-      "title": "Grateful Dead x Pulsar Sandblasted Stealie Rig Set for Puffco Peak Series",
+      "title": "Grateful Dead x Pulsar Stealie Bubbler Set for Puffco Peak Series",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
@@ -2359,16 +2543,16 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/empire-glassworks-avocadope-attachment-set-puffco-peak",
-      "title": "Empire Glassworks Avocadope Attachment Set for Puffco Peak Series",
+      "title": "Empire Glassworks Avocadope Bubbler Set for Puffco Peak Series",
       "status": "success",
       "review_count": 0,
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/pocket-monster-ball-rig-puffco-peak",
-      "title": "Pocket Monster Ball Rig for Puffco Peak Series",
+      "title": "Pocket Monster Ball Bubbler for Puffco Peak Series",
       "status": "success",
-      "review_count": 0,
+      "review_count": 10,
       "source_id": "pulsar-puffco"
     },
     {
@@ -2380,7 +2564,7 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/upright-recycler-rig-puffco-peak",
-      "title": "Pulsar Upright Recycler Rig for Puffco Peak Series",
+      "title": "Pulsar Upright Recycler Bubbler for Puffco Peak Series",
       "status": "success",
       "review_count": 15,
       "source_id": "pulsar-puffco"
@@ -2394,7 +2578,7 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/donut-staxx-rig-puffco-peak",
-      "title": "Pulsar Donut Staxx Rig for Puffco Peak Series",
+      "title": "Pulsar Donut Staxx Attachment for Puffco Peak Series",
       "status": "success",
       "review_count": 1,
       "source_id": "pulsar-puffco"
@@ -2405,9 +2589,36 @@
       "status": "success",
       "review_count": 2,
       "source_id": "pulsar-puffco"
+    },
+    {
+      "url": "https://www.pulsarshop.com/products/pulsar-sherlock-attachment-puffco-proxy",
+      "title": "Pulsar Sherlock Attachment for Puffco Proxy",
+      "status": "success",
+      "review_count": 0,
+      "source_id": "pulsar-puffco"
+    },
+    {
+      "url": "https://www.pulsarshop.com/products/pulsar-dual-attachment-set-puffco-proxy",
+      "title": "Pulsar Dual Attachment Set for Puffco Proxy",
+      "status": "success",
+      "review_count": 0,
+      "source_id": "pulsar-puffco"
     }
   ],
   "runs": [
+    {
+      "id": "run-de603569038343bf84970b3427d3f707",
+      "source_id": "pulsar-puffco",
+      "started_at": "2026-10-08T07:01:57+00:00",
+      "finished_at": "2026-10-08T07:03:42+00:00",
+      "status": "success",
+      "products_found": 50,
+      "products_scanned": 50,
+      "reviews_found": 120,
+      "new_reviews": 10,
+      "message": "采集完成",
+      "retry_after": 0
+    },
     {
       "id": "run-4d6f0eb273ea4b37a4fab4dd6aac9e3c",
       "source_id": "pulsar-puffco",
