@@ -179,3 +179,12 @@ curl -fsS https://<DOMAIN>/api/health
 - Pages 分支 `sales-maintenance-storage.ts` 存独立 IndexedDB impetus-sales-data-v1/workspace，单记录原子版本比较，不用本地存储塞大文件、不修改项目缓存或售价键。原始文件仅在浏览器解析，fflate 0.8.3 懒加载解包限定销售 XML；只输出业务合计，10 MB 文件/32 MB XML/20000 行/5000 合计上限，拒绝外部工作表关系和 DTD。原宽表型号换行规范成空格、后缀保留、客户行同型号合并，首次数量 SUM 后停止。长表重复键拒绝。CSV 仅支持长表，必须严格 UTF-8，JSON 备份按年含 null；同一业务层处理手动、Excel 与备份。
 - 当前 GitHub Pages 的编辑仍保存在本浏览器，不是写 GitHub 的后台；生产环境保存在数据库、沿用身份验证与同源检查，可由团队共同使用。浏览器维护不自动扩展公开内容。需要发布维护结果时，先导出授权年度合计，核对再更新对应 public 年度文件与目录、测试构建、提交部署；不要用浏览器保存成功反馈冒充全员同步。
 - 接手代码示例：先 GET sales-data 拿 revision；POST preview 核对差异；POST commit 使用同一 revision 与 body；409 重读；对当前最新 change POST undo。前端 tests/sales-maintenance.test.mjs、后端 tests/test_sales_maintenance.py 覆盖重复/覆盖/空缺/0/新年/撤销/并发过期版本/备份，浏览器必须测试真实 Excel，不在公开用户来源写临时测试值。
+
+## 18. 品类饼图与型号归类
+
+- 用户于 2026-10-08 指定：Mini 2 / O2 Mini 属电池，单发/双发 Tip 头属配件，Y 前缀属一次性，英文/中文单引号前缀及 0074雾化器属雾化器，原 D/P/G 规则保留。新增雾化器、一次性两类；规则为 config/sales-category-rules.json，前端 sales-categories.ts 与后端 sales_import.category 共用，完整名称例外优先。只归类、不合并型号，不推测 122N、mini、H2O MINI 等未指定名称。
+- 2025/2026 发布快照只更新 category 与 revision，数量、日期、空缺、recorded_rows、source_rows、完整 ID、名称及合计保持逐字段一致。读取时复用分类器以兼容旧年度 JSON；手动新型号、Excel 导入与覆盖层沿用规则，不改变 IndexedDB/参考售价键。研发项目和数据库不为销售类别修改而重写。
+- SalesConclusionPie.tsx / sales-pie-model.ts 在销售结论中绘制品类占比环形饼图和颜色图例，点击/键盘选择扇区或图例显示该类型号数量。时间/售价/类别筛选作用于同一报告数据；过期报告禁用交互与复制，重新生成更新。单一类别 100% 使用完整环，未录入显示空图与“—”，明确 0 显示 0 但不伪造彩色份额。详细文字与口径默认折叠，复制包含类别占比与全文。
+- 分类标签与图表共用 semanticPalette：电池紫、配件青、干烧橙、雾化器蓝、一次性玫红、待分类灰。产品分类固定入口也包含两类新类型，项目阶段与风险颜色不改。
+- Docker 前端阶段将 config 复制到 /config 以支持跨目录规则导入；运行镜像原 config 复制继续保留。后端查找本地仓库与运行镜像的 config 路径，不在部署后退回旧的三类硬编码。
+- 回归：sales-category-pie.test.mjs / test_sales_categories.py；验证每个指定名称和前缀、所有月份数量与 ID 不变、六类份额合计精确等于范围销量、单类/无数据/零值、键盘明细与移动布局。工作方法仍为测试、Pages 模式构建、提交、部署与实际页面验证。

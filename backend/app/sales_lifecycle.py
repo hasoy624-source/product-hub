@@ -6,6 +6,7 @@ from pydantic import BaseModel,Field,StrictInt
 from sqlalchemy import select
 from .models import SalesReferencePrice,serialize
 from .sales_maintenance import effective_history,register_maintenance_routes
+from .sales_import import category
 
 class SalesPriceIn(BaseModel):
     currency: Literal['USD','CNY']
@@ -17,7 +18,11 @@ def sales_dataset():
     if not default.is_file():default=root/'frontend/dist/sales/lifecycle.json'
     path=Path(os.getenv('SALES_LIFECYCLE_DATA',str(default)))
     if not path.is_file():return None
-    try:return json.loads(path.read_text(encoding='utf-8'))
+    try:
+        data=json.loads(path.read_text(encoding='utf-8'))
+        for row in data.get('products',[]):
+            if 'model' in row:row['category']=category(row['model'])
+        return data
     except (ValueError,OSError):raise HTTPException(500,'销量数据读取失败')
 
 def sales_history():
@@ -37,6 +42,8 @@ def sales_history():
             seen.add(year)
             data=latest if latest and latest.get('year')==year else json.loads((index_path.parent/name).read_text(encoding='utf-8'))
             if data.get('year')!=year:raise ValueError()
+            for row in data.get('products',[]):
+                if 'model' in row:row['category']=category(row['model'])
             result.append(data)
         return sorted(result,key=lambda data:data['year'],reverse=True)
     except (ValueError,OSError,KeyError,TypeError):raise HTTPException(500,'销售年度数据读取失败')

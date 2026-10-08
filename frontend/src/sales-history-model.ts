@@ -1,4 +1,4 @@
-import {fetchSalesDataset,validateSalesDataset,salesRows,salesSeries} from './sales-lifecycle-model.ts'
+import {fetchSalesDataset,validateSalesDataset,salesRows,salesSeries,classifiedSalesDataset} from './sales-lifecycle-model.ts'
 import type {SalesDataset,SalesModel} from './sales-lifecycle-model'
 export type ComparisonRow={id:string;model:string;category:string;current:number|null;previous:number|null;delta:number|null}
 export function recordedPeriod(row:SalesModel|undefined,length:number):number|null{
@@ -23,5 +23,5 @@ export async function fetchSalesHistory(base:string):Promise<SalesDataset[]>{
   const index=await response.json() as {schema_version:number;years:{year:number;file:string}[]}
   if(index.schema_version!==1||!Array.isArray(index.years)||!index.years.length||index.years.some(row=>!Number.isInteger(row.year)||row.year<1900||row.year>9998||!/^lifecycle(?:-\d{4})?\.json$/.test(row.file))||new Set(index.years.map(row=>row.year)).size!==index.years.length)throw new Error('销售年度目录格式不匹配')
   const result=await Promise.all(index.years.map(async row=>{const source=await fetch(`${base}sales/${row.file}`,{cache:'no-store'});if(!source.ok)throw new Error(`${row.year} 年销量读取失败`);const data=validateSalesDataset(await source.json());if(data.year!==row.year)throw new Error('销量年份与年度目录不一致');return data}))
-  return result.sort((a,b)=>b.year-a.year)
+  return result.map(classifiedSalesDataset).sort((a,b)=>b.year-a.year)
 }

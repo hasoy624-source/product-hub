@@ -25,6 +25,7 @@ const statusTones: Record<string, SemanticTone> = {
 }
 const categoryTones: Record<string, SemanticTone> = {
   '配件类': 'cyan', '电池类': 'violet', '干烧类': 'amber',
+  '雾化器': 'blue', '一次性': 'rose', '待分类': 'neutral',
   '市场类型报告': 'cyan', '研发类型报告': 'violet', '产品类型报告': 'amber',
   '竞品动态': 'violet', '市场反馈': 'cyan', '独立站评价': 'amber',
 }

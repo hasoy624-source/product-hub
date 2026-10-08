@@ -61,7 +61,7 @@ test('product category cards filter product records and monthly sales together',
     { id: 's4', product_id: 'c', month: '2026-09', revenue_cents: 30000 },
   ]
   assert.deepEqual(productCategoryCards(products, sales, '2026-09').map(card => [card.label, card.count, card.revenue_cents]), [
-    ['全部产品', 4, 60000], ['配件类', 1, 10000], ['电池类', 1, 20000], ['干烧类', 1, 30000], ['自定义类', 1, 0],
+    ['全部产品', 4, 60000], ['配件类', 1, 10000], ['电池类', 1, 20000], ['干烧类', 1, 30000], ['雾化器', 0, 0], ['一次性', 0, 0], ['自定义类', 1, 0],
   ])
   assert.deepEqual(filterProducts(products, '电池类', ' b-01 ').map(product => product.id), ['b'])
   assert.deepEqual(filterSalesByProducts(sales, products, '电池类', '2026-09').map(sale => sale.id), ['s2'])

@@ -1,6 +1,6 @@
 import type { Category, EntityMeta, Product, Project, Task, Report, Sale } from './types'
 
-export const featuredProductCategories = ['配件类', '电池类', '干烧类'] as const
+export const featuredProductCategories = ['配件类', '电池类', '干烧类', '雾化器', '一次性'] as const
 export type ProductFilter = 'all' | string
 export function filterProducts(products: Product[], filter: ProductFilter, query = '') {
   const search = query.trim().toLocaleLowerCase()

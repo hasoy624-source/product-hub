@@ -1,8 +1,10 @@
 import type { Project } from './types'
+import {salesModelCategory,salesCategories} from './sales-categories.ts'
+export {salesCategories} from './sales-categories.ts'
 
 export type SalesModel={id:string;model:string;category:string;monthly_units:(number|null)[];recorded_rows:number[];source_rows:number;missing_model:boolean;aggregate_months?:number[]}
 export type SalesDataset={schema_version:number;year:number;through_month:number;blank_policy:'missing';months:string[];products:SalesModel[];source_rows:number;missing_model_records:number;monthly_totals:number[];summary_difference:(number|null)[];revision:string;aggregation?:'model-month'|'mixed'}
-export const salesCategories=['电池类','配件类','干烧类','待分类']
+export function classifiedSalesDataset(data:SalesDataset):SalesDataset{return {...data,products:data.products.map(row=>({...row,category:salesModelCategory(row.model)}))}}
 export function modelKey(value:string){return value.normalize('NFKC').replace(/\s+/g,'').toUpperCase()}
 export function salesRows(data:SalesDataset,category='all',query=''){
   return data.products.filter(row=>(category==='all'||row.category===category)&&row.model.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())).sort((a,b)=>salesTotal(b)-salesTotal(a)||a.model.localeCompare(b.model,'zh-CN'))
@@ -26,5 +28,5 @@ export async function fetchSalesDataset(base:string):Promise<SalesDataset|null>{
   if(response.status===404)return null
   if(!response.ok)throw new Error('销售数据读取失败')
   const data=await response.json() as SalesDataset
-  return validateSalesDataset(data)
+  return classifiedSalesDataset(validateSalesDataset(data))
 }

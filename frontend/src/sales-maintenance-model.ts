@@ -1,5 +1,6 @@
 import {modelKey} from './sales-lifecycle-model.ts'
 import type {SalesDataset,SalesModel} from './sales-lifecycle-model'
+import {salesModelCategory} from './sales-categories.ts'
 export type SalesCell={year:number;model:string;month:number;units:number|null}
 export type SalesBatch={revision:string;mode:'fill'|'replace';source:'manual'|'excel'|'backup';rows:SalesCell[]}
 export type SalesPlan={changes:(SalesCell&{before:number|null})[];changed:number;skipped:number;identical:number}
@@ -27,7 +28,7 @@ export async function buildSalesHistory(base:SalesDataset[],patches:SalesCell[])
     const length=Math.max(data.through_month,patch.month);data.through_month=length;data.months=Array.from({length},(_,i)=>`${patch.year}-${String(i+1).padStart(2,'0')}`)
     for(const row of data.products){while(row.monthly_units.length<length)row.monthly_units.push(null);while(row.recorded_rows.length<length)row.recorded_rows.push(0)}
     let product=data.products.find(row=>modelKey(row.model)===key)
-    if(!product){if(patch.units===null)continue;product={id:'sales-'+await digest(key),model:patch.model,category:({'D':'电池类','P':'配件类','G':'干烧类'} as Record<string,string>)[key[0]]||'待分类',monthly_units:Array(length).fill(null),recorded_rows:Array(length).fill(0),source_rows:1,missing_model:key==='未标注型号'};data.products.push(product)}
+    if(!product){if(patch.units===null)continue;product={id:'sales-'+await digest(key),model:patch.model,category:salesModelCategory(key),monthly_units:Array(length).fill(null),recorded_rows:Array(length).fill(0),source_rows:1,missing_model:key==='未标注型号'};data.products.push(product)}
     product.monthly_units[patch.month-1]=patch.units;product.recorded_rows[patch.month-1]=Number(patch.units!==null);product.aggregate_months=[...new Set([...(product.aggregate_months||[]),patch.month])].sort((a,b)=>a-b);affected.add(data.year)
   }
   for(const data of result){if(!affected.has(data.year))continue;data.aggregation=data.products.every(row=>row.source_rows===1)?'model-month':'mixed';data.source_rows=data.products.reduce((sum,row)=>sum+row.source_rows,0);data.missing_model_records=data.products.filter(row=>row.missing_model&&row.monthly_units.some(value=>value!==null)).length;data.monthly_totals=data.months.map((_,i)=>data.products.reduce((sum,row)=>sum+(row.monthly_units[i]??0),0));data.summary_difference=Array(data.through_month).fill(null);data.revision=await digest(JSON.stringify(data))}

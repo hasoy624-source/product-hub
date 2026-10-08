@@ -1,8 +1,9 @@
 import type {SalesDataset,SalesModel} from './sales-lifecycle-model'
+import {salesCategories} from './sales-categories.ts'
 
 export type SalesPrice={product_id:string;currency:'USD'|'CNY';amount_cents:number}
 export type ConclusionFilters={from:string;to:string;category:string;price_mode:'all'|'range'|'missing';currency:'USD'|'CNY';min:string;max:string}
-export type SalesConclusion={scope:string;total:number;models:number;rows:SalesModel[];points:{title:string;text:string}[];notes:string[];empty:boolean}
+export type SalesConclusion={scope:string;total:number;models:number;rows:SalesModel[];points:{title:string;text:string}[];notes:string[];empty:boolean;shares:{category:string;units:number;share:number;models:number}[];products:{id:string;model:string;category:string;units:number}[]}
 const number=(value:number)=>new Intl.NumberFormat('zh-CN').format(value)
 const percent=(value:number)=>`${(value*100).toFixed(1)}%`
 export function priceCents(value:string):number|null{
@@ -18,7 +19,7 @@ export function defaultConclusionFilters(data:SalesDataset):ConclusionFilters{
 export function generateSalesConclusion(data:SalesDataset,filters:ConclusionFilters,prices:SalesPrice[],previous?:SalesDataset):SalesConclusion{
   const start=data.months.indexOf(filters.from),end=data.months.indexOf(filters.to)
   if(start<0||end<start)throw new Error('请选择有效时间范围，开始月份不晚于结束月份')
-  if(!['all','电池类','配件类','干烧类','待分类'].includes(filters.category))throw new Error('产品类型无效')
+  if(!['all',...salesCategories].includes(filters.category))throw new Error('产品类型无效')
   if(!['all','range','missing'].includes(filters.price_mode)||!['USD','CNY'].includes(filters.currency))throw new Error('售价筛选无效')
   const min=filters.price_mode==='range'?priceCents(filters.min):null,max=filters.price_mode==='range'?priceCents(filters.max):null
   if(filters.price_mode==='range'&&min===null&&max===null)throw new Error('请填写最低或最高售价')
@@ -27,6 +28,8 @@ export function generateSalesConclusion(data:SalesDataset,filters:ConclusionFilt
   const rows=base.filter(row=>{const price=priceMap.get(row.id);return filters.price_mode==='all'||filters.price_mode==='missing'&&!price||filters.price_mode==='range'&&Boolean(price&&price.currency===filters.currency&&(min===null||price.amount_cents>=min)&&(max===null||price.amount_cents<=max))})
   const monthCount=end-start+1,sum=(row:SalesModel)=>row.monthly_units.slice(start,end+1).reduce<number>((total,value)=>total+(value??0),0)
   const total=rows.reduce((value,row)=>value+sum(row),0),models=rows.filter(row=>!row.missing_model&&row.monthly_units.slice(start,end+1).some(value=>value!==null)).length
+  const products=rows.filter(row=>row.monthly_units.slice(start,end+1).some(value=>value!==null)).map(row=>({id:row.id,model:row.model,category:row.category,units:sum(row)})).sort((a,b)=>b.units-a.units||a.model.localeCompare(b.model))
+  const shares=salesCategories.filter(category=>products.some(row=>row.category===category)).map(category=>{const selected=products.filter(row=>row.category===category),units=selected.reduce((sum,row)=>sum+row.units,0);return {category,units,share:total>0?units/total:0,models:selected.length}})
   const priceScope=filters.price_mode==='all'?'全部售价（含未录入）':filters.price_mode==='missing'?'未录入售价':`${filters.currency} ${min===null?'不限':number(min/100)}–${max===null?'不限':number(max/100)}（参考售价）`
   const scope=`${filters.from} 至 ${filters.to} · ${filters.category==='all'?'全部产品':filters.category} · ${priceScope}`
   let known=0,possible=0
@@ -40,7 +43,7 @@ export function generateSalesConclusion(data:SalesDataset,filters:ConclusionFilt
   if(rows.some(row=>row.missing_model))notes.push(`未标注型号的 ${number(rows.filter(row=>row.missing_model).reduce((n,row)=>n+sum(row),0))} 件保留在总量中，不参与型号排名。`)
   const points:SalesConclusion['points']=[]
   const hasRecords=rows.some(row=>row.monthly_units.slice(start,end+1).some(value=>value!==null))
-  if(!rows.length||!hasRecords){points.push({title:'暂无可生成结论的数据',text:!rows.length?(filters.price_mode==='range'?'该售价区间没有已维护售价的匹配产品，请补充售价或调整筛选。':'该范围没有匹配产品。'):'匹配产品在所选月份尚未录入销量。'});return {scope,total,models,rows,points,notes,empty:true}}
+  if(!rows.length||!hasRecords){points.push({title:'暂无可生成结论的数据',text:!rows.length?(filters.price_mode==='range'?'该售价区间没有已维护售价的匹配产品，请补充售价或调整筛选。':'该范围没有匹配产品。'):'匹配产品在所选月份尚未录入销量。'});return {scope,total,models,rows,points,notes,empty:true,shares,products}}
   points.push({title:'销量规模',text:`所选范围已录入 ${number(total)} 件，覆盖 ${models} 个已标注型号${rows.some(row=>row.missing_model)?'及未标注型号汇总':''}。`})
   if(total>0){
     const categories=[...new Set(rows.map(row=>row.category))].map(category=>({category,total:rows.filter(row=>row.category===category).reduce((n,row)=>n+sum(row),0)})).sort((a,b)=>b.total-a.total||a.category.localeCompare(b.category))
@@ -61,7 +64,7 @@ export function generateSalesConclusion(data:SalesDataset,filters:ConclusionFilt
       notes.push('同期按相同月份及相同筛选条件比较已录入数量；两年记录覆盖与型号结构不同，记录差异不等同真实经营增长或衰退。')
     }
   }
-  return {scope,total,models,rows,points,notes,empty:false}
+  return {scope,total,models,rows,points,notes,empty:false,shares,products}
 }
 
 export const salesPriceStorageKey='impetus-sales-reference-prices-v1'

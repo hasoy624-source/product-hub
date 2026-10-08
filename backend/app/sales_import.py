@@ -10,7 +10,11 @@ def column(reference):
     return value
 def normalize_model(value):
     return re.sub(r'\s+','',unicodedata.normalize('NFKC',value)).upper()
-def category(model):return {'D':'电池类','P':'配件类','G':'干烧类'}.get(model[:1].upper(),'待分类')
+def category(model):
+    config=Path(__file__).resolve().parents[2]/'config/sales-category-rules.json'
+    if not config.is_file():config=Path(__file__).resolve().parents[1]/'config/sales-category-rules.json'
+    rules=json.loads(config.read_text(encoding='utf-8'));key=normalize_model(model)
+    return rules['exact'].get(key,rules['prefix'].get(key[:1],'待分类'))
 
 def import_sales(source:Path,year:int,through:int):
     if not 1900<=year<=9998 or not 1<=through<=12:raise ValueError('年份或截止月份不正确')

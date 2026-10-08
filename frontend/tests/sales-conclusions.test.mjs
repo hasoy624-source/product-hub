@@ -53,7 +53,7 @@ test('published dataset produces reconciled conclusions without prices or guesse
   const snapshot=JSON.parse(readFileSync(new URL('../public/sales/lifecycle.json',import.meta.url),'utf8'))
   const report=generateSalesConclusion(snapshot,defaultConclusionFilters(snapshot),[])
   assert.equal(report.total,2280143);assert.equal(report.models,125)
-  assert.ok(report.points.some(p=>p.title==='产品结构'&&p.text.includes('1,430,541')&&p.text.includes('62.7%')))
+  assert.ok(report.points.some(p=>p.title==='产品结构'&&p.text.includes('1,436,649')&&p.text.includes('63.0%')))
   assert.ok(report.points.some(p=>p.title==='时间分布'&&p.text.includes('2026-03')&&p.text.includes('563,400')))
   assert.equal(report.points.some(p=>p.title==='首末月比较'),false)
   assert.ok(report.notes.some(n=>n.includes('126 个型号汇总未录入售价')))
