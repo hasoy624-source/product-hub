@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "revision": "ede35dee59e54290942ae74d",
+  "fields": [
+    "name",
+    "stage",
+    "progress",
+    "completion_time"
+  ],
+  "rows": [
+    {
+      "name": "P-146  Bubbler",
+      "stage": "PVT",
+      "progress": 90.0,
+      "completion_time": "待客户反馈",
+      "id": "pt-3805153920d4b83c884c3ada"
+    },
+    {
+      "name": "P-147 Bubbler",
+      "stage": "PVT",
+      "progress": 90.0,
+      "completion_time": "待客户反馈",
+      "id": "pt-2650017f89141bcf51283e84"
+    },
+    {
+      "name": "G-151、G-151X  Smart Pen",
+      "stage": "MP",
+      "progress": 100.0,
+      "completion_time": "",
+      "id": "pt-89c07aefbaa0eb17f1145d29"
+    },
+    {
+      "name": "G-158 Herb Box",
+      "stage": "MP",
+      "progress": 100.0,
+      "completion_time": "",
+      "id": "pt-155926911671cc96b5135ed3"
+    },
+    {
+      "name": "D-168 Secret Box Ultra",
+      "stage": "MP",
+      "progress": 100.0,
+      "completion_time": "2026-09-15",
+      "id": "pt-486e0a76a61debd9522e5707"
+    },
+    {
+      "name": "G-173 Delta Box",
+      "stage": "MP",
+      "progress": 100.0,
+      "completion_time": "",
+      "id": "pt-280f68a3e192a181015ed064"
+    },
+    {
+      "name": "P-180 GrandJar",
+      "stage": "PVT",
+      "progress": 50.0,
+      "completion_time": "2026-11-20",
+      "id": "pt-9b25b7e89b4e32b2c1f39342"
+    },
+    {
+      "name": "D-181 Ultra Slim",
+      "stage": "DVT",
+      "progress": 50.0,
+      "completion_time": "2026-12-05",
+      "id": "pt-219e70fbfffffa6dd0312e3f"
+    },
+    {
+      "name": "D-183 Ultra Stick",
+      "stage": "EVT",
+      "progress": 15.0,
+      "completion_time": "",
+      "id": "pt-a50909d322afbfe9d3af94c5"
+    },
+    {
+      "name": "D-189 Nano X",
+      "stage": "DVT",
+      "progress": 50.0,
+      "completion_time": "",
+      "id": "pt-8c678bdfc66dea128d5947b6"
+    },
+    {
+      "name": "P-196 PodPacker",
+      "stage": "PVT",
+      "progress": 50.0,
+      "completion_time": "2026-11-03",
+      "id": "pt-d3b9a6c380c15c02034f4585"
+    },
+    {
+      "name": "P-179 Chorus Bubbler",
+      "stage": "PVT",
+      "progress": 50.0,
+      "completion_time": "2026-11-20",
+      "id": "pt-5368c7fc7d7122905fba33ac"
+    },
+    {
+      "name": "D-182 Flip Knife 军刀",
+      "stage": "DVT",
+      "progress": 60.0,
+      "completion_time": "2026-10-31",
+      "id": "pt-99281653558e49de94b36922"
+    },
+    {
+      "name": "D-188 Luxe 510",
+      "stage": "EVT",
+      "progress": 20.0,
+      "completion_time": "",
+      "id": "pt-9fa4393ecf7225e1a1227281"
+    },
+    {
+      "name": "D-172 Key Fob\n保时捷钥匙",
+      "stage": "PVT",
+      "progress": 90.0,
+      "completion_time": "2026-10-31",
+      "id": "pt-aa948fee42ee2797423e61c9"
+    },
+    {
+      "name": "G-190",
+      "stage": "DVT",
+      "progress": 20.0,
+      "completion_time": "2026-01-30",
+      "id": "pt-fe405c1f3dc2c32a7bf0f427"
+    },
+    {
+      "name": "D-192 Foger",
+      "stage": "预研",
+      "progress": 10.0,
+      "completion_time": "2026-12-15",
+      "id": "pt-8c465a5a7b2223f64bd17c6f"
+    },
+    {
+      "name": "D-193 Lift 510",
+      "stage": "预研",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-8e46b75926f15c2b949ece3c"
+    },
+    {
+      "name": "E-rig",
+      "stage": "预研",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-131578ee6a8eb1d2af854e95"
+    },
+    {
+      "name": "G-185 烧花烟斗",
+      "stage": "PVT",
+      "progress": 50.0,
+      "completion_time": "2026-12-25",
+      "id": "pt-c2c38261563180d3fd872842"
+    },
+    {
+      "name": "Herb Cigar 烧花雪茄",
+      "stage": "预研",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-625743e0c6378ed53b986ed5"
+    },
+    {
+      "name": "069升级款",
+      "stage": "预研",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-2209cb46941707203d19fc8c"
+    },
+    {
+      "name": "烧膏烟斗",
+      "stage": "",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-942231cb89556373b6dfd974"
+    },
+    {
+      "name": "自动冒烟灭火器",
+      "stage": "预研",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-7b884c6028c88526fda38a3f"
+    },
+    {
+      "name": "D-122系列 便宜圆杆电池",
+      "stage": "",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-a092459da58380c801675e1e"
+    },
+    {
+      "name": "Electric Grinder 电动研磨器",
+      "stage": "",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-58b75bacebd0ba58280eff2a"
+    },
+    {
+      "name": "便宜款069",
+      "stage": "",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-e15a948e70c9564d87c200fb"
+    },
+    {
+      "name": "Hot Knife 多功能切膏刀",
+      "stage": "",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-a17749ad6b70231b6a975d38"
+    },
+    {
+      "name": "Hot Knife 切膏刀+510螺纹",
+      "stage": "",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-3992649aa630d7e70dfb6f78"
+    },
+    {
+      "name": "烧花雪茄烟盒",
+      "stage": "",
+      "progress": null,
+      "completion_time": "",
+      "id": "pt-436903f8c8d446485b9fd4a4"
+    }
+  ]
+}

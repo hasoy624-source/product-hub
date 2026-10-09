@@ -10,6 +10,8 @@ import {browserProductTaxonomy,saveBrowserProductTaxonomy,undoBrowserProductTaxo
 import {activateProductTaxonomy,taxonomyPreview,canonicalProductTypeName,canonicalProductDashboard} from './product-taxonomy-model'
 import type {Dashboard} from './types'
 import type {ProductTaxonomy,ProductTaxonomyView} from './product-taxonomy-model'
+import {browserProjectTable,saveBrowserProjectTable} from './project-table-storage'
+import type {ProjectTableData} from './project-table-model'
 
 export { ApiError, publishedPreviewEnabled } from './preview'
 export async function uploadProjectFile(projectId:string,nodeId:string,file:File):Promise<ProjectFile>{
@@ -41,6 +43,9 @@ export async function uploadProjectImage(projectId: string, file: File) {
 }
 export async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   if (import.meta.env.VITE_PREVIEW_MODE === 'true') {
+    if(path==='/project-table'&&method==='GET')return (await browserProjectTable(import.meta.env.BASE_URL)).view as T
+    if(path==='/project-table'&&method==='PUT'){const payload=body as {data:ProjectTableData;revision:string};return await saveBrowserProjectTable(import.meta.env.BASE_URL,payload.data,payload.revision) as T}
+    if(path==='/project-table/undo'&&method==='POST'){const current=await browserProjectTable(import.meta.env.BASE_URL);return await saveBrowserProjectTable(import.meta.env.BASE_URL,current.view,(body as {revision:string}).revision,true) as T}
     if(path==='/product-taxonomy'&&method==='GET')return await browserProductTaxonomy() as T
     if(path==='/product-taxonomy'&&method==='PUT'){const payload=body as {config:ProductTaxonomy;revision:string};const result=await saveBrowserProductTaxonomy(payload.config,payload.revision);window.dispatchEvent(new Event('product-taxonomy-changed'));return result as T}
     if(path==='/product-taxonomy/undo'&&method==='POST'){const result=await undoBrowserProductTaxonomy((body as {revision:string}).revision);window.dispatchEvent(new Event('product-taxonomy-changed'));return result as T}

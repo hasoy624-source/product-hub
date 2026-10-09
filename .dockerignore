@@ -4,9 +4,10 @@
 **/.pytest_cache
 **/*.db*
 frontend/dist
+frontend/dist-local
 .git
 .env
 logs
 backups
 test-results
-
+backend/project-table

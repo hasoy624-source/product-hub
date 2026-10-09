@@ -10,6 +10,7 @@ frontend/dist/
 frontend/dist-local/
 backend/import-assets/
 backend/project-files/
+backend/project-table/
 .env
 logs/
 backups/

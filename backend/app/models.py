@@ -240,6 +240,14 @@ class ProductTaxonomyState(Base):
     previous: Mapped[dict | None] = mapped_column(JSON, nullable=True)
 
 
+class ProjectTableState(Base):
+    __tablename__ = "project_table_state"
+    id: Mapped[str] = mapped_column(String(20), primary_key=True)
+    version: Mapped[str] = mapped_column(String(64))
+    data: Mapped[dict] = mapped_column(JSON)
+    previous: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+
+
 class SalesDataChange(Base):
     __tablename__ = "sales_data_changes"
     id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)

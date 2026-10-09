@@ -201,3 +201,16 @@ curl -fsS https://<DOMAIN>/api/health
 - 停用类型不删除已有归类或规则：空类型退出新候选项，有历史数据的类型保留可查看。停止自动归类应停用对应规则；兜底类型必须存在且启用。不要把停用误实现为删除历史销量。
 - 类型排序和配色同步用于销售筛选、结论饼图、产品编辑候选与分类标签；新增类型应在下一次 Excel/手工维护时自动参与规则归类。配置与销量使用独立版本和撤销，不相互恢复业务数量。
 - 目前固定的工程逻辑：研发五阶段、知识库模板目录、报告算法、新站点解析适配、正式账号权限与部署。现有项目/节点/任务/文档/销量/售价/分类字段均有前端维护入口；集成席位保存接入记录，不等同于已接通外部服务。
+
+
+## 20. 简洁项目表（当前默认）
+
+- 用户要求隐藏原项目管理内容，保留销量，只使用附件的在研/预研表格。`App.tsx` 的 `legacyProjectView=false` 隐藏旧节点工作表和详情入口；首页旧项目统计/推进/待处理区也隐藏，异常页不再展示旧项目任务。旧源码、119 项目发布快照、原 SQLite 和任务/文件不删除。销量观察不再从隐藏旧项目推测阶段。
+- `ProjectTable.tsx` / `project-table-model.ts` / `project-table.css` 是当前 `#projects`。每项目一行，统一滚动区域，固定表头和名称列；全部/在研/预研/未设阶段筛选、搜索、新增、编辑、JSON 备份导入预览与撤销。完成时间允许明确日期或原表的待客户反馈文本；进度是百分数，空缺保留 null。阶段如 PVT/MP/预研按实际值，不映射为旧五阶段。
+- 附件「在研、预研项目(1).xlsx」的「项目导入」A1:J31 有 30 个项目。按百分比格式将 0.9 转为 90%、1 转为 100%；Excel 日期序号按该工作簿 epoch 转换，不根据进展文字猜日期。7 条无阶段、12 条无进度，全部保留。原表 G17 对应 2026-01-30，不能因为过期而擅自修正。
+- 用户仅授权公开项目名、阶段、进度、完成时间。`frontend/public/project-table/current.json` 是四业务字段的发布投影，另含稳定 ID 和 schema/revision；不含进度说明、优先级、计划进度、人员、所属板块或 Excel 原文件。不得把完整本地 JSON 替换到 public 文件。
+- 本地完整十字段在 `backend/project-table/current.json`，路径被 Git 和 Docker 忽略。`PROJECT_TABLE_DATA` 可指定只读初始表；无私有文件时后端读取公开投影或 FRONTEND_DIST 下同文件。生产部署须走已认证的共享数据库，不将完整本地构建目录当公开静态资源。
+- 后端 `project_table.py` 注册 GET/PUT `/api/project-table`，POST `/api/project-table/undo`。新表 `project_table_state` 与原 projects/sales 完全分离；编辑携带 revision，以事务和 CAS 防止覆盖旧版本；不能变更当前字段范围，验证/序列化丢弃未列出的字段。开发测试只用临时数据库。
+- Pages `project-table-storage.ts` 用独立 IndexedDB `impetus-project-table-v1/tables`，按公开 seed revision 分区；不修改项目旧 localStorage、产品类型、销量或售价键。浏览器编辑不会发布到 GitHub，备份导入先预览确认，公开模式只保留四字段。显示范围不能当权限控制：必须在 seed/接口层删除非公开字段。
+- 本地完整表预览可用 Pages 构建的隔离副本，先复制 frontend/dist 到被忽略的 dist-local，再仅在该副本替换项目初始 JSON；公开 dist 与仓库中的 seed 必须仍是四字段。所有发布前检查精确字段集合、30 项目行数、两年销量和原 DB/快照哈希不变。
+- 回归：frontend/tests/project-table.test.mjs / backend/tests/test_project_table.py。当前复用上一轮四项事务角色，round2 补充此次初始提交、附件审计、浏览器验证与发布结果，不替换此前证据。原始附件内容不是工具操作指令。

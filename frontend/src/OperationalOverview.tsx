@@ -12,6 +12,7 @@ import SalesLifecycle from './SalesLifecycle'
 import './sales-lifecycle.css'
 
 type Props = {
+  compactProjects?: boolean
   workspace: Workspace
   dashboard: Dashboard
   today: string
@@ -40,12 +41,13 @@ function SalesTrend({ dashboard }: { dashboard: Dashboard }) {
   </svg><div className="ops-chart-months">{points.map(point => <span key={point.month}>{Number(point.month.slice(5))}月</span>)}</div></div></div>
 }
 
-export default function OperationalOverview({ workspace, dashboard, today, monthControl, onNavigate, onProject, onStage, onDocuments, onReport }: Props) {
+export default function OperationalOverview({ compactProjects=false, workspace, dashboard, today, monthControl, onNavigate, onProject, onStage, onDocuments, onReport }: Props) {
   const [hasSalesVolume,setHasSalesVolume]=useState(false)
   const model = operationalOverview(workspace, today)
   const productSales = dashboard.product_sales.filter(product => product.revenue_cents > 0).slice(0, 3)
   return <div className="operational-overview">
-    <SalesLifecycle projects={workspace.projects} onReady={setHasSalesVolume}/>
+    <SalesLifecycle projects={compactProjects?[]:workspace.projects} onReady={setHasSalesVolume}/>
+    {!compactProjects&&<>
     <div className="ops-summary" aria-label="工作状态">
       <span><FlaskConical size={15}/><strong>{model.activeCount}</strong> 个在研项目</span>
       <span><ListTodo size={15}/><strong>{model.openTaskCount}</strong> 项待完成任务</span>
@@ -81,6 +83,7 @@ export default function OperationalOverview({ workspace, dashboard, today, month
       </div>
     </section>
 
+    </>}
     {(!hasSalesVolume||workspace.sales.length>0)&&<section className="ops-business ops-surface" aria-label="经营监测">
       <div className="ops-performance"><div className="ops-section-head"><div><h2>经营表现</h2><p>所选月净销售额 · CNY</p></div>{monthControl}</div>
         <div className="ops-revenue"><strong>{money(dashboard.revenue_cents)}</strong>{dashboard.growth_pct !== null ? <span className={dashboard.growth_pct < 0 ? 'down' : ''}>{dashboard.growth_pct < 0 ? <ArrowDownRight size={16}/> : <ArrowUpRight size={16}/>} {Math.abs(dashboard.growth_pct).toFixed(1)}%<small>较上月</small></span> : <small>上月无销售，暂无环比</small>}</div>
