@@ -27,6 +27,7 @@ from .market import register_market_routes, ensure_sources
 from .project_files import register_file_routes
 from .sales_lifecycle import register_sales_routes
 from .project_table import register_table_routes
+from .project_table_files import register_table_file_routes
 
 
 COOKIE = "product_hub_session"
@@ -114,6 +115,7 @@ def create_app(database_url=None, seed_demo=True):
     register_file_routes(app,factory)
     register_sales_routes(app,factory)
     register_table_routes(app,factory)
+    register_table_file_routes(app,factory)
     register_market_routes(app, factory)
     app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"] if mode == "demo" else [], allow_credentials=True, allow_methods=["GET", "POST", "PATCH", "PUT", "OPTIONS"], allow_headers=["Content-Type"])
     attempts = {}

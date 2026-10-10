@@ -11,6 +11,7 @@ frontend/dist-local/
 backend/import-assets/
 backend/project-files/
 backend/project-table/
+backend/project-table-files/
 .env
 logs/
 backups/

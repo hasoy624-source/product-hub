@@ -248,6 +248,18 @@ class ProjectTableState(Base):
     previous: Mapped[dict | None] = mapped_column(JSON, nullable=True)
 
 
+class ProjectTableFile(Base):
+    __tablename__ = "project_table_files"
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)
+    project_id: Mapped[str] = mapped_column(String(80), index=True)
+    milestone_id: Mapped[str] = mapped_column(String(40))
+    name: Mapped[str] = mapped_column(String(200))
+    content_type: Mapped[str] = mapped_column(String(100))
+    size: Mapped[int] = mapped_column(Integer)
+    sha256: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[str] = mapped_column(String(40))
+
+
 class SalesDataChange(Base):
     __tablename__ = "sales_data_changes"
     id: Mapped[str] = mapped_column(String(64), primary_key=True, default=uid)

@@ -14,6 +14,14 @@ import {browserProjectTable,saveBrowserProjectTable} from './project-table-stora
 import type {ProjectTableData} from './project-table-model'
 
 export { ApiError, publishedPreviewEnabled } from './preview'
+export async function uploadProjectTableFile(projectId:string,kind:'image'|'file',file:File):Promise<ProjectFile>{
+  validateProjectFile(file)
+  if(kind==='image'&&(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>10*1024*1024))throw new Error('请选择不超过 10 MB 的 PNG、JPEG 或 WebP 图片')
+  if(import.meta.env.VITE_PREVIEW_MODE==='true'){const table=(await browserProjectTable(import.meta.env.BASE_URL)).view;if(!table.rows.some(row=>row.id===projectId))throw new ApiError('项目表记录不存在',404);return storeProjectFile(projectId,'project-table-'+kind,file)}
+  const response=await fetch(`/api/project-table/${projectId}/files?kind=${kind}&name=${encodeURIComponent(file.name)}`,{method:'POST',credentials:'same-origin',headers:{'Content-Type':file.type||'application/octet-stream'},body:file}),value=await response.json().catch(()=>null)
+  if(!response.ok)throw new ApiError(value?.detail||'文件上传失败',response.status);return value
+}
+export async function projectTableFileURL(file:ProjectFile){return import.meta.env.VITE_PREVIEW_MODE==='true'?URL.createObjectURL(await previewFileBlob(file)):`/api/project-table/${file.project_id}/files/${file.id}`}
 export async function uploadProjectFile(projectId:string,nodeId:string,file:File):Promise<ProjectFile>{
   validateProjectFile(file)
   if(import.meta.env.VITE_PREVIEW_MODE==='true'){
@@ -43,6 +51,8 @@ export async function uploadProjectImage(projectId: string, file: File) {
 }
 export async function api<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   if (import.meta.env.VITE_PREVIEW_MODE === 'true') {
+    const tableFiles=path.match(/^\/project-table\/([^/]+)\/files$/)
+    if(tableFiles&&method==='GET'){const table=(await browserProjectTable(import.meta.env.BASE_URL)).view;if(!table.rows.some(row=>row.id===tableFiles[1]))throw new ApiError('项目表记录不存在',404);return (await previewProjectFiles(tableFiles[1])).filter(file=>file.milestone_id.startsWith('project-table-')) as T}
     if(path==='/project-table'&&method==='GET')return (await browserProjectTable(import.meta.env.BASE_URL)).view as T
     if(path==='/project-table'&&method==='PUT'){const payload=body as {data:ProjectTableData;revision:string};return await saveBrowserProjectTable(import.meta.env.BASE_URL,payload.data,payload.revision) as T}
     if(path==='/project-table/undo'&&method==='POST'){const current=await browserProjectTable(import.meta.env.BASE_URL);return await saveBrowserProjectTable(import.meta.env.BASE_URL,current.view,(body as {revision:string}).revision,true) as T}

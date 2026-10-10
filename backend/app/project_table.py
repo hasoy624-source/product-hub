@@ -8,7 +8,8 @@ from sqlalchemy import select,update
 from sqlalchemy.exc import IntegrityError
 from .models import ProjectTableState
 PUBLIC=['name','stage','progress','completion_time']
-FIELDS=['name','priority','stage','progress','planned_progress','description','completion_time','owner','structural_owner','project_kind']
+FIELDS=['name','priority','stage','progress','planned_progress','description','completion_time','owner','structural_owner','project_kind','category','node','start_date','deadline','deliverable','status']
+MANUAL=['category','owner','node','start_date','deadline','deliverable','priority','status']
 def validate_table(data):
     try:
         if type(data['schema_version']) is not int or data['schema_version']!=1 or not isinstance(data['revision'],str) or not data['revision'] or not isinstance(data['rows'],list) or len(data['rows'])>2000 or not isinstance(data['fields'],list):raise ValueError('项目表结构不正确')
@@ -31,10 +32,18 @@ def validate_table(data):
             if not key or key in names:raise ValueError('项目名称为空或重复')
             names.add(key)
             if re.fullmatch(r'\d{4}-\d{2}-\d{2}',row['completion_time']):date.fromisoformat(row['completion_time'])
+            for field in ['start_date','deadline']:
+                if row.get(field):
+                    if not re.fullmatch(r'\d{4}-\d{2}-\d{2}',row[field]):raise ValueError('开始/截止日期格式不正确')
+                    date.fromisoformat(row[field])
+            if row.get('start_date') and row.get('deadline') and row['start_date']>row['deadline']:raise ValueError('开始日期不能晚于截止日期')
             rows.append(row)
         return {'schema_version':1,'revision':data['revision'],'fields':list(fields),'rows':rows}
     except (KeyError,TypeError):raise HTTPException(422,'项目表结构不正确')
     except ValueError as error:raise HTTPException(422,str(error))
+def expanded_table(data):
+    base=validate_table(data);fields=list(dict.fromkeys([*base['fields'],*MANUAL]))
+    return validate_table({**base,'fields':fields,'rows':[{**{field:'' for field in MANUAL},**row} for row in base['rows']]})
 def seed_table():
     root=Path(__file__).resolve().parents[2];private=root/'backend/project-table/current.json'
     default=private if private.is_file() else root/'frontend/public/project-table/current.json'
@@ -45,7 +54,7 @@ def seed_table():
     except (OSError,ValueError):raise HTTPException(500,'项目表读取失败')
 def table_view(session):
     state=session.get(ProjectTableState,'project-table');data=copy.deepcopy(state.data) if state else seed_table()
-    return {**data,'revision':state.version if state else 'seed:'+data['revision'],'storage':'server','can_undo':bool(state and state.previous is not None)}
+    return {**expanded_table(data),'revision':state.version if state else 'seed:'+data['revision'],'storage':'server','can_undo':bool(state and state.previous is not None)}
 class TableIn(BaseModel):
     revision:str=Field(min_length=1,max_length=100)
     data:dict

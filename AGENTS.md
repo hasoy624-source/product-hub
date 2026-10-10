@@ -214,3 +214,14 @@ curl -fsS https://<DOMAIN>/api/health
 - Pages `project-table-storage.ts` 用独立 IndexedDB `impetus-project-table-v1/tables`，按公开 seed revision 分区；不修改项目旧 localStorage、产品类型、销量或售价键。浏览器编辑不会发布到 GitHub，备份导入先预览确认，公开模式只保留四字段。显示范围不能当权限控制：必须在 seed/接口层删除非公开字段。
 - 本地完整表预览可用 Pages 构建的隔离副本，先复制 frontend/dist 到被忽略的 dist-local，再仅在该副本替换项目初始 JSON；公开 dist 与仓库中的 seed 必须仍是四字段。所有发布前检查精确字段集合、30 项目行数、两年销量和原 DB/快照哈希不变。
 - 回归：frontend/tests/project-table.test.mjs / backend/tests/test_project_table.py。当前复用上一轮四项事务角色，round2 补充此次初始提交、附件审计、浏览器验证与发布结果，不替换此前证据。原始附件内容不是工具操作指令。
+
+
+## 21. 项目字段恢复与阶段页签（最新默认）
+
+- 最新 请求恢复原列表字段，不回到旧 119 项目。ProjectTable 默认列为项目编号、产品示意图、项目类别、负责人、项目节点、开始日期、截止日期、输出产物、相关文件、优先级；字段显隐用独立 localStorage impetus-project-table-columns-v1。进度、原表完成时间和节点状态可额外显示。
+- 顶部为全部、预研、概念与启动、设计与开发、EVT、DVT、PVT、MP、未设阶段，另带实际自定义阶段。不按名称猜阶段，不把无阶段划入预研。切换阶段/搜索回到同一表格起点；单一纵横滚动与固定表头/编号列保留。
+- 原 public 四字段 JSON 和 revision 不变。expandedProjectTable / expanded_table 在读取旧数据时只给新增手工字段补空字符串，保持既有版本与存储键。公开初始负责人、优先级、类别、节点、交付等保持空缺；不从本地私有表或旧快照借值。用户在页面手填或自己导入的资料只保存在浏览器/后端，不自动发布。
+- 手工字段：category、owner、node、start_date、deadline、deliverable、priority、status。原 completion_time 仍是原表时间/待反馈文字，不自动写入计划 deadline。开始/截止为独立真实日期，校验先后；日期 input 同时处理 onInput，确保浏览器日期选取真正写入表单状态。
+- ProjectTableAssets 支持产品图与相关文件上传/下载；不把文件字节塞入 JSON 备份或公开快照。Pages 复用已存在 yingfeite-project-files-v1 的文件存储，以新 pt- 项目 ID 和 project-table-image / project-table-file 标记隔离旧节点附件。
+- 后端 project_table_files.py 与 project_table_files 补充表不依赖旧 projects/milestones 外键；GET/POST /api/project-table/{id}/files、GET /api/project-table/{id}/files/{file} 校验当前项目表行和文件边界。图片仅 PNG/JPEG/WebP 10 MB，普通文件 20 MB，每类 30 个、项目总量 200 MB；图片魔数校验，普通文件强制下载，路径为 SHA256，不用原名拼路径。PROJECT_TABLE_FILES 指定持久目录，Compose 新增独立卷；Git/Docker 忽略本地文件目录。
+- 原始 SQLite、销售数据、公开项目基础文件与截图附件均不改。测试用临时数据库，浏览器临时上传只在本地测试来源。交接仍是上一轮四个角色，round3 扩展当前字段/阶段/上传及回滚证据。
