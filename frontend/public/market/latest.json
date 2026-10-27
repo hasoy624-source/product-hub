@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-26T05:48:45+00:00",
+  "updated_at": "2026-10-27T06:01:23+00:00",
   "sources": [
     {
       "id": "pulsar-puffco",
@@ -11,12 +11,12 @@
       "max_products": 80,
       "max_collection_pages": 5,
       "max_review_pages": 10,
-      "last_run_at": "2026-10-26T05:50:37+00:00",
-      "last_status": "success",
-      "message": "采集完成",
+      "last_run_at": "2026-10-27T06:01:27+00:00",
+      "last_status": "failed",
+      "message": "HTTP 503",
       "retry_after": 0,
       "review_count": 152,
-      "product_count": 55,
+      "product_count": 29,
       "last_success_at": "2026-10-26T05:50:37+00:00"
     }
   ],
@@ -2863,135 +2863,97 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/death-bunny-rig-puffco-peak",
-      "title": "Pulsar Death Bunny Bubbler for Puffco Peak Series",
-      "status": "success",
-      "review_count": 4,
+      "title": "death-bunny-rig-puffco-peak",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/grateful-dead-stealied-out-rig-puffco-peak-series",
-      "title": "Grateful Dead x Pulsar Stealied Out Bubbler Set for Puffco Peak Series",
-      "status": "success",
-      "review_count": 4,
+      "title": "grateful-dead-stealied-out-rig-puffco-peak-series",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/ocean-aquarium-rig-puffco-peak",
-      "title": "Pulsar Ocean Aquarium Bubbler for Puffco Peak Series",
-      "status": "success",
-      "review_count": 5,
+      "title": "ocean-aquarium-rig-puffco-peak",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/mushroom-mayhem-rig-puffco-peak",
-      "title": "Pulsar Mushroom Mayhem Bubbler for Puffco Peak Series",
-      "status": "success",
-      "review_count": 0,
+      "title": "mushroom-mayhem-rig-puffco-peak",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/fab-egg-bubbler-attachment-puffco-pivot",
-      "title": "Fab Egg Bubbler for Puffco Pivot",
-      "status": "success",
-      "review_count": 0,
+      "title": "fab-egg-bubbler-attachment-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/swiss-bubbler-attachment-puffco-pivot",
-      "title": "Swiss Bubbler for Puffco Pivot",
-      "status": "success",
-      "review_count": 4,
+      "title": "swiss-bubbler-attachment-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/vortex-mouthpiece-attachment-puffco-pivot",
-      "title": "Vortex Attachment for Puffco Pivot",
-      "status": "success",
-      "review_count": 6,
+      "title": "vortex-mouthpiece-attachment-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/candy-cane-mouthpiece-attachment-puffco-pivot",
-      "title": "Candy Cane Attachment for Puffco Pivot",
-      "status": "success",
-      "review_count": 2,
+      "title": "candy-cane-mouthpiece-attachment-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/snowman-mouthpiece-attachment-puffco-pivot",
-      "title": "Snowman Attachment for Puffco Pivot",
-      "status": "success",
-      "review_count": 2,
+      "title": "snowman-mouthpiece-attachment-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/ducky-mouthpiece-attachment-puffco-pivot",
-      "title": "Ducky Attachment for Puffco Pivot",
-      "status": "success",
-      "review_count": 0,
+      "title": "ducky-mouthpiece-attachment-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/love-machine-rig-puffco-peak",
-      "title": "Pulsar Love Machine Bubbler for Puffco Peak Series",
-      "status": "success",
-      "review_count": 0,
+      "title": "love-machine-rig-puffco-peak",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/heart-mouthpiece-attachment-puffco-pivot",
-      "title": "Pulsar Heart Attachment for Puffco Pivot",
-      "status": "success",
-      "review_count": 0,
+      "title": "heart-mouthpiece-attachment-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/cubez-rig-puffco-peak",
-      "title": "Pulsar Cubez Attachment for Puffco Peak Series",
-      "status": "success",
-      "review_count": 0,
+      "title": "cubez-rig-puffco-peak",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/dichro-mouthpiece-attachment-puffco-pivot",
-      "title": "Pulsar Dichro Attachment for Puffco Pivot",
-      "status": "success",
-      "review_count": 1,
+      "title": "dichro-mouthpiece-attachment-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/puffco-peak-atomizer",
-      "title": "Puffco Peak Atomizer",
-      "status": "success",
-      "review_count": 0,
+      "title": "puffco-peak-atomizer",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/giddy-ghost-rig-puffco-peak",
-      "title": "Pulsar Giddy Ghost Bubbler for Puffco Peak Series",
-      "status": "success",
-      "review_count": 1,
+      "title": "giddy-ghost-rig-puffco-peak",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/seshgear-8-ball-rig-for-puffco-peak-series",
-      "title": "SeshGear 8-Ball Bubbler for Puffco Peak Series",
-      "status": "success",
-      "review_count": 0,
+      "title": "seshgear-8-ball-rig-for-puffco-peak-series",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/opal-marble-bubbler-attachment-puffco-pivot",
-      "title": "Opal Marble Bubbler for Puffco Pivot",
-      "status": "success",
-      "review_count": 0,
+      "title": "opal-marble-bubbler-attachment-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/seshgear-swiss-donut-rig-puffco-peak-series",
-      "title": "SeshGear Swiss Donut Attachment for Puffco Peak Series",
-      "status": "success",
-      "review_count": 0,
+      "title": "seshgear-swiss-donut-rig-puffco-peak-series",
       "source_id": "pulsar-puffco"
     },
     {
@@ -3192,55 +3154,54 @@
     },
     {
       "url": "https://www.pulsarshop.com/products/pulsar-sherlock-attachment-puffco-proxy",
-      "title": "Pulsar Sherlock Attachment for Puffco Proxy",
-      "status": "success",
-      "review_count": 0,
+      "title": "pulsar-sherlock-attachment-puffco-proxy",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/pulsar-dual-attachment-set-puffco-proxy",
-      "title": "Pulsar Dual Attachment Set for Puffco Proxy",
-      "status": "success",
-      "review_count": 0,
+      "title": "pulsar-dual-attachment-set-puffco-proxy",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/seshgear-shroomin-bubbler-puffco-peak-series",
-      "title": "SeshGear Shroomin' Bubbler for Puffco Peak Series",
-      "status": "success",
-      "review_count": 0,
+      "title": "seshgear-shroomin-bubbler-puffco-peak-series",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/seshgear-busty-bubbler-puffco-peak-series",
-      "title": "SeshGear Busty Bubbler for Puffco Peak Series",
-      "status": "success",
-      "review_count": 0,
+      "title": "seshgear-busty-bubbler-puffco-peak-series",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/fumed-bicolor-bubbler-puffco-pivot",
-      "title": "Fumed Bicolor Bubbler for Puffco Pivot",
-      "status": "success",
-      "review_count": 0,
+      "title": "fumed-bicolor-bubbler-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/mushroom-attachment-puffco-pivot",
-      "title": "Mushroom Attachment for Puffco Pivot",
-      "status": "success",
-      "review_count": 0,
+      "title": "mushroom-attachment-puffco-pivot",
       "source_id": "pulsar-puffco"
     },
     {
       "url": "https://www.pulsarshop.com/products/seshgear-full-monty-bubbler-puffco-peak-series",
-      "title": "SeshGear Full Monty Bubbler for Puffco Peak Series",
-      "status": "success",
-      "review_count": 0,
+      "title": "seshgear-full-monty-bubbler-puffco-peak-series",
       "source_id": "pulsar-puffco"
     }
   ],
   "runs": [
+    {
+      "id": "run-39f4c9fb10ef4e0cacac1ecec52d3b18",
+      "source_id": "pulsar-puffco",
+      "started_at": "2026-10-27T06:01:23+00:00",
+      "finished_at": "2026-10-27T06:01:27+00:00",
+      "status": "failed",
+      "products_found": 0,
+      "products_scanned": 0,
+      "reviews_found": 0,
+      "new_reviews": 0,
+      "message": "HTTP 503",
+      "retry_after": 0
+    },
     {
       "id": "run-53f8cc1c2f184f709f984d32661ff6b8",
       "source_id": "pulsar-puffco",
