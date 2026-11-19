@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-18T08:14:52+00:00",
+  "updated_at": "2026-11-19T08:27:10+00:00",
   "sources": [
     {
       "id": "pulsar-puffco",
@@ -11,9 +11,9 @@
       "max_products": 80,
       "max_collection_pages": 5,
       "max_review_pages": 10,
-      "last_run_at": "2026-11-18T08:16:44+00:00",
-      "last_status": "success",
-      "message": "采集完成",
+      "last_run_at": "2026-11-19T08:27:13+00:00",
+      "last_status": "not_found",
+      "message": "HTTP 404",
       "retry_after": 0,
       "review_count": 153,
       "product_count": 56,
@@ -3266,6 +3266,19 @@
     }
   ],
   "runs": [
+    {
+      "id": "run-af839e4cbf184d72b440fcb8c764e705",
+      "source_id": "pulsar-puffco",
+      "started_at": "2026-11-19T08:27:10+00:00",
+      "finished_at": "2026-11-19T08:27:13+00:00",
+      "status": "not_found",
+      "products_found": 0,
+      "products_scanned": 0,
+      "reviews_found": 0,
+      "new_reviews": 0,
+      "message": "HTTP 404",
+      "retry_after": 0
+    },
     {
       "id": "run-1b78c2d67ec04398869313903b558525",
       "source_id": "pulsar-puffco",
