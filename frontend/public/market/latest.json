@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-21T08:01:55+00:00",
+  "updated_at": "2026-11-22T07:48:55+00:00",
   "sources": [
     {
       "id": "pulsar-puffco",
@@ -11,7 +11,7 @@
       "max_products": 80,
       "max_collection_pages": 5,
       "max_review_pages": 10,
-      "last_run_at": "2026-11-21T08:01:58+00:00",
+      "last_run_at": "2026-11-22T07:48:58+00:00",
       "last_status": "not_found",
       "message": "HTTP 404",
       "retry_after": 0,
@@ -3266,6 +3266,19 @@
     }
   ],
   "runs": [
+    {
+      "id": "run-6cc3d4d47c024b6dbb3d0dbc6b0b34aa",
+      "source_id": "pulsar-puffco",
+      "started_at": "2026-11-22T07:48:55+00:00",
+      "finished_at": "2026-11-22T07:48:58+00:00",
+      "status": "not_found",
+      "products_found": 0,
+      "products_scanned": 0,
+      "reviews_found": 0,
+      "new_reviews": 0,
+      "message": "HTTP 404",
+      "retry_after": 0
+    },
     {
       "id": "run-4470e23f0e544c5b8ab3fe70f186a59b",
       "source_id": "pulsar-puffco",
